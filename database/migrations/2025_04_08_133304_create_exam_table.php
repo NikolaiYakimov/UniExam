@@ -11,8 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exam', function (Blueprint $table) {
+        Schema::create('exams', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('teacher_id')->constrained('teachers')->onDelete('cascade');
+            $table->foreignId('subject_id')->constrained('subjects')->onDelete('cascade');
+            $table->date('exam_date');
+            $table->string('exam_hall');
+            $table->integer('max_students ');
+            $table->enum('exam_type',['редовен','поправителен','ликвидация']);
             $table->timestamps();
         });
     }
