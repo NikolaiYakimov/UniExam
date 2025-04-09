@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('teacher_id')->constrained('teachers')->onDelete('cascade');
             $table->foreignId('subject_id')->constrained('subjects')->onDelete('cascade');
-            $table->date('exam_date');
+            $table->dateTime('exam_date');
             $table->string('exam_hall');
-            $table->integer('max_students ');
+            $table->integer('max_students');
             $table->enum('exam_type',['редовен','поправителен','ликвидация']);
             $table->timestamps();
         });
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exam');
+        Schema::dropIfExists('exams');
     }
 };
