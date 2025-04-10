@@ -15,9 +15,9 @@ class StudentController extends Controller
         $exams = Exam::with(['teacher', 'subject'])->
         where('exam_date', '>', now())->
         get()->
-        filter(fn($exam) => $exam->remaingSlots > 0);
+        filter(fn($exam) => $exam->remainingSlots() > 0);
 
-        return view('student.exams', compact('exams'));
+        return view('exams', compact('exams'));
     }
 
     public function register(Request $request, Exam $exam)
@@ -26,7 +26,7 @@ class StudentController extends Controller
             return back()->with('error', 'Няма свободни места!');
         }
         if ($exam->registrations()->where('student_id', auth('student')->id())->exists()) {
-            return back('error', 'Вече сте записани за този изпит!');
+            return back()->with('error', 'Вече сте записани за този изпит!');
         }
 
         ExamRegistration::create([
@@ -34,7 +34,7 @@ class StudentController extends Controller
             'exam_id' => $exam->id,
         ]);
 
-        return back()->with('success', 'Успешно се записахте за изпит!');
+        return  redirect()->route('exams')->with('success', 'Успешно се записахте за изпит!');
 
     }
 }

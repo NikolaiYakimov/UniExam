@@ -20,14 +20,17 @@ class StudentAuthController extends Controller
 
         if(Auth::guard('student')->attempt($credentials)){
             $request->session()->regenerate();
+//            return view('exams');
             return redirect()->route('exams');
         }
+        echo "Error";
         return back()->withErrors([
             'username' => 'Грешно потребителско име или парола.',
         ]);
     }
-    public function logout(Request $request){
-        Auth::logout();
+    public function logout(Request $request):\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    {
+        Auth::guard('student')->logout();
         $request->session()->invalidate();
         return redirect('/login');
     }
