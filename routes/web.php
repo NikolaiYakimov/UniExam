@@ -15,7 +15,9 @@ Route::get('/', function () {
 
     Route::middleware(['auth:student'])->group(function () {
         Route::get('/exams', [StudentController::class, 'exams'])->name('exams');
+        Route::get('/my_exams', [StudentController::class, 'myExams'])->name('student.my_exams');
         Route::post('/exams/{exam}/register', [StudentController::class, 'register'])->name('student.exam.register');
+
     });
 
 //});

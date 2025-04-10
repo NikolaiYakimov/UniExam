@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Достъпни изпити</title>
+    <title>Моите изпити</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Преизползване на оригиналните стилове */
         body {
             background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -40,39 +41,34 @@
             color: #495057;
             margin-bottom: 8px;
         }
-        .register-btn {
-            background-color: #3490dc;
+
+        /* Допълнителни стилове специфични за тази страница */
+        .cancel-btn {
+            background-color: #dc3545;
             border: none;
             padding: 8px 20px;
             font-weight: 500;
             margin-top: 15px;
         }
-        .register-btn:hover {
-            background-color: #227dc7;
+        .cancel-btn:hover {
+            background-color: #bb2d3b;
         }
-        .register-btn:disabled {
+        .back-btn {
             background-color: #6c757d;
+            color: white;
         }
-        .slots-available {
-            font-weight: bold;
-            color: #28a745;
-        }
-        .slots-full {
-            font-weight: bold;
-            color: #dc3545;
-        }
-        .alert {
-            margin-top: 15px;
+        .back-btn:hover {
+            background-color: #5c636a;
         }
     </style>
 </head>
 <body>
 <div class="header">
     <div class="container d-flex justify-content-between align-items-center">
-        <h1 class="mb-0">Достъпни изпити</h1>
+        <h1 class="mb-0">Моите изпити</h1>
         <div class="d-flex gap-2">
-            <a href="{{ route('student.my_exams') }}" class="btn btn-light">
-                <i class="fas fa-list-alt"></i> Моите изпити
+            <a href="{{ route('exams') }}" class="btn back-btn">
+                <i class="fas fa-arrow-left"></i> Назад
             </a>
             <form action="{{ route('student.logout') }}" method="POST">
                 @csrf
@@ -100,8 +96,8 @@
     @endif
 
     @if($exams->isEmpty())
-        <div class="alert alert-info text-center">
-            В момента няма налични изпити за записване.
+        <div class="alert alert-info text-center mt-4">
+            Все още нямате записани изпити.
         </div>
     @else
         <div class="row">
@@ -111,15 +107,14 @@
                         <div class="card-body">
                             <h5 class="exam-title">{{ $exam->subject->subject_name }}</h5>
 
-
                             <p class="exam-detail">
                                 <i class="fas fa-chalkboard-teacher"></i> Преподавател:
-                                <strong>{{ $exam->teacher->first_name }}  {{$exam->teacher->last_name }}</strong>
+                                <strong>{{ $exam->teacher->first_name }} {{ $exam->teacher->last_name }}</strong>
                             </p>
 
                             <p class="exam-detail">
                                 <i class="fas fa-calendar-alt"></i> Дата:
-                                <strong>{{{ \Carbon\Carbon::parse($exam->exam_date)->format('d.m.Y H:i') }}}</strong>
+                                <strong>{{ \Carbon\Carbon::parse($exam->exam_date)->format('d.m.Y H:i') }}</strong>
                             </p>
 
                             <p class="exam-detail">
@@ -127,20 +122,7 @@
                                 <strong>{{$exam->exam_hall}}</strong>
                             </p>
 
-                            <p class="exam-detail">
-                                <i class="fas fa-users"></i> Свободни места:
-                                <span class="{{ $exam->remainingSlots() > 0 ? 'slots-available' : 'slots-full' }}">
-                                        {{ $exam->remainingSlots() }}
-                                    </span>
-                            </p>
 
-                            <form method="POST" action="{{ route('student.exam.register', $exam) }}">
-                                @csrf
-                                <button type="submit" class="btn register-btn w-100"
-                                    {{ $exam->remainingSlots() <= 0 ? 'disabled' : '' }}>
-                                    <i class="fas fa-edit"></i> Запиши се
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>

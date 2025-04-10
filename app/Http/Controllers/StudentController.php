@@ -9,17 +9,34 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    //
+    //Get the exams which the student didn't registe
     public function exams(): \Illuminate\Contracts\View\View
     {
-        $exams = Exam::with(['teacher', 'subject'])->
-        where('exam_date', '>', now())->
-        get()->
-        filter(fn($exam) => $exam->remainingSlots() > 0);
+        //Get the exams which the student didn't register
+        /** @var \App\Models\Student $student */
+        $student = auth('student')->user();
+        $registeredExamIds = $student->registrations()->pluck('exam_id');
+
+        $exams=Exam::with(['teacher', 'subject'])
+            ->where('exam_date', '>', now())
+            ->whereNotIn('id', $registeredExamIds)
+            ->get()
+            ->filter(fn($exam) => $exam->remainingSlots() > 0);
 
         return view('exams', compact('exams'));
     }
+        public function myExams(){
+        /** @var \App\Models\Student $student */
+        $student = auth('student')->user();
+        $registrations=$student->registrations()
+            ->with('exam.teacher', 'exam.subject')
+            ->get()
+            ->pluck('exam');
 
+        return view('my_exams',[
+            'exams' => $registrations,
+            'student' => $student]);
+        }
     public function register(Request $request, Exam $exam)
     {
         if ($exam->remainingSlots() <= 0) {
