@@ -25,6 +25,5 @@ Route::get('/', function () {
 
 
 
-    });
 
 //});
