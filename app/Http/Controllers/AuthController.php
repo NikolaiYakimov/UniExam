@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
-class StudentAuthController extends Controller
+class AuthController extends Controller
 {
-    public function showLoginForm(){
-        return view('student_login');
+    public function showLoginForm():View{
+        return view('user_login');
     }
 
-    public function login(Request $request){
+    public function login(Request $request):object{
         $credentials = $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
@@ -20,7 +21,6 @@ class StudentAuthController extends Controller
 
         if(Auth::guard('student')->attempt($credentials)){
             $request->session()->regenerate();
-//            return view('exams');
             return redirect()->route('exams');
         }
         echo "Error";

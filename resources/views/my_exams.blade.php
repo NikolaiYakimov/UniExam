@@ -42,20 +42,9 @@
             margin-bottom: 8px;
         }
 
-        /* Допълнителни стилове специфични за тази страница */
-        .cancel-btn {
-            background-color: #dc3545;
-            border: none;
-            padding: 8px 20px;
-            font-weight: 500;
-            margin-top: 15px;
-        }
-        .cancel-btn:hover {
-            background-color: #bb2d3b;
-        }
         .back-btn {
-            background-color: #6c757d;
-            color: white;
+            background-color: white;
+            color: black;
         }
         .back-btn:hover {
             background-color: #5c636a;
@@ -68,9 +57,9 @@
         <h1 class="mb-0">Моите изпити</h1>
         <div class="d-flex gap-2">
             <a href="{{ route('exams') }}" class="btn back-btn">
-                <i class="fas fa-arrow-left"></i> Назад
+                <i class="fas fa-arrow-left "></i> Достъпни изпити
             </a>
-            <form action="{{ route('student.logout') }}" method="POST">
+            <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-danger">
                     <i class="fas fa-sign-out-alt"></i> Изход
@@ -131,9 +120,9 @@
     @endif
 </div>
 
-<!-- Font Awesome за икони -->
+
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-<!-- Bootstrap JS -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

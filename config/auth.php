@@ -39,10 +39,15 @@ return [
 //        'web' => [
 //            'driver' => 'session',
 //            'provider' => 'users',
-//        ],
+//      cd  ],
         'student' => [
             'driver' => 'session',
             'provider' => 'students',
+        ],
+
+        'teacher'=> [
+            'driver'=>'session',
+            'provider'=>'teachers',
         ],
     ],
 
@@ -71,11 +76,13 @@ return [
         'students'=>[
             'driver' => 'eloquent',
             'model' => App\Models\Student::class,
-        ]
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        ],
+
+        'teachers'=>[
+            'driver'=>'eloquent',
+            'model'=>App\Models\Teacher::class,
+
+        ],
     ],
 
     /*

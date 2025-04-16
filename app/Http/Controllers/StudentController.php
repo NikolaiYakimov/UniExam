@@ -35,7 +35,8 @@ class StudentController extends Controller
 
         return view('my_exams',[
             'exams' => $registrations,
-            'student' => $student]);
+            'student' => $student
+]);
         }
     public function register(Request $request, Exam $exam)
     {
