@@ -20,7 +20,9 @@ Route::get('/', function () {
 
     });
 
-    Route::middleware(['auth:teacher'])->group(function () {
+    Route::middleware(['auth:teacher'])->group(function () {});
+
+
 
 
     });
