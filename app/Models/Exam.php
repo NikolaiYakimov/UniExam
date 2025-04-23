@@ -17,6 +17,7 @@ class Exam extends Model
 
     protected $fillable = ['teacher_id', 'subject_id', 'exam_date','exam_hall','max_students','exam_type'];
 
+    
 
     public function teacher():belongsTo{
         return $this->belongsTo(Teacher::class);

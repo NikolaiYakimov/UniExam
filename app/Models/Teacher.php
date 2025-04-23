@@ -35,4 +35,10 @@ class Teacher extends Authenticatable
     {
         $this->attributes['last_name'] = ucfirst($lastName);
     }
+
+
+    public function getExamsCountAttribute()
+    {
+        return $this->exams()->count();
+    }
 }

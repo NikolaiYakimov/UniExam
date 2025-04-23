@@ -23,6 +23,11 @@ class AuthController extends Controller
             $request->session()->regenerate();
             return redirect()->route('exams');
         }
+
+        if(Auth::guard('teacher')->attempt($credentials)){
+            $request->session()->regenerate();
+            return redirect()->route('teacher_dashboard');
+        }
         echo "Error";
         return back()->withErrors([
             'username' => 'Грешно потребителско име или парола.',
