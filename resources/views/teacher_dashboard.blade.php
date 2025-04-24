@@ -123,7 +123,7 @@
     <title>Teacher Profile - Exam Manager</title>
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gradient-to-br from-indigo-50 to-blue-100 min-h-screen" x-data="{ showModal: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -241,80 +241,89 @@
             </svg>
         </button>
 
-{{--        <!-- Create Exam Modal -->--}}
-{{--        <div x-cloak x-show="showModal"--}}
-{{--             class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"--}}
-{{--             x-transition.opacity>--}}
-{{--            <div @click.away="showModal = false"--}}
-{{--                 class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8"--}}
-{{--                 x-transition:enter="ease-out duration-300"--}}
-{{--                 x-transition:enter-start="opacity-0 scale-95"--}}
-{{--                 x-transition:enter-end="opacity-100 scale-100"--}}
-{{--                 x-transition:leave="ease-in duration-200"--}}
-{{--                 x-transition:leave-start="opacity-100 scale-100"--}}
-{{--                 x-transition:leave-end="opacity-0 scale-95">--}}
+        <!-- Create Exam Modal -->
+        <div x-cloak x-show="showModal"
+             class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+             x-transition.opacity>
+            <div @click.away="showModal = false"
+                 class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95">
 
-{{--                <h3 class="text-2xl font-bold text-gray-900 mb-6">Създаване на нов изпит</h3>--}}
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Създаване на нов изпит</h3>
 
-{{--                <form method="POST" action="{{ route('exams.store') }}">--}}
-{{--                    @csrf--}}
-{{--                    <div class="space-y-5">--}}
-{{--                        <div>--}}
-{{--                            <label class="block text-sm font-medium text-gray-700 mb-2">Дисциплина</label>--}}
-{{--                            <select name="subject_id" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">--}}
-{{--                                @foreach($subjects as $subject)--}}
-{{--                                    <option value="{{ $subject->id }}">{{ $subject->subject_name }} (Семестър {{ $subject->semester }})</option>--}}
-{{--                                @endforeach--}}
-{{--                            </select>--}}
-{{--                        </div>--}}
+                <form method="POST" action="{{ route('exams.store') }}">
+                    @csrf
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Дисциплина</label>
+                            <select name="subject_id" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                                @foreach($subjects as $subject)
+                                    <option value="{{ $subject->id }}">{{ $subject->subject_name }} (Семестър {{ $subject->semester }})</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-{{--                        <div class="grid grid-cols-2 gap-4">--}}
-{{--                            <div>--}}
-{{--                                <label class="block text-sm font-medium text-gray-700 mb-2">Тип изпит</label>--}}
-{{--                                <select name="exam_type" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">--}}
-{{--                                    <option value="written">Писмен</option>--}}
-{{--                                    <option value="oral">Устен</option>--}}
-{{--                                    <option value="practical">Практически</option>--}}
-{{--                                </select>--}}
-{{--                            </div>--}}
-{{--                            <div>--}}
-{{--                                <label class="block text-sm font-medium text-gray-700 mb-2">Макс. студенти</label>--}}
-{{--                                <input type="number" name="max_students" required min="1"--}}
-{{--                                       class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Тип изпит</label>
+                                <select name="exam_type" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                                    <option value="редовен">редовен</option>
+                                    <option value="поправителен">поправителен</option>
+                                    <option value="ликвидация">ликвидация</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Макс. студенти</label>
+                                <input type="number" name="max_students" required min="1"
+                                       class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                            </div>
+                        </div>
 
-{{--                        <div class="grid grid-cols-2 gap-4">--}}
-{{--                            <div>--}}
-{{--                                <label class="block text-sm font-medium text-gray-700 mb-2">Дата и час</label>--}}
-{{--                                <input type="datetime-local" name="exam_date" required--}}
-{{--                                       class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">--}}
-{{--                            </div>--}}
-{{--                            <div>--}}
-{{--                                <label class="block text-sm font-medium text-gray-700 mb-2">Изпитна зала</label>--}}
-{{--                                <input type="text" name="exam_hall" required--}}
-{{--                                       class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Дата и час</label>
+                                <input type="datetime-local" name="exam_date" required
+                                       class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Изпитна зала</label>
+                                <input type="text" name="exam_hall" required
+                                       class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                            </div>
+                        </div>
 
-{{--                        <div class="flex justify-end gap-3 mt-8">--}}
-{{--                            <button type="button" @click="showModal = false"--}}
-{{--                                    class="px-5 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">--}}
-{{--                                Отказ--}}
-{{--                            </button>--}}
-{{--                            <button type="submit"--}}
-{{--                                    class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-sm">--}}
-{{--                                Създай изпит--}}
-{{--                            </button>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                </form>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
+                        <div class="flex justify-end gap-3 mt-8">
+                            <button type="button" @click="showModal = false"
+                                    class="px-5 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                                Отказ
+                            </button>
+                            <button type="submit"
+                                    class="px-5 py-2.5 bg-ind igo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-sm">
+                                Създай изпит
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
 
-        <form method="POST" action="{{ route('logout') }}" class="fixed bottom-8 right-28">
+    <form method="POST" action="{{ route('logout') }}" class="fixed bottom-8 right-28">
             @csrf
             <button type="submit"
                     class="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-xl flex items-center justify-center transition-all duration-300"

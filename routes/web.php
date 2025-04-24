@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ExamController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
@@ -24,7 +25,7 @@ Route::get('/', function () {
     Route::middleware(['auth:teacher'])->group(function () {
 
      Route::get('/teacher_dashboard', [TeacherController::class, 'dashboard'])->name('teacher_dashboard');
-
+     Route::post('/exams',[ExamController::class, 'store'])->name('exams.store');
     });
 
 
