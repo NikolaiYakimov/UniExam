@@ -148,10 +148,16 @@
                             <h2 class="text-lg font-semibold text-gray-900 leading-tight">
                                 {{ $exam->subject->subject_name }}
                             </h2>
-                            <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $exam->remainingSlots() > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                {{ $exam->remainingSlots() > 0 ? 'Свободни места' : 'Няма места' }}
-                            </span>
+                            <div class="flex items-center gap-2 mb-3">
+    <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+        {{ $exam->exam_type }}
+    </span>
+                                <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $exam->remainingSlots() > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+        {{ $exam->remainingSlots() > 0 ? $exam->remainingSlots().' Свободни места' : 'Няма места' }}
+    </span>
+                            </div>
                         </div>
+
 
                         <div class="space-y-3 mb-5">
                             <div class="flex items-center gap-2 text-gray-600">
