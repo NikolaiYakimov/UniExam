@@ -1,25 +1,34 @@
-// Мобилно меню
-const menuToggle = document.getElementById('menuToggle');
-const sidebar = document.getElementById('sidebar');
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const menuContainer = document.getElementById('menuContainer');
 
-menuToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    sidebar.classList.toggle('left-0');
-    sidebar.classList.toggle('left-[-100%]');
-});
+    menuToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isOpen = sidebar.style.left === '0px';
 
-// Close the menu when we click outside of it
-document.addEventListener('click', (e) => {
-    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-        sidebar.classList.remove('left-0');
-        sidebar.classList.add('left-[-100%]');
-    }
-});
+        if(isOpen) {
+            sidebar.style.left = '-288px';
+            menuContainer.classList.remove('hidden');
+        } else {
+            sidebar.style.left = '0';
+            menuContainer.classList.add('hidden');
+        }
+    });
 
-//Close when we reach the dekstop size
-window.addEventListener('resize', () => {
-    if (window.innerWidth >= 1024) {
-        sidebar.classList.remove('left-0');
-        sidebar.classList.add('left-[-100%]');
-    }
+    document.addEventListener('click', function(e) {
+        if(window.innerWidth < 1024 && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+            sidebar.style.left = '-100%';
+            menuContainer.classList.remove('hidden');
+        }
+    });
+
+    window.addEventListener('resize', function() {
+        if(window.innerWidth >= 1024) {
+            sidebar.style.left = '0';
+        } else {
+            sidebar.style.left = '-100%';
+            menuContainer.classList.remove('hidden');
+        }
+    });
 });
