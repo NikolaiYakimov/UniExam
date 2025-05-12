@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('subject_name');
             $table->string('description');
-            $table->string('semester');
+            $table->integer('semester');
             $table->timestamps();
         });
     }
