@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
 {
@@ -14,7 +15,7 @@ class StudentController extends Controller
     {
         //Get the exams which the student didn't register
         /** @var \App\Models\Student $student */
-        $student = auth('student')->user();
+        $student = Auth::user()->student;
         $registeredExamIds = $student->registrations()->pluck('exam_id');
 
         $exams=Exam::with(['teacher', 'subject'])

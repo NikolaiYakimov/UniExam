@@ -28,7 +28,7 @@ class SubjectSeeder extends Seeder
         Subject::create([
             'subject_name'=>'ОМТ',
             'description'=>'Изучаване на основните мрежови технологии',
-            'semester'=>'6'
+            'semester'=>'3'
         ]);
     }
 }

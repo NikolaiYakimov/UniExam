@@ -36,19 +36,19 @@ return [
     */
 
     'guards' => [
-//        'web' => [
-//            'driver' => 'session',
-//            'provider' => 'users',
-//      cd  ],
-        'student' => [
+        'web' => [
             'driver' => 'session',
-            'provider' => 'students',
+            'provider' => 'users',
         ],
-
-        'teacher'=> [
-            'driver'=>'session',
-            'provider'=>'teachers',
-        ],
+//        'student' => [
+//            'driver' => 'session',
+//            'provider' => 'students',
+//        ],
+//
+//        'teacher'=> [
+//            'driver'=>'session',
+//            'provider'=>'teachers',
+//        ],
     ],
 
     /*
@@ -69,20 +69,20 @@ return [
     */
 
     'providers' => [
-//        'users' => [
-//            'driver' => 'eloquent',
-//            'model' => env('AUTH_MODEL', App\Models\User::class),
-//        ],
-        'students'=>[
+        'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Student::class,
+            'model' => App\Models\User::class,
         ],
-
-        'teachers'=>[
-            'driver'=>'eloquent',
-            'model'=>App\Models\Teacher::class,
-
-        ],
+//        'students'=>[
+//            'driver' => 'eloquent',
+//            'model' => App\Models\Student::class,
+//        ],
+//
+//        'teachers'=>[
+//            'driver'=>'eloquent',
+//            'model'=>App\Models\Teacher::class,
+//
+//        ],
     ],
 
     /*
