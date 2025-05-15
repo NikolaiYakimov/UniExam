@@ -32,7 +32,7 @@
             <div class="space-y-3.5 mt-4">
                 <div>
                     <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Специалност</p>
-                    <p class="font-medium text-gray-800">{{ Auth::user()->major }}</p>
+                    <p class="font-medium text-gray-800">{{ Auth::user()->student->major }}</p>
                 </div>
                 <div>
                     <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Потребителско име</p>

@@ -258,12 +258,12 @@
             <div class="flex items-center gap-4 text-gray-600 mt-4">
                 <div class="flex-1">
                     <h1 class="text-xl font-semibold text-gray-900 mb-2">
-                        {{ $teacher->title }} {{ $teacher->first_name }} {{ $teacher->second_name }} {{ $teacher->last_name }}
+                        {{ $teacher->title }} {{ $teacher->user->first_name }} {{ $teacher->user->second_name }} {{ $teacher->user->last_name }}
                     </h1>
                     <div class="flex items-center gap-4 flex-wrap">
                         <span class="flex items-center gap-1.5">
                             <i class="fas fa-envelope text-gray-400"></i>
-                            {{ $teacher->email }}
+                            {{ $teacher->user->email }}
                         </span>
                         <span class="flex items-center gap-1.5">
                             <i class="fas fa-clipboard-list text-gray-400"></i>

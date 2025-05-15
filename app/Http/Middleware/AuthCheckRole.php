@@ -13,14 +13,16 @@ class AuthCheckRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $role): Response
+    public function handle(Request $request, Closure $next, string $role): Response
     {
+
         //If the user is not logged in
         if(!auth()->check()){
             return redirect()->route('login');
         }
 
-        if(auth()->user()->role !== $role){
+        $user = auth()->user();
+        if (!$user || $user->role !== $role) {
             abort(403,'Нямате достъп до тази страница  ');
         }
 
