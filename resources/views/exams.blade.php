@@ -58,7 +58,7 @@
                         <div class="space-y-3 mb-5">
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-chalkboard-teacher w-5 text-gray-400"></i>
-                                <span>Преподавател: <span class="font-medium text-gray-800">{{ $exam->teacher->first_name }} {{ $exam->teacher->last_name }}</span></span>
+                                <span>Преподавател: <span class="font-medium text-gray-800">{{ $exam->teacher->user->first_name }} {{ $exam->teacher->user->last_name }}</span></span>
                             </div>
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-calendar-alt w-5 text-gray-400"></i>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
 {
@@ -14,7 +15,7 @@ class StudentController extends Controller
     {
         //Get the exams which the student didn't register
         /** @var \App\Models\Student $student */
-        $student = auth('student')->user();
+        $student = Auth::user()->student;
         $registeredExamIds = $student->registrations()->pluck('exam_id');
 
         $exams=Exam::with(['teacher', 'subject'])
@@ -27,7 +28,7 @@ class StudentController extends Controller
     }
         public function myExams(){
         /** @var \App\Models\Student $student */
-        $student = auth('student')->user();
+        $student =Auth::user()->student;
         $registrations=$student->registrations()
             ->with('exam.teacher', 'exam.subject')
             ->get()
@@ -43,12 +44,12 @@ class StudentController extends Controller
         if ($exam->remainingSlots() <= 0) {
             return back()->with('error', 'Няма свободни места!');
         }
-        if ($exam->registrations()->where('student_id', auth('student')->id())->exists()) {
+        if ($exam->registrations()->where('student_id', auth()->user()->student->id)->exists()) {
             return back()->with('error', 'Вече сте записани за този изпит!');
         }
 
         ExamRegistration::create([
-            'student_id' => auth('student')->id(),
+            'student_id' =>auth()->user()->student->id,
             'exam_id' => $exam->id,
         ]);
 

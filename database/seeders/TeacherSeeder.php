@@ -15,24 +15,17 @@ class TeacherSeeder extends Seeder
     public function run(): void
     {
         Teacher::create([
-            'first_name' => 'Иван',
-            'second_name' => 'Георгиев',
-            'last_name' => 'Стоянов',
+            'user_id' => 4,
             'title' => 'доц.',
-            'username' => 'istoqnov',
-            'password' => Hash::make('123456'),
-            'email' => 'istoqnov@gmail.com',
-            'phone' => '0883645666',
+            'department'=>'Информатика',
+            'faculty'=>'ФКСТ',
+
         ]);
         Teacher::create([
-            'first_name' => 'Георги',
-            'second_name' => 'Василев',
-            'last_name' => 'Дамянов',
-            'title' => 'доц.',
-            'username' => 'gdamqnov',
-            'password' => Hash::make('123456'),
-            'email' => 'gdamqnov@gmail.com',
-            'phone' => '0883645789',
+            'user_id' => 5,
+            'title' => 'проф.',
+            'department'=>'Математика',
+            'faculty'=>'ФКСТ',
         ]);
     }
 }

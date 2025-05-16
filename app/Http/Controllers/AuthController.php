@@ -19,24 +19,32 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if(Auth::guard('student')->attempt($credentials)){
+        if(Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->route('exams');
+
+            // Redirect based on user role
+           $user = Auth::user();
+//            return match ($user->role) {
+
+            return match ($user->role){
+                'administrator' => redirect()->route('administrator_dashboard'),
+                'teacher' => redirect()->route('teacher_dashboard'),
+                'student' => redirect()->route('exams'),
+                default => redirect()->route('login'),
+            };
+
         }
 
-        if(Auth::guard('teacher')->attempt($credentials)){
-            $request->session()->regenerate();
-            return redirect()->route('teacher_dashboard');
-        }
-        echo "Error";
         return back()->withErrors([
             'username' => 'Грешно потребителско име или парола.',
         ]);
     }
+
     public function logout(Request $request):\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
-        Auth::guard('student')->logout();
+        Auth::logout();
         $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return redirect('/login');
     }
 }

@@ -23,7 +23,7 @@ class ExamController extends Controller
       try {
 
       Exam::create([
-         'teacher_id'=>auth('teacher')->id(),
+         'teacher_id'=>auth()->user()->teacher->id,
           'subject_id' =>$request ->subject_id,
           'exam_date' =>$request->exam_date,
           'exam_hall' =>$request->exam_hall,

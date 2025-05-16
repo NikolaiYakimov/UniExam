@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @method static truncate()
@@ -14,7 +15,7 @@ class ExamRegistration extends Model
 {
 
     use HasFactory;
-    protected $fillable = ['student_id','exam_id'];
+    protected $fillable = ['student_id','exam_id','payment_id'];
 
     public function student(): BelongsTo
     {
@@ -25,4 +26,7 @@ class ExamRegistration extends Model
         return $this->belongsTo(Exam::class);
     }
 
+    public function payment():BelongsTo{
+        return $this->belongsTo(Payment::class);
+    }
 }
