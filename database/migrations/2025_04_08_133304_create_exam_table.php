@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('teacher_id')->constrained('teachers')->onDelete('cascade');
             $table->foreignId('subject_id')->constrained('subjects')->onDelete('cascade');
-            $table->dateTime('exam_date');
-            $table->string('exam_hall');
+            $table->foreignId('hall_id')->constrained('exam_halls')->onDelete('cascade');
+            $table->dateTime('start_time');
+            $table->dateTime('end_time');
             $table->integer('max_students');
             $table->enum('exam_type',['редовен','поправителен','ликвидация']);
             $table->timestamps();
