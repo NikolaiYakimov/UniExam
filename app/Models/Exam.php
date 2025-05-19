@@ -15,9 +15,12 @@ class Exam extends Model
 
     use HasFactory;
 
-    protected $fillable = ['teacher_id', 'subject_id', 'exam_date','exam_hall','max_students','exam_type'];
+    protected $fillable = ['teacher_id', 'subject_id','hall_id','start_time','end_time','exam_hall','max_students','exam_type'];
 
-    
+    public function hall(): BelongsTo
+    {
+        return $this->belongsTo(ExamHall::class, 'hall_id',);
+    }
 
     public function teacher():belongsTo{
         return $this->belongsTo(Teacher::class);

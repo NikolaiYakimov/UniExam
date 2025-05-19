@@ -302,11 +302,15 @@
                         <div class="space-y-3 mb-5">
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
-                                <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->date)->format('d.m.Y H:i') }}</span></span>
+                                <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y ') }}</span></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
+                                <span>Продължителност: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format(' H:i')}}-{{\Carbon\Carbon::parse($exam->end_time)->format(' H:i')}}</span></span>
                             </div>
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-university w-5 text-gray-400"></i>
-                                <span>Зала: <span class="font-medium text-gray-800">{{ $exam->exam_hall }}</span></span>
+                                <span>Зала: <span class="font-medium text-gray-800">{{ $exam->hall->name }}</span></span>
                             </div>
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-users w-5 text-gray-400"></i>
