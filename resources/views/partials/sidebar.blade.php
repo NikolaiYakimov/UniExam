@@ -31,8 +31,14 @@
 
             <div class="space-y-3.5 mt-4">
                 <div>
+                    @if(Auth::user()->role==='student')
                     <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Специалност</p>
                     <p class="font-medium text-gray-800">{{ Auth::user()->student->major }}</p>
+                    @elseif(Auth::user()->role==='teacher')
+                        <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Факултет</p>
+                        <p class="font-medium text-gray-800">{{ Auth::user()->teacher->faculty }}</p>
+                    @endif
+
                 </div>
                 <div>
                     <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Потребителско име</p>
