@@ -30,6 +30,7 @@
             </div>
 
             <div class="space-y-3.5 mt-4">
+                @if(Auth::user()->role==='student')
                 <div>
                     @if(Auth::user()->role==='student')
                     <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Специалност</p>
@@ -40,6 +41,12 @@
                     @endif
 
                 </div>
+                @elseif(Auth::user()->role==='teacher')
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Факултет</p>
+                        <p class="font-medium text-gray-800">{{ Auth::user()->teacher->faculty }}</p>
+                    </div>
+                @endif
                 <div>
                     <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Потребителско име</p>
                     <p class="font-medium text-gray-800">{{ Auth::user()->username }}</p>

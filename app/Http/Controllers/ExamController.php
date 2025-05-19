@@ -15,7 +15,7 @@ class ExamController extends Controller
       $request->validate([
           "subject_id"=>'required|exists:subjects,id',
           'exam_date' =>'required|date',
-          'exam_hall'=>'required|string',
+          'hall_id'=>'required|exists:exam_halls,id',
           'max_students'=>'required|integer|min:1',
           'exam_type'=>'required|in:редовен,поправителен,ликвидация',
       ]);
@@ -25,8 +25,9 @@ class ExamController extends Controller
       Exam::create([
          'teacher_id'=>auth()->user()->teacher->id,
           'subject_id' =>$request ->subject_id,
-          'exam_date' =>$request->exam_date,
-          'exam_hall' =>$request->exam_hall,
+          'hall_id' =>$request->hall_id,
+          'start_time' =>$request->start_time,
+          'end_time' =>$request->start_time,
           'max_students'=>$request->max_students,
           'exam_type'=>$request->exam_type,
       ]);

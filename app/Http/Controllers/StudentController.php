@@ -19,7 +19,7 @@ class StudentController extends Controller
         $registeredExamIds = $student->registrations()->pluck('exam_id');
 
         $exams=Exam::with(['teacher', 'subject'])
-            ->where('exam_date', '>', now())
+            ->where('start_time', '>', now())
             ->whereNotIn('id', $registeredExamIds)
             ->get()
             ->filter(fn($exam) => $exam->remainingSlots() > 0);
@@ -28,7 +28,7 @@ class StudentController extends Controller
     }
         public function myExams(){
         /** @var \App\Models\Student $student */
-        $student =Auth::user()->student;
+        $student = auth('student')->user();
         $registrations=$student->registrations()
             ->with('exam.teacher', 'exam.subject')
             ->get()
@@ -44,12 +44,12 @@ class StudentController extends Controller
         if ($exam->remainingSlots() <= 0) {
             return back()->with('error', 'Няма свободни места!');
         }
-        if ($exam->registrations()->where('student_id', auth()->user()->student->id)->exists()) {
+        if ($exam->registrations()->where('student_id', auth('student')->id())->exists()) {
             return back()->with('error', 'Вече сте записани за този изпит!');
         }
 
         ExamRegistration::create([
-            'student_id' =>auth()->user()->student->id,
+            'student_id' => auth('student')->id(),
             'exam_id' => $exam->id,
         ]);
 
