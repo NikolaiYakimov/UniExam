@@ -28,7 +28,7 @@ class StudentController extends Controller
     }
         public function myExams(){
         /** @var \App\Models\Student $student */
-        $student = auth('student')->user();
+        $student = auth()->user()->student;
         $registrations=$student->registrations()
             ->with('exam.teacher', 'exam.subject')
             ->get()
