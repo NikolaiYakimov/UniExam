@@ -225,32 +225,214 @@
 {{--</body>--}}
 {{--</html>--}}
 
- <!DOCTYPE html>
+{{-- <!DOCTYPE html>--}}
+{{--<html lang="bg">--}}
+
+
+{{--@include('partials.head')--}}
+{{-- <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>--}}
+
+{{--<body class="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen font-[Inter] overflow-x-hidden" x-data="{ showModal: false }">--}}
+{{--<!-- Student information sidebar with toggle button -->--}}
+{{--@include('partials.sidebar')--}}
+
+{{--<div class="ml-0 lg:ml-80 p-4 lg:p-8 transition-all duration-300">--}}
+
+{{--    <!-- Header -->--}}
+{{--    @include('partials.header',[--}}
+{{--             'title'=>"Управление на изпити",--}}
+{{--             'subtitle'=>'Преглед и създаване на изпитни сесии',--}}
+{{--             'button'=>[--}}
+{{--                        'route'=>route('logout'),--}}
+{{--                        'text'=>'Изход от системата',--}}
+{{--                        'icon' =>'fas fa-sign-out-alt'--}}
+{{--                       ]--}}
+{{--            ])--}}
+
+{{--    <main>--}}
+
+{{--        @include('partials.alerts')--}}
+
+{{--        <div class="prose max-w-none mb-8">--}}
+{{--            <h2 class="text-2xl font-bold text-gray-900">Преподавателски профил</h2>--}}
+{{--            <div class="flex items-center gap-4 text-gray-600 mt-4">--}}
+{{--                <div class="flex-1">--}}
+{{--                    <h1 class="text-xl font-semibold text-gray-900 mb-2">--}}
+{{--                        {{ $teacher->title }} {{ $teacher->user->first_name }} {{ $teacher->user->second_name }} {{ $teacher->user->last_name }}--}}
+{{--                    </h1>--}}
+{{--                    <div class="flex items-center gap-4 flex-wrap">--}}
+{{--                        <span class="flex items-center gap-1.5">--}}
+{{--                            <i class="fas fa-envelope text-gray-400"></i>--}}
+{{--                            {{ $teacher->user->email }}--}}
+{{--                        </span>--}}
+{{--                        <span class="flex items-center gap-1.5">--}}
+{{--                            <i class="fas fa-clipboard-list text-gray-400"></i>--}}
+{{--                            {{ $teacher->exams_count }} активни изпита--}}
+{{--                        </span>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+
+{{--        @if($exams->isEmpty())--}}
+{{--            <div class="text-center p-8 bg-white border border-gray-100 shadow-sm rounded-xl">--}}
+{{--                <i class="fas fa-calendar-plus text-4xl text-gray-300 mb-4"></i>--}}
+{{--                <h3 class="text-lg font-medium text-gray-700 mb-2">Няма създадени изпити</h3>--}}
+{{--                <p class="text-gray-500">Можете да създадете нов изпит чрез бутона по-долу.</p>--}}
+{{--                <button @click="showModal = true" class="mt-4 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors">--}}
+{{--                    Нов изпит--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--        @else--}}
+{{--            <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">--}}
+{{--                @foreach($exams as $exam)--}}
+{{--                    <div class="bg-white border border-gray-100 rounded-xl p-6 hover:shadow-md transition-all hover:border-primary-100 hover:translate-y-[-2px]">--}}
+{{--                        <div class="flex justify-between items-start gap-2 mb-3">--}}
+{{--                            <h2 class="text-lg font-semibold text-gray-900">--}}
+{{--                                {{ $exam->subject->subject_name }}--}}
+{{--                                <span class="block text-sm font-normal text-gray-500 mt-1">--}}
+{{--                                    {{ $exam->subject->description }}--}}
+{{--                                </span>--}}
+{{--                            </h2>--}}
+{{--                            <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">--}}
+{{--                                {{ $exam->exam_type }}--}}
+{{--                            </span>--}}
+{{--                        </div>--}}
+
+{{--                        <div class="space-y-3 mb-5">--}}
+{{--                            <div class="flex items-center gap-2 text-gray-600">--}}
+{{--                                <i class="fas fa-calendar-alt w-5 text-gray-400"></i>--}}
+{{--                                <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y ') }}</span></span>--}}
+{{--                            </div>--}}
+{{--                            <div class="flex items-center gap-2 text-gray-600">--}}
+{{--                                <i class="fas fa-calendar-alt w-5 text-gray-400"></i>--}}
+{{--                                <span>Продължителност: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format(' H:i')}}-{{\Carbon\Carbon::parse($exam->end_time)->format(' H:i')}}</span></span>--}}
+{{--                            </div>--}}
+{{--                            <div class="flex items-center gap-2 text-gray-600">--}}
+{{--                                <i class="fas fa-university w-5 text-gray-400"></i>--}}
+{{--                                <span>Зала: <span class="font-medium text-gray-800">{{ $exam->hall->name }}</span></span>--}}
+{{--                            </div>--}}
+{{--                            <div class="flex items-center gap-2 text-gray-600">--}}
+{{--                                <i class="fas fa-users w-5 text-gray-400"></i>--}}
+{{--                                <span class="font-medium {{ $exam->remainingSlots() > 0 ? 'text-green-700' : 'text-red-700' }}">--}}
+{{--                                    {{ $exam->remainingSlots() }}/{{ $exam->max_students }} места--}}
+{{--                                </span>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                @endforeach--}}
+
+{{--                <!-- Add New Exam Card -->--}}
+{{--                    <div class="flex items-center justify-center">--}}
+{{--                        <button @click="showModal = true" class="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">--}}
+{{--                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">--}}
+{{--                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>--}}
+{{--                             </svg>--}}
+{{--                        </button>--}}
+{{--                    </div>--}}
+{{--            </div>--}}
+{{--        @endif--}}
+{{--    </main>--}}
+{{--</div>--}}
+
+{{--<!-- Create Exam Modal -->--}}
+{{--<div x-cloak x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" >--}}
+{{--    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 mx-4"--}}
+{{--         @click.outside="showModal = false">--}}
+{{--        <h3 class="text-xl font-bold text-gray-900 mb-4">Създаване на нов изпит</h3>--}}
+
+{{--        <form method="POST" action="{{ route('exams.store') }}">--}}
+{{--            @csrf--}}
+{{--            <div class="space-y-4">--}}
+{{--                <div>--}}
+{{--                    <label class="block text-sm font-medium text-gray-700 mb-2">Дисциплина</label>--}}
+{{--                    <select name="subject_id" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">--}}
+{{--                        @foreach($subjects as $subject)--}}
+{{--                            <option value="{{ $subject->id }}">{{ $subject->subject_name }} (Сем. {{ $subject->semester }})</option>--}}
+{{--                        @endforeach--}}
+{{--                    </select>--}}
+{{--                </div>--}}
+
+{{--                <div class="grid grid-cols-2 gap-4">--}}
+{{--                    <div>--}}
+{{--                        <label class="block text-sm font-medium text-gray-700 mb-2">Тип изпит</label>--}}
+{{--                        <select name="exam_type" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">--}}
+{{--                            <option value="редовен">Редовен</option>--}}
+{{--                            <option value="поправителен">Поправителен</option>--}}
+{{--                            <option value="ликвидация">Ликвидация</option>--}}
+{{--                        </select>--}}
+{{--                    </div>--}}
+{{--                    <div>--}}
+{{--                        <label class="block text-sm font-medium text-gray-700 mb-2">Макс. студенти</label>--}}
+{{--                        <input type="number" name="max_students" required min="1" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+
+{{--                <!-- Нов блок за избор на зала и дата -->--}}
+{{--                <div>--}}
+{{--                    <label class="block text-sm font-medium text-gray-700 mb-2">Изпитна зала</label>--}}
+{{--                    <select name="hall_id" id="hall_id" required--}}
+{{--                            class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">--}}
+{{--                        @foreach($halls as $hall)--}}
+{{--                            <option value="{{ $hall->id }}">{{ $hall->name }} (Капацитет: {{ $hall->capacity }})</option>--}}
+{{--                        @endforeach--}}
+{{--                    </select>--}}
+{{--                </div>--}}
+
+{{--                <!-- Календар -->--}}
+{{--                <div id="calendarContainer" class="h-96"></div>--}}
+
+{{--                <!-- Скрити полета за start/end time -->--}}
+{{--                <input type="hidden" name="start_time" id="start_time">--}}
+{{--                <input type="hidden" name="end_time" id="end_time">--}}
+
+{{--                <div class="flex justify-end gap-3 mt-6">--}}
+{{--                    <button type="button" @click="showModal = false" class="px-5 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">--}}
+{{--                        Отказ--}}
+{{--                    </button>--}}
+{{--                    <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">--}}
+{{--                        Създай--}}
+{{--                    </button>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </form>--}}
+{{--    </div>--}}
+{{--</div>--}}
+
+{{--<script src="{{asset('js/menuFunctions.js')}}" defer></script>--}}
+{{--@if ($errors->any())--}}
+{{--    <script>--}}
+{{--        document.addEventListener('DOMContentLoaded', () => {--}}
+{{--            Alpine.data('main', () => ({--}}
+{{--                showModal: true--}}
+{{--            }))--}}
+{{--        })--}}
+{{--    </script>--}}
+{{--@endif--}}
+
+{{--</body>--}}
+{{--</html>--}}
+
+    <!DOCTYPE html>
 <html lang="bg">
-
-
 @include('partials.head')
- <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <body class="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen font-[Inter] overflow-x-hidden" x-data="{ showModal: false }">
-<!-- Student information sidebar with toggle button -->
 @include('partials.sidebar')
 
 <div class="ml-0 lg:ml-80 p-4 lg:p-8 transition-all duration-300">
-
-    <!-- Header -->
     @include('partials.header',[
-             'title'=>"Управление на изпити",
-             'subtitle'=>'Преглед и създаване на изпитни сесии',
-             'button'=>[
-                        'route'=>route('logout'),
-                        'text'=>'Изход от системата',
-                        'icon' =>'fas fa-sign-out-alt'
-                       ]
-            ])
+        'title'=>"Управление на изпити",
+        'subtitle'=>'Преглед и създаване на изпитни сесии',
+        'button'=>[
+            'route'=>route('logout'),
+            'text'=>'Изход от системата',
+            'icon' =>'fas fa-sign-out-alt'
+        ]
+    ])
 
     <main>
-
         @include('partials.alerts')
 
         <div class="prose max-w-none mb-8">
@@ -261,14 +443,14 @@
                         {{ $teacher->title }} {{ $teacher->user->first_name }} {{ $teacher->user->second_name }} {{ $teacher->user->last_name }}
                     </h1>
                     <div class="flex items-center gap-4 flex-wrap">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fas fa-envelope text-gray-400"></i>
+                                {{ $teacher->user->email }}
+                            </span>
                         <span class="flex items-center gap-1.5">
-                            <i class="fas fa-envelope text-gray-400"></i>
-                            {{ $teacher->user->email }}
-                        </span>
-                        <span class="flex items-center gap-1.5">
-                            <i class="fas fa-clipboard-list text-gray-400"></i>
-                            {{ $teacher->exams_count }} активни изпита
-                        </span>
+                                <i class="fas fa-clipboard-list text-gray-400"></i>
+                                {{ $teacher->exams_count }} активни изпита
+                            </span>
                     </div>
                 </div>
             </div>
@@ -278,7 +460,6 @@
             <div class="text-center p-8 bg-white border border-gray-100 shadow-sm rounded-xl">
                 <i class="fas fa-calendar-plus text-4xl text-gray-300 mb-4"></i>
                 <h3 class="text-lg font-medium text-gray-700 mb-2">Няма създадени изпити</h3>
-                <p class="text-gray-500">Можете да създадете нов изпит чрез бутона по-долу.</p>
                 <button @click="showModal = true" class="mt-4 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors">
                     Нов изпит
                 </button>
@@ -302,11 +483,11 @@
                         <div class="space-y-3 mb-5">
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
-                                <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y ') }}</span></span>
+                                <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y') }}</span></span>
                             </div>
                             <div class="flex items-center gap-2 text-gray-600">
-                                <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
-                                <span>Продължителност: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format(' H:i')}}-{{\Carbon\Carbon::parse($exam->end_time)->format(' H:i')}}</span></span>
+                                <i class="fas fa-clock w-5 text-gray-400"></i>
+                                <span>Час: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($exam->end_time)->format('H:i') }}</span></span>
                             </div>
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-university w-5 text-gray-400"></i>
@@ -322,23 +503,21 @@
                     </div>
                 @endforeach
 
-                <!-- Add New Exam Card -->
-                    <div class="flex items-center justify-center">
-                        <button @click="showModal = true" class="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">
-                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                             </svg>
-                        </button>
-                    </div>
+                <div class="flex items-center justify-center">
+                    <button @click="showModal = true" class="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         @endif
     </main>
 </div>
 
 <!-- Create Exam Modal -->
-<div x-cloak x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" >
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 mx-4"
-         @click.outside="showModal = false">
+<div x-cloak x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 mx-4" @click.outside="showModal = false">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Създаване на нов изпит</h3>
 
         <form method="POST" action="{{ route('exams.store') }}">
@@ -368,16 +547,19 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Дата и час</label>
-                        <input type="datetime-local" name="exam_date" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Зала</label>
-                        <input type="text" name="exam_hall" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Изпитна зала</label>
+                    <select name="hall_id" id="hall_id" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">
+                        @foreach($halls as $hall)
+                            <option value="{{ $hall->id }}">{{ $hall->name }} ({{ $hall->capacity }} места)</option>
+                        @endforeach
+                    </select>
                 </div>
+
+                <div id="calendarContainer" class="h-96"></div>
+
+                <input type="hidden" name="start_time" id="start_time">
+                <input type="hidden" name="end_time" id="end_time">
 
                 <div class="flex justify-end gap-3 mt-6">
                     <button type="button" @click="showModal = false" class="px-5 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
@@ -392,16 +574,7 @@
     </div>
 </div>
 
-<script src="{{asset('js/menuFunctions.js')}}" defer></script>
-@if ($errors->any())
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            Alpine.data('main', () => ({
-                showModal: true
-            }))
-        })
-    </script>
-@endif
+@vite(['resources/js/app.js'])
+<script src="{{ asset('js/menuFunctions.js') }}" defer></script>
 </body>
 </html>
-

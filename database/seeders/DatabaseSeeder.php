@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ExamHall;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -25,9 +26,10 @@ class DatabaseSeeder extends Seeder
             TeacherSeeder::class,
             AdministratorSeeder::class,
             SubjectSeeder::class,
+            HallSeeder::class,
             ExamSeeder::class,
+            PaymentSeeder::class,
             ExamRegistrationSeeder::class,
-            PaymentSeeder::class
         ]);
     }
 }
