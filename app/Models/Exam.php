@@ -15,6 +15,10 @@ class Exam extends Model
 
     use HasFactory;
 
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+    ];
     protected $fillable = ['teacher_id', 'subject_id','hall_id','start_time','end_time','max_students','exam_type'];
 
     public function hall(): BelongsTo
