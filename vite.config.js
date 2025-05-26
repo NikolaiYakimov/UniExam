@@ -1,15 +1,18 @@
-import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
+import vue from '@vitejs/plugin-vue'; // ако използваш Vue
+import path from 'path';
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: ['resources/js/app.js', 'resources/sass/app.scss'],
             refresh: true,
         }),
-        react(),
-        tailwindcss(),
+        vue(), // ако ползваш Vue
     ],
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './resources/js'),
+        },
+    },
 });

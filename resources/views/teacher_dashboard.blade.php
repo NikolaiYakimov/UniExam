@@ -1,256 +1,23 @@
-
-
-{{--    <!DOCTYPE html>--}}
-{{--<html lang="en">--}}
-{{--<head>--}}
-{{--    <meta charset="UTF-8">--}}
-{{--    <meta name="viewport" content="width=device-width, initial-scale=1.0">--}}
-{{--    <title>Teacher Profile - Exam Manager</title>--}}
-{{--    <script src="//unpkg.com/alpinejs" defer></script>--}}
-{{--    <script src="https://cdn.tailwindcss.com"></script>--}}
-{{--    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">--}}
-{{--</head>--}}
-{{--<body class="bg-gradient-to-br from-indigo-50 to-blue-100 min-h-screen" x-data="{ showModal: false }">--}}
-{{--<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">--}}
-{{--    <!-- Profile Header Section -->--}}
-{{--    <section class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 mb-12 border border-white/10 relative">--}}
-{{--        <!-- Logout Button -->--}}
-{{--        <form action="{{ route('logout') }}" method="POST" class="absolute top-4 right-4">--}}
-{{--            @csrf--}}
-{{--            <button type="submit" class="flex items-center gap-2 px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm">--}}
-{{--                <i class="fas fa-sign-out-alt"></i>--}}
-{{--                <span>Изход от системата</span>--}}
-{{--            </button>--}}
-{{--        </form>--}}
-
-{{--        <div class="flex items-center gap-6">--}}
-{{--            <div>--}}
-{{--                <h1 class="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">--}}
-{{--                    {{ $teacher->title }} {{ $teacher->first_name }} {{ $teacher->second_name }} {{ $teacher->last_name }}--}}
-{{--                </h1>--}}
-
-{{--                <div class="prose max-w-none">--}}
-{{--                    <h2 class="text-lg font-semibold text-gray-800 mb-2">Профил на учителя</h2>--}}
-{{--                    <p class="text-gray-600 text-sm mb-4">--}}
-{{--                        Добре дошли в личния ви преподавателски профил. Тук можете да управлявате всички изпити,--}}
-{{--                        да преглеждате записаните студенти и да създавате нови изпитни сесии.--}}
-{{--                    </p>--}}
-{{--                </div>--}}
-
-{{--                <div class="flex items-center gap-4 text-gray-600">--}}
-{{--                    <span class="flex items-center gap-1.5">--}}
-{{--                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">--}}
-{{--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>--}}
-{{--                        </svg>--}}
-{{--                        {{ $teacher->email }}--}}
-{{--                    </span>--}}
-{{--                    <span class="flex items-center gap-1.5">--}}
-{{--                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">--}}
-{{--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>--}}
-{{--                        </svg>--}}
-{{--                        {{ $teacher->exams_count }} активни изпита--}}
-{{--                    </span>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </section>--}}
-
-{{--    <!-- Exams Section -->--}}
-{{--    <section>--}}
-{{--        <div class="prose max-w-none mb-8">--}}
-{{--            <h2 class="text-2xl font-bold text-gray-900">Управление на изпити</h2>--}}
-{{--            <p class="text-gray-600">--}}
-{{--                Списък на всички предстоящи изпити. Можете да преглеждате детайли за всеки изпит,--}}
-{{--                да следите свободните места и да създавате нови изпити чрез бутона "+" в долния десен ъгъл.--}}
-{{--            </p>--}}
-{{--        </div>--}}
-
-{{--        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">--}}
-{{--            @foreach($exams as $exam)--}}
-{{--                <article class="bg-white/80 backdrop-blur-lg rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6 group border border-white/10">--}}
-{{--                    <header class="flex justify-between items-start mb-4">--}}
-{{--                        <h3 class="text-xl font-bold text-gray-900">--}}
-{{--                            {{ $exam->subject->subject_name }}--}}
-{{--                            <span class="block text-sm font-normal text-gray-500 mt-1">--}}
-{{--                        {{ $exam->subject->description }}--}}
-{{--                    </span>--}}
-{{--                        </h3>--}}
-{{--                        <span class="px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">--}}
-{{--                    {{ $exam->exam_type }}--}}
-{{--                </span>--}}
-{{--                    </header>--}}
-
-{{--                    <div class="space-y-3">--}}
-{{--                        <div class="flex items-center gap-2 text-gray-600">--}}
-{{--                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">--}}
-{{--                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>--}}
-{{--                            </svg>--}}
-{{--                            <span>--}}
-{{--                        <time datetime="{{ \Carbon\Carbon::parse($exam->date)->format('d.m.Y H:i') }}">--}}
-{{--                            {{ \Carbon\Carbon::parse($exam->date)->format('d.m.Y H:i') }}--}}
-{{--                        </time>--}}
-{{--                    </span>--}}
-{{--                        </div>--}}
-
-{{--                        <div class="flex items-center gap-2 text-gray-600">--}}
-{{--                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">--}}
-{{--                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>--}}
-{{--                            </svg>--}}
-{{--                            <span>Зала {{ $exam->exam_hall }}</span>--}}
-{{--                        </div>--}}
-
-{{--                        <div class="flex items-center gap-2 text-gray-600">--}}
-{{--                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">--}}
-{{--                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>--}}
-{{--                            </svg>--}}
-{{--                            <span>--}}
-{{--                        <span class="font-medium">{{ $exam->remainingSlots() }}</span> свободни места--}}
-{{--                        от <span class="font-medium">{{ $exam->max_students }}</span>--}}
-{{--                    </span>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                </article>--}}
-{{--            @endforeach--}}
-
-{{--            @if($exams->isNotEmpty())--}}
-{{--                <!-- Бутонът за създаване на нов изпит като нов "карточка" -->--}}
-{{--                    <div class="flex items-center justify-center">--}}
-{{--                        <button @click="showModal = true"--}}
-{{--                                class="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">--}}
-{{--                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">--}}
-{{--                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>--}}
-{{--                            </svg>--}}
-{{--                        </button>--}}
-{{--                    </div>--}}
-{{--            @else--}}
-{{--                <div class="col-span-full text-center py-12">--}}
-{{--                    <p class="text-gray-500 mb-4">Все още нямате създадени изпити</p>--}}
-{{--                    <button @click="showModal = true"--}}
-{{--                            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">--}}
-{{--                        Създайте първия изпит--}}
-{{--                    </button>--}}
-{{--                </div>--}}
-{{--            @endif--}}
-{{--        </div>--}}
-
-{{--    </section>--}}
-
-{{--    <!-- Create Exam Modal -->--}}
-{{--    <div x-cloak x-show="showModal"--}}
-{{--         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"--}}
-{{--         x-transition.opacity>--}}
-{{--        <div @click.away="showModal = false"--}}
-{{--             class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8"--}}
-{{--             x-transition:enter="ease-out duration-300"--}}
-{{--             x-transition:enter-start="opacity-0 scale-95"--}}
-{{--             x-transition:enter-end="opacity-100 scale-100"--}}
-{{--             x-transition:leave="ease-in duration-200"--}}
-{{--             x-transition:leave-start="opacity-100 scale-100"--}}
-{{--             x-transition:leave-end="opacity-0 scale-95">--}}
-
-{{--            <h3 class="text-2xl font-bold text-gray-900 mb-6">Създаване на нов изпит</h3>--}}
-
-{{--            <form method="POST" action="{{ route('exams.store') }}">--}}
-{{--                @csrf--}}
-{{--                <div class="space-y-5">--}}
-{{--                    <div>--}}
-{{--                        <label class="block text-sm font-medium text-gray-700 mb-2">Дисциплина</label>--}}
-{{--                        <select name="subject_id" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">--}}
-{{--                            @foreach($subjects as $subject)--}}
-{{--                                <option value="{{ $subject->id }}">{{ $subject->subject_name }} (Семестър {{ $subject->semester }})</option>--}}
-{{--                            @endforeach--}}
-{{--                        </select>--}}
-{{--                    </div>--}}
-
-{{--                    <div class="grid grid-cols-2 gap-4">--}}
-{{--                        <div>--}}
-{{--                            <label class="block text-sm font-medium text-gray-700 mb-2">Тип изпит</label>--}}
-{{--                            <select name="exam_type" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">--}}
-{{--                                <option value="редовен">редовен</option>--}}
-{{--                                <option value="поправителен">поправителен</option>--}}
-{{--                                <option value="ликвидация">ликвидация</option>--}}
-{{--                            </select>--}}
-{{--                        </div>--}}
-{{--                        <div>--}}
-{{--                            <label class="block text-sm font-medium text-gray-700 mb-2">Макс. студенти</label>--}}
-{{--                            <input type="number" name="max_students" required min="1"--}}
-{{--                                   class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-
-{{--                    <div class="grid grid-cols-2 gap-4">--}}
-{{--                        <div>--}}
-{{--                            <label class="block text-sm font-medium text-gray-700 mb-2">Дата и час</label>--}}
-{{--                            <input type="datetime-local" name="exam_date" required--}}
-{{--                                   class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">--}}
-{{--                        </div>--}}
-{{--                        <div>--}}
-{{--                            <label class="block text-sm font-medium text-gray-700 mb-2">Изпитна зала</label>--}}
-{{--                            <input type="text" name="exam_hall" required--}}
-{{--                                   class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-
-{{--                    <div class="flex justify-end gap-3 mt-8">--}}
-{{--                        <button type="button" @click="showModal = false"--}}
-{{--                                class="px-5 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">--}}
-{{--                            Отказ--}}
-{{--                        </button>--}}
-{{--                        <button type="submit"--}}
-{{--                                class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-sm">--}}
-{{--                            Създай изпит--}}
-{{--                        </button>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </form>--}}
-{{--        </div>--}}
-{{--    </div>--}}
-{{--</div>--}}
-{{--@if ($errors->any())--}}
-{{--    <div class="alert alert-danger">--}}
-{{--        <ul>--}}
-{{--            @foreach ($errors->all() as $error)--}}
-{{--                <li>{{ $error }}</li>--}}
-{{--            @endforeach--}}
-{{--        </ul>--}}
-{{--    </div>--}}
-{{--@endif--}}
-
-{{--<style>--}}
-{{--    [x-cloak] { display: none !important; }--}}
-{{--    .bg-indigo-50/80 { background-color: rgba(238, 242, 255, 0.8); }--}}
-{{--    .backdrop-blur-lg { backdrop-filter: blur(16px); }--}}
-{{--    .border-white/10 { border-color: rgba(255, 255, 255, 0.1); }--}}
-{{--</style>--}}
-{{--</body>--}}
-{{--</html>--}}
-
- <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="bg">
-
-
 @include('partials.head')
- <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <body class="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen font-[Inter] overflow-x-hidden" x-data="{ showModal: false }">
-<!-- Student information sidebar with toggle button -->
 @include('partials.sidebar')
 
 <div class="ml-0 lg:ml-80 p-4 lg:p-8 transition-all duration-300">
-
-    <!-- Header -->
     @include('partials.header',[
-             'title'=>"Управление на изпити",
-             'subtitle'=>'Преглед и създаване на изпитни сесии',
-             'button'=>[
-                        'route'=>route('logout'),
-                        'text'=>'Изход от системата',
-                        'icon' =>'fas fa-sign-out-alt'
-                       ]
-            ])
+        'title'=>"Управление на изпити",
+        'subtitle'=>'Преглед и създаване на изпитни сесии',
+        'button'=>[
+            'route'=>route('logout'),
+            'text'=>'Изход от системата',
+            'icon' =>'fas fa-sign-out-alt'
+        ]
+    ])
 
     <main>
-
         @include('partials.alerts')
 
         <div class="prose max-w-none mb-8">
@@ -261,14 +28,14 @@
                         {{ $teacher->title }} {{ $teacher->user->first_name }} {{ $teacher->user->second_name }} {{ $teacher->user->last_name }}
                     </h1>
                     <div class="flex items-center gap-4 flex-wrap">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fas fa-envelope text-gray-400"></i>
+                                {{ $teacher->user->email }}
+                            </span>
                         <span class="flex items-center gap-1.5">
-                            <i class="fas fa-envelope text-gray-400"></i>
-                            {{ $teacher->user->email }}
-                        </span>
-                        <span class="flex items-center gap-1.5">
-                            <i class="fas fa-clipboard-list text-gray-400"></i>
-                            {{ $teacher->exams_count }} активни изпита
-                        </span>
+                                <i class="fas fa-clipboard-list text-gray-400"></i>
+                                {{ $teacher->exams_count }} активни изпита
+                            </span>
                     </div>
                 </div>
             </div>
@@ -278,7 +45,6 @@
             <div class="text-center p-8 bg-white border border-gray-100 shadow-sm rounded-xl">
                 <i class="fas fa-calendar-plus text-4xl text-gray-300 mb-4"></i>
                 <h3 class="text-lg font-medium text-gray-700 mb-2">Няма създадени изпити</h3>
-                <p class="text-gray-500">Можете да създадете нов изпит чрез бутона по-долу.</p>
                 <button @click="showModal = true" class="mt-4 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors">
                     Нов изпит
                 </button>
@@ -302,11 +68,11 @@
                         <div class="space-y-3 mb-5">
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
-                                <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y ') }}</span></span>
+                                <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y') }}</span></span>
                             </div>
                             <div class="flex items-center gap-2 text-gray-600">
-                                <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
-                                <span>Продължителност: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format(' H:i')}}-{{\Carbon\Carbon::parse($exam->end_time)->format(' H:i')}}</span></span>
+                                <i class="fas fa-clock w-5 text-gray-400"></i>
+                                <span>Час: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($exam->end_time)->format('H:i') }}</span></span>
                             </div>
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-university w-5 text-gray-400"></i>
@@ -322,26 +88,24 @@
                     </div>
                 @endforeach
 
-                <!-- Add New Exam Card -->
-                    <div class="flex items-center justify-center">
-                        <button @click="showModal = true" class="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">
-                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                             </svg>
-                        </button>
-                    </div>
+                <div class="flex items-center justify-center">
+                    <button @click="showModal = true" class="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         @endif
     </main>
 </div>
 
 <!-- Create Exam Modal -->
-<div x-cloak x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" >
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 mx-4"
-         @click.outside="showModal = false">
+<div x-cloak x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 mx-4" @click.outside="showModal = false">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Създаване на нов изпит</h3>
 
-        <form method="POST" action="{{ route('exams.store') }}">
+        <form method="POST" action="{{ route('exams.store') }}" id="examForm">
             @csrf
             <div class="space-y-4">
                 <div>
@@ -368,22 +132,40 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Дата и час</label>
-                        <input type="datetime-local" name="exam_date" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Зала</label>
-                        <input type="text" name="exam_hall" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Изпитна зала</label>
+                    <select name="hall_id" id="hall_id" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">
+                        @foreach($halls as $hall)
+                            <option value="{{ $hall->id }}">{{ $hall->name }} ({{ $hall->capacity }} места)</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Дата</label>
+                    <input type="date" id="exam_date" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Изберете свободни часове</label>
+                    <div class="mt-2">
+                        <h4 class="text-center font-medium mb-2">Стая <span id="selected_room">---</span></h4>
+                        <div id="time_slots_grid" class="grid grid-cols-4 gap-2">
+                            <!-- Time slots will be generated here -->
+                        </div>
                     </div>
                 </div>
+
+                <input type="hidden" name="start_time" id="start_time" required>
+                <input type="hidden" name="end_time" id="end_time" required>
+
+                <div id="formErrors" class="text-red-600 font-medium hidden"></div>
 
                 <div class="flex justify-end gap-3 mt-6">
                     <button type="button" @click="showModal = false" class="px-5 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
                         Отказ
                     </button>
-                    <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                    <button type="submit" id="submitBtn" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                         Създай
                     </button>
                 </div>
@@ -392,16 +174,332 @@
     </div>
 </div>
 
-<script src="{{asset('js/menuFunctions.js')}}" defer></script>
-@if ($errors->any())
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            Alpine.data('main', () => ({
-                showModal: true
-            }))
-        })
-    </script>
-@endif
+@vite(['resources/js/app.js'])
+<script src="{{ asset('js/menuFunctions.js') }}" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const hallSelect = document.getElementById('hall_id');
+    const dateInput = document.getElementById('exam_date');
+    const timeGrid = document.getElementById('time_slots_grid');
+    const selectedRoomDisplay = document.getElementById('selected_room');
+    const startTimeInput = document.getElementById('start_time');
+    const endTimeInput = document.getElementById('end_time');
+    const examForm = document.getElementById('examForm');
+    const formErrors = document.getElementById('formErrors');
+
+    // Set default date to today
+    const today = new Date();
+    dateInput.value = today.toISOString().split('T')[0];
+
+    // Store selected time slots
+    let selectedSlots = [];
+    let bookedSlots = @json($bookedSlots ?? []);
+
+    // Form submission handling
+    examForm.addEventListener('submit', function(e) {
+        // Check if start and end time are set
+        if (!startTimeInput.value || !endTimeInput.value) {
+            e.preventDefault();
+            alert('Моля, изберете период за изпита от времевата мрежа.');
+            return false;
+        }
+
+        // Check if at least one time slot is selected
+        if (selectedSlots.length === 0) {
+            e.preventDefault();
+            alert('Моля, изберете поне един времеви слот.');
+            return false;
+        }
+
+        return true;
+    });
+
+    // Initialize time slots when page loads
+    updateRoomDisplay();
+    generateTimeSlots();
+
+    // Force fetch booked slots on initial load
+    setTimeout(fetchBookedSlots, 300);
+
+    // Re-fetch booked slots when tab becomes visible again
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+            console.log('Tab became visible, refreshing booked slots');
+            fetchBookedSlots();
+        }
+    });
+
+    // Update time slots when room or date changes
+    hallSelect.addEventListener('change', function() {
+        console.log('Hall changed, fetching new booked slots');
+        updateRoomDisplay();
+        fetchBookedSlots();
+    });
+
+    dateInput.addEventListener('change', function() {
+        console.log('Date changed to:', dateInput.value, 'fetching new booked slots');
+        fetchBookedSlots();
+    });
+
+    // When the modal opens, refresh the booked slots
+    if (typeof Alpine !== 'undefined') {
+        document.addEventListener('alpine:initialized', function() {
+            document.querySelectorAll('[x-data]').forEach(el => {
+                if (el.getAttribute('x-data').includes('showModal')) {
+                    el.__x.$watch('showModal', value => {
+                        if (value === true) {
+                            console.log('Modal opened, refreshing booked slots');
+                            setTimeout(fetchBookedSlots, 100); // Small delay to ensure DOM is ready
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    function updateRoomDisplay() {
+        const selectedRoom = hallSelect.options[hallSelect.selectedIndex].text;
+        selectedRoomDisplay.textContent = selectedRoom;
+    }
+
+    function fetchBookedSlots() {
+        const selectedDate = dateInput.value;
+        const selectedHallId = hallSelect.value;
+
+        console.log(`Fetching booked slots for date=${selectedDate}, hall_id=${selectedHallId}`);
+
+        if (!selectedDate || !selectedHallId) {
+            console.warn('Missing date or hall_id, cannot fetch booked slots');
+            return;
+        }
+
+        // Show loading state
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.classList.add('opacity-50');
+        });
+
+        // Clear selected slots when date/room changes
+        selectedSlots = [];
+        startTimeInput.value = '';
+        endTimeInput.value = '';
+
+        // Construct the URL with the query parameters
+        const url = `{{ route('exams.booked-slots') }}?date=${encodeURIComponent(selectedDate)}&hall_id=${encodeURIComponent(selectedHallId)}`;
+        console.log('Fetching from URL:', url);
+
+        // Fetch booked slots from the server for this specific date and hall
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Server responded with error:', response.status);
+                    throw new Error('Failed to fetch booked slots');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Fetched booked slots:', data.bookedSlots);
+                bookedSlots = data.bookedSlots;
+                checkBookedSlots();
+
+                // Remove loading state
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.classList.remove('opacity-50');
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching booked slots:', error);
+
+                // Remove loading state
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.classList.remove('opacity-50');
+                });
+
+                // Show error message
+                alert('Грешка при зареждане на заетите часове. Моля, опитайте отново.');
+            });
+    }
+
+    function checkBookedSlots() {
+        const selectedDate = dateInput.value;
+
+        console.log('Checking booked slots for date:', selectedDate);
+        console.log('Total booked slots in memory:', bookedSlots.length);
+
+        // Reset all slots to available
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.classList.remove('bg-red-500', 'bg-green-500', 'bg-blue-500');
+            slot.classList.add('bg-green-500');
+            slot.disabled = false;
+        });
+
+        // Mark booked slots as unavailable
+        let bookedCount = 0;
+
+        if (!Array.isArray(bookedSlots)) {
+            console.error('bookedSlots is not an array:', bookedSlots);
+            return;
+        }
+
+        bookedSlots.forEach(booking => {
+            try {
+                if (!booking.start || !booking.end) {
+                    console.warn('Invalid booking data:', booking);
+                    return;
+                }
+
+                const bookingDate = booking.start.split('T')[0];
+
+                if (bookingDate === selectedDate) {
+                    const startTime = booking.start.split('T')[1].substring(0, 5);
+                    const endTime = booking.end.split('T')[1].substring(0, 5);
+
+                    console.log(`Found booked slot for current date: ${startTime} to ${endTime}`);
+                    bookedCount++;
+
+                    document.querySelectorAll('.time-slot').forEach(slot => {
+                        const slotTime = slot.dataset.time;
+
+                        // If slot time is between start and end of booking
+                        if (slotTime >= startTime && slotTime < endTime) {
+                            slot.classList.remove('bg-green-500');
+                            slot.classList.add('bg-red-500');
+                            slot.disabled = true;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error processing booking:', booking, error);
+            }
+        });
+
+        console.log(`Marked ${bookedCount} slots as booked for date ${selectedDate}`);
+
+        // Update selected slots
+        updateSelectedSlots();
+    }
+
+    function generateTimeSlots() {
+        timeGrid.innerHTML = '';
+
+        // Generate time slots as shown in the design (4 rows with 4 slots each)
+        const timeSlots = [
+            // Row 1
+            '07:30', '08:30', '09:30', '10:30',
+            // Row 2
+            '11:30', '12:30', '13:30', '14:30',
+            // Row 3
+            '15:30', '16:30', '17:30', '18:30',
+            // Row 4
+            '19:30', '20:30', '21:30', '22:30',
+        ];
+
+        // Add all time slots to the grid
+        timeSlots.forEach(time => {
+            const slot = document.createElement('button');
+            slot.type = 'button';
+            slot.className = 'time-slot py-3 rounded-lg text-white font-medium bg-green-500 hover:bg-green-600 transition-colors';
+            slot.dataset.time = time;
+            slot.textContent = time;
+
+            slot.addEventListener('click', function() {
+                if (!slot.disabled) {
+                    selectTimeSlot(slot);
+                }
+            });
+
+            timeGrid.appendChild(slot);
+        });
+
+        checkBookedSlots();
+    }
+
+    function selectTimeSlot(slot) {
+        const timeValue = slot.dataset.time;
+
+        // If slot is already selected, deselect it and all slots after it
+        if (selectedSlots.includes(timeValue)) {
+            const index = selectedSlots.indexOf(timeValue);
+            selectedSlots = selectedSlots.slice(0, index);
+        } else {
+            // Sort time slots to find consecutive ones
+            const allTimeSlots = Array.from(document.querySelectorAll('.time-slot:not([disabled])'))
+                .map(s => s.dataset.time)
+                .sort();
+
+            // If no slots selected yet, add this one
+            if (selectedSlots.length === 0) {
+                selectedSlots.push(timeValue);
+            } else {
+                // Get current slot index and the last selected slot index
+                const currentSlotIndex = allTimeSlots.indexOf(timeValue);
+                const lastSelectedSlot = selectedSlots[selectedSlots.length - 1];
+                const lastSelectedIndex = allTimeSlots.indexOf(lastSelectedSlot);
+
+                // Check if this slot is consecutive to the last selected slot
+                if (currentSlotIndex === lastSelectedIndex + 1) {
+                    // If consecutive, add to selection
+                    selectedSlots.push(timeValue);
+                } else {
+                    // If not consecutive or earlier in the list, start a new selection
+                    selectedSlots = [timeValue];
+                }
+            }
+        }
+
+        updateSelectedSlots();
+    }
+
+    function updateSelectedSlots() {
+        // Update visual representation
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            if (!slot.disabled) {
+                if (selectedSlots.includes(slot.dataset.time)) {
+                    slot.classList.remove('bg-green-500');
+                    slot.classList.add('bg-blue-500');
+                } else {
+                    slot.classList.remove('bg-blue-500');
+                    slot.classList.add('bg-green-500');
+                }
+            }
+        });
+
+        // Update hidden inputs for form submission
+        if (selectedSlots.length > 0) {
+            const selectedDate = dateInput.value;
+
+            // Sort slots to ensure correct order
+            selectedSlots.sort();
+
+            // For the start time, use the first selected slot
+            const firstSlot = selectedSlots[0];
+            // Format date as YYYY-MM-DD HH:MM:SS for Laravel
+            startTimeInput.value = `${selectedDate} ${firstSlot}:00`;
+
+            // For the end time, calculate the end time based on the duration
+            // Assume each slot is 45 minutes long
+            const lastSlot = selectedSlots[selectedSlots.length - 1];
+
+            // Parse the last slot time
+            let [lastHours, lastMinutes] = lastSlot.split(':').map(Number);
+
+            // Add 45 minutes for the end time
+            let endHours = lastHours + Math.floor((lastMinutes + 45) / 60);
+            let endMinutes = (lastMinutes + 45) % 60;
+
+            // Format the end time with seconds for Laravel datetime format
+            const endTime = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}:00`;
+            endTimeInput.value = `${selectedDate} ${endTime}`;
+
+            console.log("Form will submit with:", {
+                start_time: startTimeInput.value,
+                end_time: endTimeInput.value
+            });
+        } else {
+            startTimeInput.value = '';
+            endTimeInput.value = '';
+        }
+    }
+});
+</script>
 </body>
 </html>
-

@@ -25,6 +25,7 @@ Route::prefix('student')->middleware(['auth', 'role:student'])->group(function (
 Route::prefix('teacher')->middleware(['auth', 'role:teacher'])->group(function () {
     Route::get('/teacher_dashboard', [TeacherController::class, 'dashboard'])->name('teacher_dashboard');
     Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');
+    Route::get('/booked-slots', [ExamController::class, 'getBookedSlots'])->name('exams.booked-slots');
 });
 
 // Administrator routes

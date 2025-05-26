@@ -44,12 +44,12 @@ class StudentController extends Controller
         if ($exam->remainingSlots() <= 0) {
             return back()->with('error', 'Няма свободни места!');
         }
-        if ($exam->registrations()->where('student_id', auth('student')->id())->exists()) {
+        if ($exam->registrations()->where('student_id', auth()->user()->student->id)->exists()) {
             return back()->with('error', 'Вече сте записани за този изпит!');
         }
 
         ExamRegistration::create([
-            'student_id' => auth('student')->id(),
+            'student_id' => auth()->user()->student->id,
             'exam_id' => $exam->id,
         ]);
 
