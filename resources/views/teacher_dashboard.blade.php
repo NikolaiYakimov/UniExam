@@ -174,7 +174,7 @@
     </div>
 </div>
 
-@vite(['resources/js/app.js'])
+
 <script src="{{ asset('js/menuFunctions.js') }}" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
