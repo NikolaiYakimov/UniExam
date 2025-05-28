@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->integer('capacity');
-            $table->time('opening_time')->default('07:30:00');
-            $table->time('closing_time')->default('20:00:00');
+            $table->time('opening_time')->default('07:00:00');
+            $table->time('closing_time')->default('19:10:00');
             $table->timestamps();
         });
     }

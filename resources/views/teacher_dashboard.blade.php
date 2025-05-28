@@ -150,7 +150,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Изберете свободни часове</label>
                     <div class="mt-2">
                         <h4 class="text-center font-medium mb-2">Стая <span id="selected_room">---</span></h4>
-                        <div id="time_slots_grid" class="grid grid-cols-4 gap-2">
+                        <div id="time_slots_grid" class="grid grid-cols-3 gap-2">
                             <!-- Time slots will be generated here -->
                         </div>
                     </div>
@@ -174,7 +174,6 @@
     </div>
 </div>
 
-@vite(['resources/js/app.js'])
 <script src="{{ asset('js/menuFunctions.js') }}" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -208,6 +207,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedSlots.length === 0) {
             e.preventDefault();
             alert('Моля, изберете поне един времеви слот.');
+            return false;
+        }
+
+        if (selectedSlots.length < 1) {
+            e.preventDefault();
+            alert('Изпитът трябва да е поне 45 минути.');
             return false;
         }
 
@@ -339,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('bookedSlots is not an array:', bookedSlots);
             return;
         }
-
+        console.log(bookedCount)
         bookedSlots.forEach(booking => {
             try {
                 if (!booking.start || !booking.end) {
@@ -381,16 +386,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateTimeSlots() {
         timeGrid.innerHTML = '';
 
-        // Generate time slots as shown in the design (4 rows with 4 slots each)
         const timeSlots = [
             // Row 1
-            '07:30', '08:30', '09:30', '10:30',
+            '07:00', '08:00', '09:00',
             // Row 2
-            '11:30', '12:30', '13:30', '14:30',
+            '10:00', '11:00', '12:00',
             // Row 3
-            '15:30', '16:30', '17:30', '18:30',
-            // Row 4
-            '19:30', '20:30', '21:30', '22:30',
+            '13:00', '14:00','15:00',
+            //Row 4
+            '16:00', '17:00', '18:00',
+
         ];
 
         // Add all time slots to the grid
@@ -414,33 +419,65 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function selectTimeSlot(slot) {
+        // const timeValue = slot.dataset.time;
+        //
+        // // If slot is already selected, deselect it and all slots after it
+        // if (selectedSlots.includes(timeValue)) {
+        //     const index = selectedSlots.indexOf(timeValue);
+        //     selectedSlots = selectedSlots.slice(0, index);
+        // } else {
+        //     // Sort time slots to find consecutive ones
+        //     const allTimeSlots = Array.from(document.querySelectorAll('.time-slot:not([disabled])'))
+        //         .map(s => s.dataset.time)
+        //         .sort();
+        //
+        //     // If no slots selected yet, add this one
+        //     if (selectedSlots.length === 0) {
+        //         selectedSlots.push(timeValue);
+        //     } else {
+        //         // Get current slot index and the last selected slot index
+        //         const currentSlotIndex = allTimeSlots.indexOf(timeValue);
+        //         const lastSelectedSlot = selectedSlots[selectedSlots.length - 1];
+        //         const lastSelectedIndex = allTimeSlots.indexOf(lastSelectedSlot);
+        //
+        //         // Check if this slot is consecutive to the last selected slot
+        //         if (currentSlotIndex === lastSelectedIndex + 1) {
+        //             console.log('AAA')
+        //             // If consecutive, add to selection
+        //             selectedSlots.push(timeValue);
+        //         } else {
+        //             // If not consecutive or earlier in the list, start a new selection
+        //             selectedSlots = [timeValue];
+        //             updateSelectedSlots();
+        //         }
+        //     }
+        // }
+        //
+        // updateSelectedSlots();
         const timeValue = slot.dataset.time;
 
-        // If slot is already selected, deselect it and all slots after it
+        const allTimeSlots = Array.from(document.querySelectorAll('.time-slot:not([disabled])'))
+            .map(s => s.dataset.time)
+            .sort();
+
+        const currentSlotIndex = allTimeSlots.indexOf(timeValue);
+
         if (selectedSlots.includes(timeValue)) {
             const index = selectedSlots.indexOf(timeValue);
             selectedSlots = selectedSlots.slice(0, index);
         } else {
-            // Sort time slots to find consecutive ones
-            const allTimeSlots = Array.from(document.querySelectorAll('.time-slot:not([disabled])'))
-                .map(s => s.dataset.time)
-                .sort();
-
-            // If no slots selected yet, add this one
             if (selectedSlots.length === 0) {
+
                 selectedSlots.push(timeValue);
             } else {
-                // Get current slot index and the last selected slot index
-                const currentSlotIndex = allTimeSlots.indexOf(timeValue);
                 const lastSelectedSlot = selectedSlots[selectedSlots.length - 1];
                 const lastSelectedIndex = allTimeSlots.indexOf(lastSelectedSlot);
 
-                // Check if this slot is consecutive to the last selected slot
+                // Проверка дали слотът е директно след последния
                 if (currentSlotIndex === lastSelectedIndex + 1) {
-                    // If consecutive, add to selection
                     selectedSlots.push(timeValue);
                 } else {
-                    // If not consecutive or earlier in the list, start a new selection
+                    // Ако не е последователен -> нулирай избора
                     selectedSlots = [timeValue];
                 }
             }
@@ -450,6 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateSelectedSlots() {
+        console.log(selectedSlots)
         // Update visual representation
         document.querySelectorAll('.time-slot').forEach(slot => {
             if (!slot.disabled) {
@@ -463,38 +501,69 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Update hidden inputs for form submission
+        // // Update hidden inputs for form submission
+        // if (selectedSlots.length > 0) {
+        //     const selectedDate = dateInput.value;
+        //
+        //     // Sort slots to ensure correct order
+        //     selectedSlots.sort();
+        //
+        //     // For the start time, use the first selected slot
+        //     const firstSlot = selectedSlots[0];
+        //     // Format date as YYYY-MM-DD HH:MM:SS for Laravel
+        //     startTimeInput.value = `${selectedDate} ${firstSlot}:00`;
+        //
+        //     // For the end time, calculate the end time based on the duration
+        //     // Assume each slot is 45 minutes long
+        //     const lastSlot = selectedSlots[selectedSlots.length - 1];
+        //
+        //     // Parse the last slot time
+        //     let [lastHours, lastMinutes] = lastSlot.split(':').map(Number);
+        //
+        //     // Add 45 minutes for the end time
+        //     let endHours = lastHours + Math.floor((lastMinutes + 45) / 60);
+        //     let endMinutes = (lastMinutes + 45) % 60;
+        //
+        //     // Format the end time with seconds for Laravel datetime format
+        //     const endTime = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}:00`;
+        //     endTimeInput.value = `${selectedDate} ${endTime}`;
+        //
+        //     console.log("Form will submit with:", {
+        //         start_time: startTimeInput.value,
+        //         end_time: endTimeInput.value
+        //     });
+        // }
+
+        // //Other one
         if (selectedSlots.length > 0) {
             const selectedDate = dateInput.value;
-
-            // Sort slots to ensure correct order
-            selectedSlots.sort();
-
-            // For the start time, use the first selected slot
             const firstSlot = selectedSlots[0];
-            // Format date as YYYY-MM-DD HH:MM:SS for Laravel
-            startTimeInput.value = `${selectedDate} ${firstSlot}:00`;
 
-            // For the end time, calculate the end time based on the duration
-            // Assume each slot is 45 minutes long
-            const lastSlot = selectedSlots[selectedSlots.length - 1];
+            // Set the breaks with max operator, so we can avoid negative numbers when we don't pick slot
+            const totalMinutes = (selectedSlots.length * 45) +Math.max(selectedSlots.length-1)*15;
 
-            // Parse the last slot time
-            let [lastHours, lastMinutes] = lastSlot.split(':').map(Number);
+            const startDateTime = new Date(`${selectedDate}T${firstSlot}:00`);
+            const endDateTime = new Date(startDateTime.getTime() + totalMinutes * 60000  );
 
-            // Add 45 minutes for the end time
-            let endHours = lastHours + Math.floor((lastMinutes + 45) / 60);
-            let endMinutes = (lastMinutes + 45) % 60;
+            // Форматиране на времето
+            const formatTime = (date) => {
+                return [
+                    date.getFullYear(),
+                    (date.getMonth() + 1).toString().padStart(2, '0'),
+                    date.getDate().toString().padStart(2, '0')
+                ].join('-') + ' ' + [
+                    date.getHours().toString().padStart(2, '0'),
+                    date.getMinutes().toString().padStart(2, '0'),
+                    '00'
+                ].join(':');
+            };
 
-            // Format the end time with seconds for Laravel datetime format
-            const endTime = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}:00`;
-            endTimeInput.value = `${selectedDate} ${endTime}`;
+            startTimeInput.value = formatTime(startDateTime);
+            endTimeInput.value = formatTime(endDateTime);
 
-            console.log("Form will submit with:", {
-                start_time: startTimeInput.value,
-                end_time: endTimeInput.value
-            });
-        } else {
+            console.log("Times:", startTimeInput.value, endTimeInput.value);
+        }
+        else {
             startTimeInput.value = '';
             endTimeInput.value = '';
         }
