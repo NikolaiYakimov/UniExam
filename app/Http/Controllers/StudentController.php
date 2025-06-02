@@ -19,7 +19,7 @@ class StudentController extends Controller
         $registeredExamIds = $student->registrations()->pluck('exam_id');
 
         $exams=Exam::with(['teacher', 'subject'])
-            ->where('start_time', '>', now())
+            ->where('start_time ', '>', now())
             ->whereNotIn('id', $registeredExamIds)
             ->get()
             ->filter(fn($exam) => $exam->remainingSlots() > 0);

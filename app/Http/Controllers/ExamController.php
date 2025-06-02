@@ -21,6 +21,7 @@ class ExamController extends Controller
           'hall_id'=>'required|exists:exam_halls,id',
           'max_students'=>'required|integer|min:1',
           'exam_type'=>'required|in:редовен,поправителен,ликвидация',
+          'price' => 'required_if:exam_type,ликвидация|numeric|min:0',
           'start_time'=>'required |date',
           'end_time' => [
               'required',
@@ -69,6 +70,7 @@ class ExamController extends Controller
           'end_time' =>$endTime,
           'max_students'=>$request->max_students,
           'exam_type'=>$request->exam_type,
+          'price'=>$request->exam_type==='ликвидация'?$request->price:0,
       ]);
 
       // Check if the exam was created successfully

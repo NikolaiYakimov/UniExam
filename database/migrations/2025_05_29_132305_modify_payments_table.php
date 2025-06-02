@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payments', function (Blueprint $table) {
-            $table->dropForeign('student_id');
+            $table->dropForeign('payments_student_id_foreign');
             $table->dropColumn('student_id');
             $table->foreignId('user_id')->after('id')->constrained('users')->onDelete('cascade');
             $table->string('stripe_payment_id')->nullable()->after('exam_id')->unique();

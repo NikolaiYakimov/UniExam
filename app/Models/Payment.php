@@ -12,11 +12,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Payment extends Model
 {
     use HasFactory;
-    protected $fillable = [ 'student_id', 'exam_id', 'amount', 'currency',
-        'transaction_id', 'status', 'payment_date'];
+    protected $fillable = [ 'user_id', 'exam_id', 'stripe_payment_id','amount', 'currency', 'status', 'payment_date'];
 
-    public function student():belongsTo{
-        return $this->belongsTo(Student::class);
+    public function user():belongsTo{
+        return $this->belongsTo(User::class);
     }
     public function exam():belongsTo{
         return $this->belongsTo(Exam::class);

@@ -19,7 +19,7 @@ class Exam extends Model
         'start_time' => 'datetime',
         'end_time' => 'datetime',
     ];
-    protected $fillable = ['teacher_id', 'subject_id','hall_id','start_time','end_time','max_students','exam_type'];
+    protected $fillable = ['teacher_id', 'subject_id','hall_id','start_time','end_time','max_students','exam_type','price'];
 
     public function hall(): BelongsTo
     {
