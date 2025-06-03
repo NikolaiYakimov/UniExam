@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payments', function (Blueprint $table) {
-            $table->dropForeign('payments_student_id_foreign');
-            $table->dropColumn('student_id');
-            $table->foreignId('user_id')->after('id')->constrained('users')->onDelete('cascade');
-            $table->string('stripe_payment_id')->nullable()->after('exam_id')->unique();
+            $table->dropForeign('payments_user_id_foreign');
+            $table->dropColumn('user_id');
+            $table->foreignId('student_id')->after('id')->constrained('students')->onDelete('cascade');
 
-        });
+        });;
     }
 
     /**
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+
     }
 };
