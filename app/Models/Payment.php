@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 
+/**
+ * @method static create(array $array)
+ */
 class Payment extends Model
 {
     use HasFactory;

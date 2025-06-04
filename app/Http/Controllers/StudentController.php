@@ -50,7 +50,7 @@ class StudentController extends Controller
             return back()->with('error', 'Вече сте записани за този изпит!');
         }
         if($exam->exam_type==='ликвидация'){
-            return $this->handlePayment($exam);
+            return app(PaymentController::class)->handlePayment($exam);
         }
         ExamRegistration::create([
             'student_id' => auth()->user()->student->id,
@@ -58,55 +58,6 @@ class StudentController extends Controller
         ]);
 
         return  redirect()->route('exams')->with('success', 'Успешно се записахте за изпит!');
-
-    }
-
-    private function handlePayment(Exam $exam)
-    {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        try{
-            $session=Session::create([
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => 'bgn',
-                        'product_data' => [
-                            'name'=>'Ликвидационен изпит по'.$exam->subject->subject_name,
-                        ],
-                        'unit_amount' => $exam->price*100,
-                    ],
-                    'quantity' => 1,
-                ]],
-                'mode' => 'payment',
-                'success_url' => route('payment.success', $exam->id),
-                'cancel_url' => route('payment.cancel',$exam->id),
-                'metadata' => [
-                   'user_id'=>auth()->user()->id,
-                    'exam_id'=>$exam->id,
-                ]
-            ]);
-            return redirect()->away($session->url);
-
-        }catch (\Exception $exception){
-            return back()->with('error','Грешка при плащане: '.$exception->getMessage());
-        }
-    }
-
-    public function paymentSuccess($examId){
-        $exam=Exam::findOrFail($examId);
-        $user=auth()->user;
-
-        $payment=Payment::create([
-            'user_id'=>$user->id,
-            'exam_id'=>$exam->id,
-            'amount'=>$exam->price*100,
-            'currency'=>'bgn',
-            'status'=>'paid',
-            'payment_date'=>now(),
-        ]);
-
-
 
     }
 
