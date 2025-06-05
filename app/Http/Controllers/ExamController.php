@@ -92,8 +92,6 @@ class ExamController extends Controller
      */
     public function getBookedSlots(Request $request) {
         try {
-
-
             // Validate inputs
             $validated = $request->validate([
                 'date' => 'required|date_format:Y-m-d',
@@ -113,7 +111,7 @@ class ExamController extends Controller
                     $query->where('end_time', '>', $startOfDay)
                         ->where('start_time', '<', $endOfDay);
                 })
-                ->get(['id','hall_id', 'start_time', 'end_time']); // hall_id е излишен;
+                ->get(['id','hall_id', 'start_time', 'end_time']);
 
 
 
