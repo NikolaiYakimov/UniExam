@@ -27,7 +27,7 @@ class StoreExamRequest extends FormRequest
             "subject_id"=>'required|exists:subjects,id',
             'hall_id'=>'required|exists:exam_halls,id',
             'max_students'=>'required|integer|min:1',
-            'exam_type'=>['required|',Rule::in(['редовен','поправителен','ликвидация'])],
+            'exam_type'=>['required',Rule::in(['редовен','поправителен','ликвидация'])],
             'price' => 'required_if:exam_type,ликвидация|numeric| :0',
             'start_time'=>'required |date',
             'end_time' => [
