@@ -25,7 +25,7 @@ class Teacher extends Model
       return $this->hasMany(Exam::class);
   }
   public function user(): BelongsTo{
-      return $this->belongsTo(User::class);
+      return $this->BelongsTo(User::class);
   }
 
 

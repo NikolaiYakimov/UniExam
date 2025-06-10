@@ -15,7 +15,7 @@ class Subject extends Model
 
     use HasFactory;
 
-    protected $fillable=['subject_name','description','semester'];
+    protected $fillable=['subject_name','description','semester','price'];
 
     public function exams(): HasMany
     {
