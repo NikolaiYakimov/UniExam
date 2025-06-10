@@ -11,18 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('exams', function (Blueprint $table) {
-            $table->dropColumn('price');
+        Schema::table('exam_registrations', function (Blueprint $table) {
+            $table->dropForeign('exam_registrations_payment_id_foreign');
+            $table->dropColumn('payment_id');
         });
     }
-
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('exams', function (Blueprint $table) {
-            $table->dropColumn('price');
-        });
+        //
     }
 };

@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('exams', function (Blueprint $table) {
-            $table->dropColumn('price');
+        Schema::table('payments', function (Blueprint $table) {
+            $table->dropForeign('payments_exam_id_foreign');
+            $table->dropColumn('exam_id');
+            $table->foreignId('exam_registration_id')->after('student_id')->constrained('exam_registrations')->onDelete('cascade');
+
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('exams', function (Blueprint $table) {
-            $table->dropColumn('price');
-        });
+        //
     }
 };

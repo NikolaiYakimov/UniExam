@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('exams', function (Blueprint $table) {
             $table->dropColumn('price');
+
         });
     }
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('exams', function (Blueprint $table) {
-            $table->dropColumn('price');
+            //
         });
     }
 };

@@ -15,18 +15,15 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Payment extends Model
 {
     use HasFactory;
-    protected $fillable = [ 'user_id', 'exam_id', 'stripe_payment_id','amount', 'currency', 'status', 'payment_date'];
+    protected $fillable = [ 'student_id', 'exam_registration_id', 'stripe_payment_id','amount', 'currency', 'status', 'payment_date'];
 
-    public function user():belongsTo{
-        return $this->belongsTo(User::class);
+    public function student():BelongsTo{
+        return $this->BelongsTo(Student::class);
     }
-    public function exam():belongsTo{
-        return $this->belongsTo(Exam::class);
+    public function registration():BelongsTo{
+        return $this->BelongsTo(ExamRegistration::class,'exam_registration_id');
     }
 
-    public function registration():hasOne
-    {
-        return $this->hasOne(ExamRegistration::class);
-    }
+
 
 }

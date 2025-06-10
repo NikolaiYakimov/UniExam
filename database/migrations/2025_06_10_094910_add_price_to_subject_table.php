@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('exams', function (Blueprint $table) {
-            $table->dropColumn('price');
+        Schema::table('subjects', function (Blueprint $table) {
+            $table->decimal('price',8,2)->default(0)->after('semester');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('exams', function (Blueprint $table) {
-            $table->dropColumn('price');
+        Schema::table('subject', function (Blueprint $table) {
+            //
         });
     }
 };

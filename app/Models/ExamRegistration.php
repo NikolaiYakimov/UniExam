@@ -15,7 +15,7 @@ class ExamRegistration extends Model
 {
 
     use HasFactory;
-    protected $fillable = ['student_id','exam_id','payment_id'];
+    protected $fillable = ['student_id','exam_id','grade'];
 
     public function student(): BelongsTo
     {
@@ -26,7 +26,7 @@ class ExamRegistration extends Model
         return $this->belongsTo(Exam::class);
     }
 
-    public function payment():BelongsTo{
-        return $this->belongsTo(Payment::class);
+    public function payment():HasOne{
+        return $this->HasOne(Payment::class);
     }
 }
