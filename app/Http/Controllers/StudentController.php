@@ -50,7 +50,7 @@ class StudentController extends Controller
             return back()->with('error', 'Вече сте записани за този изпит!');
         }
         if($exam->exam_type==='ликвидация'){
-            return app(PaymentController::class)->handlePayment($exam);
+            return redirect()->route('payment.handle',['exam'=>$exam]);
         }
         ExamRegistration::create([
             'student_id' => auth()->user()->student->id,

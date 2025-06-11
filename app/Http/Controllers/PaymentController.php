@@ -14,8 +14,12 @@ use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
+    public function __construct()
+    {
+        Strioe::setApiKey(config('services.stripe.secret'));
+    }
     public function handlePayment(Exam $exam){
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
         try{
             $session=Session::create([
                 'payment_method_types' => ['card'],
@@ -47,6 +51,7 @@ class PaymentController extends Controller
 
         public function paymentSuccess(Request $request){
 
+        Stripe::setApiKey(config('services.stripe.secret'));
 
         $sessionId=$request->query('session_id');
         $examId=$request->query('exam_id');
@@ -73,7 +78,7 @@ class PaymentController extends Controller
 
     private function createRegistrationAndPayment(Session $session)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
         try {
             $exam = Exam::findOrFail($session->metadata->exam_id);
             $studentId = $session->metadata->student_id;
@@ -111,7 +116,7 @@ class PaymentController extends Controller
 
     private function processRefund($paymentIntentId,$reason)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
         try {
             $refund = Refund::create([
                 'payment_intent' => $paymentIntentId,
