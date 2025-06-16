@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
 use App\Models\Payment;
+use App\Services\PaymentService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Stripe\Refund;
 use Stripe\Stripe;
@@ -14,34 +16,18 @@ use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
-    public function __construct()
+    protected $paymentService;
+
+    public function __construct(PaymentService $paymentService)
     {
-        Stripe::setApiKey(config('services.stripe.secret'));
+        $this->paymentService = $paymentService;
     }
 
-    public function handlePayment(Exam $exam){
+    public function handlePayment(Exam $exam):RedirectResponse{
 
         try{
-            $session=Session::create([
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => 'bgn',
-                        'product_data' => [
-                            'name'=>'Ликвидационен изпит по'.$exam->subject->subject_name,
-                        ],
-                        'unit_amount' => $exam->subject->price*100,
-                    ],
-                    'quantity' => 1,
-                ]],
-                'mode' => 'payment',
-                'success_url' => route('payment.success'). '?session_id={CHECKOUT_SESSION_ID}&exam_id='.$exam->id,
-                'cancel_url' => route('payment.cancel').'?exam_id='.$exam->id,
-                'metadata' => [
-                    'stuedent_id'=>auth()->user()->student->id,
-                    'exam_id'=>$exam->id,
-                ]
-            ]);
+            $session=$this->paymentService->createCheckoutSession($exam,auth()->user()->student);
+
             return redirect()->away($session->url);
         }catch (\Exception $e){
             Log::error('Payment initiation failed: ' . $e->getMessage());
@@ -53,7 +39,7 @@ class PaymentController extends Controller
         public function paymentSuccess(Request $request){
 
         $sessionId=$request->query('session_id');
-        $examId=$request->query('exam_id');
+
         if (!$sessionId) {
             return back()->with('error', 'Невалидна сесия за плащане.');
         }
