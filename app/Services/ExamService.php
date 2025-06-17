@@ -48,7 +48,9 @@ class ExamService{
             'end_time' => $endTime,
             'max_students' => $data['max_students'],
             'exam_type' => $data['exam_type'],
-            'price' => $data['exam_type'] === 'ликвидация' ? $data['price'] : 0]);
+//            'price' => $data['exam_type'] === 'ликвидация' ? $data['price'] : 0
+            ]
+        );
     }
 
     public function getBookedSlots(int $hallId,string $date){

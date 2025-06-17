@@ -12,6 +12,10 @@ use Stripe\Stripe;
 
 class StudentController extends Controller
 {
+    public function showPaymentForm(Exam $exam)
+    {
+        return view('payment_form',compact('exam'));
+    }
     //Get the exams which the student didn't registe
     public function exams(): \Illuminate\Contracts\View\View
     {
