@@ -26,7 +26,7 @@ Route::prefix('student')->middleware(['auth', 'role:student'])->group(function (
     Route::post('/exams/{exam}/register', [StudentController::class, 'register'])->name('student.exam.register');
     Route::get('/exams/payment/{exam}', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
 
-//    Route::post('/exams/payment/{exam}', [PaymentController::class, 'handlePayment'])->name('payment.handle')->middleware(['auth', 'role:student']);
+    Route::post('/exams/payment/{exam}', [PaymentController::class, 'handlePayment'])->name('payment.handle')->middleware(['auth', 'role:student']);
     Route::get('/exams//payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success')->middleware(['auth', 'role:student']);
     Route::get('/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel')->middleware(['auth', 'role:student']);
 });

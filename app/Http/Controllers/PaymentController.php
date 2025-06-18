@@ -23,12 +23,12 @@ class PaymentController extends Controller
         $this->paymentService = $paymentService;
     }
 
-    public function handlePayment(Exam $exam):RedirectResponse{
+    public function handlePayment(Exam $exam){
 
         try{
             $session=$this->paymentService->createCheckoutSession($exam,auth()->user()->student);
 
-            return redirect()->away($session->url);
+//            return redirect()->away($session->url,303);
         }catch (\Exception $e){
             Log::error('Payment initiation failed: ' . $e->getMessage());
             return back()->with('error', 'Грешка при плащане: ' . $e->getMessage());

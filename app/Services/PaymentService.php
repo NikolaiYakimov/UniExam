@@ -26,8 +26,10 @@ class PaymentService
     /**
      * @throws ApiErrorException
      */
-    public function createCheckoutSession(Exam $exam, Student $student ):Session{
-        return Session::create([
+    public function createCheckoutSession(Exam $exam, Student $student )
+    {
+
+        $session= Session::create([
             'payment_method_types' => ['card'],
             'line_items' => [[
                 'price_data' => [
@@ -40,13 +42,13 @@ class PaymentService
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => route('payment.success') . '?session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url' => route('payment.cancel'),
             'metadata' => [
-                'student_id' => auth()->user()->student->id,
+                'student_id' => $student->id,
                 'exam_id' => $exam->id,
-            ]
+            ],
+            'return_url' => route('payment.success.embedded'),
         ]);
+        return response()->json(['clientSecret' => $session->client_secret]);
     }
 
     /**

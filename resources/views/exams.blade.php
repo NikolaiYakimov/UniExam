@@ -60,7 +60,7 @@
                                 <i class="fas fa-chalkboard-teacher w-5 text-gray-400"></i>
                                 <span>Преподавател: <span class="font-medium text-gray-800">{{ $exam->teacher->user->first_name }} {{ $exam->teacher->user->last_name }}</span></span>
                             </div>
-                            < <div class="flex items-center gap-2 text-gray-600">
+                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
                                 <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y ') }}</span></span>
                             </div>
@@ -79,7 +79,7 @@
                                 data-exam-id="{{ $exam->id }}"
                                 data-subject="{{ $exam->subject->subject_name }}"
                                 data-price="{{ $exam->price }}">
-                            <i class="fas fa-credit-card mr-2"></i> Регистрирай се и плати
+                            <i class="fas fa-credit-card mr-2"></i> Плати и се запиши
                         </button>
                         @else
                             <form method="POST" action="{{ route('student.exam.register', $exam) }}">
@@ -98,81 +98,83 @@
         @endif
     </main>
 </div>
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title font-semibold">Плащане за изпит</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="mb-2">Предмет: <span id="modalSubject" class="font-medium"></span></p>
-                <p class="mb-4">Сума за плащане: <span id="modalPrice" class="font-bold text-blue-600"></span> лв.</p>
+<div id="paymentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-auto p-6 relative">
+        <button id="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+        </button>
+        <h5 class="text-lg font-semibold mb-4">Плащане за изпит</h5>
+        <p class="mb-2">Предмет: <span id="modalSubject" class="font-medium"></span></p>
+        <p class="mb-4">Сума за плащане: <span id="modalPrice" class="font-bold text-blue-600"></span> лв.</p>
 
-                <!-- Форма за плащане -->
-                <form id="paymentForm" method="POST">
-                    @csrf
-                    <div class="form-group mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Име на картата</label>
-                        <input type="text" class="form-input w-full rounded-md border-gray-300 shadow-sm" placeholder="John Doe" required>
-                    </div>
-
-                    <div class="form-group mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Номер на карта</label>
-                        <input type="text" class="form-input w-full rounded-md border-gray-300 shadow-sm" placeholder="4242 4242 4242 4242" required>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Валидност</label>
-                            <input type="text" class="form-input w-full rounded-md border-gray-300 shadow-sm" placeholder="MM/ГГ" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                            <input type="text" class="form-input w-full rounded-md border-gray-300 shadow-sm" placeholder="123" required>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отказ</button>
-                <button type="submit" form="paymentForm" class="btn btn-primary bg-blue-600 hover:bg-blue-700">
-                    <i class="fas fa-lock mr-2"></i>Плати сега
-                </button>
-            </div>
-        </div>
+        <!-- Контейнер за Embedded Checkout -->
+        <div id="embedded-checkout"></div>
     </div>
 </div>
 
+
 <script src="{{asset('js/menuFunctions.js')}}" defer></script>
+<script src="https://js.stripe.com/v3/"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        const stripe = Stripe("{{ config('services.stripe.key') }}");
+        let checkout;
+
         const paymentButtons = document.querySelectorAll('.payment-btn');
         const paymentModal = document.getElementById('paymentModal');
+        const subjectSpan = document.getElementById('modalSubject');
+        const priceSpan = document.getElementById('modalPrice');
+        const closeModal = document.getElementById('closeModal');
 
         paymentButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const subject = this.dataset.subject;
-                const price = this.dataset.price;
+            button.addEventListener('click', async function () {
                 const examId = this.dataset.examId;
+                subjectSpan.textContent = this.dataset.subject;
+                priceSpan.textContent = this.dataset.price;
 
-                document.getElementById('modalSubject').textContent = subject;
-                document.getElementById('modalPrice').textContent = price;
+                try {
+                    // Заявка за създаване на checkout сесия
+                    const response = await fetch("{{ route('payment.create.session') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({ exam_id: examId })
+                    });
 
-                const paymentForm = document.getElementById('paymentForm');
-                paymentForm.action = paymentForm.action.replace(':examId', examId);
+                    const { clientSecret } = await response.json();
 
-                // Показване на модала с чист JavaScript
-                paymentModal.classList.remove('hidden');
+                    // Инициализиране на Embedded Checkout
+                    checkout = stripe.embeddedCheckout({ clientSecret });
+
+                    // Показване на модала
+                    paymentModal.classList.remove('hidden');
+
+                    // Зареждане на Checkout в контейнера
+                    checkout.mount('#embedded-checkout');
+
+                    // Обработка на събития
+                    checkout.on('complete', () => {
+                        paymentModal.classList.add('hidden');
+                        window.location.reload();
+                    });
+
+                    checkout.on('close', () => {
+                        paymentModal.classList.add('hidden');
+                    });
+
+                } catch (error) {
+                    console.error('Грешка:', error);
+                    alert('Възникна грешка при инициализиране на плащането');
+                }
             });
         });
 
-        // Добавете функционалност за затваряне
-        // document.getElementById('closeModal').addEventListener('click', function() {
-        //     paymentModal.classList.add('hidden');
-        // });
+        closeModal.addEventListener('click', () => {
+            paymentModal.classList.add('hidden');
+            if (checkout) checkout.unmount();
+        });
     });
 </script>
 </body>
