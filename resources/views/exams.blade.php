@@ -75,7 +75,7 @@
                         </div>
                         @if($exam->exam_type === 'ликвидация')
                         <button type="button"
-                                class="w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-purple-600 hover:bg-purple-700 payment-btn"
+                                class="w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-blue-600 hover:bg-purple-700 payment-btn"
                                 data-exam-id="{{ $exam->id }}"
                                 data-subject="{{ $exam->subject->subject_name }}"
                                 data-price="{{ $exam->price }}">
@@ -114,7 +114,8 @@
 
 
 <script src="{{asset('js/menuFunctions.js')}}" defer></script>
-<script src="https://js.stripe.com/v3/"></script>
+{{--<script src="https://js.stripe.com/v3/"></script>--}}
+<script async src="https://js.stripe.com/v3/"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const stripe = Stripe("{{ config('services.stripe.key') }}");
@@ -133,8 +134,10 @@
                 priceSpan.textContent = this.dataset.price;
 
                 try {
+
+                    const url="{{route('payment.handle',['exam'=>'__examId__'])}}".replace('__examId__',examId)
                     // Заявка за създаване на checkout сесия
-                    const response = await fetch("{{ route('payment.create.session') }}", {
+                    const response = await fetch(url, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -142,17 +145,24 @@
                         },
                         body: JSON.stringify({ exam_id: examId })
                     });
-
+                    console.log(response)
+                    console.log('aaaaa')
                     const { clientSecret } = await response.json();
+                    console.log(clientSecret);
 
                     // Инициализиране на Embedded Checkout
-                    checkout = stripe.embeddedCheckout({ clientSecret });
+                    // checkout = stripe.embeddedCheckout({ clientSecret });
+                    stripe.initEmbeddedCheckout({
+                        clientSecret
+                    }).then((checkout)=>{
+                        paymentModal.classList.remove('hidden');
+                        checkout.mount('#checkout');                    })
 
                     // Показване на модала
                     paymentModal.classList.remove('hidden');
-
-                    // Зареждане на Checkout в контейнера
-                    checkout.mount('#embedded-checkout');
+                    //
+                    // // Зареждане на Checkout в контейнера
+                    // checkout.mount('#embedded-checkout');
 
                     // Обработка на събития
                     checkout.on('complete', () => {

@@ -16,7 +16,7 @@ use Stripe\Stripe;
 
 
 
-class PaymentService
+class  PaymentService
 {
     public function __construct()
     {
@@ -42,6 +42,7 @@ class PaymentService
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
+            'ui_mode' => 'embedded',
             'metadata' => [
                 'student_id' => $student->id,
                 'exam_id' => $exam->id,
@@ -72,7 +73,7 @@ class PaymentService
             if($exam->remainingSlots()<=0){
                 throw new Exception("Няма свободни места");
             }
-            if(Payment::where('stripe_payment_id',$session->payment_intent)->exist()){
+            if (Payment::where('stripe_payment_id', $session->payment_intent)->exists()) {
                 throw new Exception('Дублиране на плащане');
             }
 

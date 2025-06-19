@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Log;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
 use App\Models\Payment;
@@ -26,12 +26,17 @@ class PaymentController extends Controller
     public function handlePayment(Exam $exam){
 
         try{
-            $session=$this->paymentService->createCheckoutSession($exam,auth()->user()->student);
+            return $this->paymentService->createCheckoutSession($exam, auth()->user()->student);
 
 //            return redirect()->away($session->url,303);
         }catch (\Exception $e){
+//            Log::error('Payment initiation failed: ' . $e->getMessage());
+////            return back()->with('error', 'Грешка при плащане: ' . $e->getMessage());
+//            return response()->json([
+//                'error' => 'Грешка при плащане: ' . $e->getMessage()
+//            ], 500);
             Log::error('Payment initiation failed: ' . $e->getMessage());
-            return back()->with('error', 'Грешка при плащане: ' . $e->getMessage());
+            return response()->json(['error' => 'Грешка при плащане: ' . $e->getMessage()], 500);
         }
 
     }
