@@ -4,6 +4,9 @@
 
 {{--Head--}}
 @include('partials.head')
+<hevad>
+    <script async src="https://js.stripe.com/v3/"></script>
+</hevad>>
 
 <body class="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen font-[Inter] overflow-x-hidden">
 <!-- Student information sidebar with toggle button -->
@@ -103,19 +106,15 @@
         <button id="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
             <i class="fas fa-times"></i>
         </button>
-        <h5 class="text-lg font-semibold mb-4">Плащане за изпит</h5>
-        <p class="mb-2">Предмет: <span id="modalSubject" class="font-medium"></span></p>
-        <p class="mb-4">Сума за плащане: <span id="modalPrice" class="font-bold text-blue-600"></span> лв.</p>
-
++
         <!-- Контейнер за Embedded Checkout -->
         <div id="embedded-checkout"></div>
     </div>
 </div>
 
 
-<script src="{{asset('js/menuFunctions.js')}}" defer></script>
+<script src="{{asset('js/menuFunctions.js')}}"></script>
 {{--<script src="https://js.stripe.com/v3/"></script>--}}
-<script async src="https://js.stripe.com/v3/"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const stripe = Stripe("{{ config('services.stripe.key') }}");
@@ -130,8 +129,8 @@
         paymentButtons.forEach(button => {
             button.addEventListener('click', async function () {
                 const examId = this.dataset.examId;
-                subjectSpan.textContent = this.dataset.subject;
-                priceSpan.textContent = this.dataset.price;
+                // subjectSpan.textContent = this.dataset.subject;
+                // priceSpan.textContent = this.dataset.price;
 
                 try {
 
@@ -155,8 +154,9 @@
                     stripe.initEmbeddedCheckout({
                         clientSecret
                     }).then((checkout)=>{
+                        console.log('Hello')
                         paymentModal.classList.remove('hidden');
-                        checkout.mount('#checkout');                    })
+                        checkout.mount('#embedded-checkout');                    })
 
                     // Показване на модала
                     paymentModal.classList.remove('hidden');
