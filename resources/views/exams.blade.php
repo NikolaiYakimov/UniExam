@@ -4,9 +4,9 @@
 
 {{--Head--}}
 @include('partials.head')
-<hevad>
-    <script async src="https://js.stripe.com/v3/"></script>
-</hevad>>
+<head>
+    <script  src="https://js.stripe.com/v3/"></script>
+</head>>
 
 <body class="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen font-[Inter] overflow-x-hidden">
 <!-- Student information sidebar with toggle button -->
