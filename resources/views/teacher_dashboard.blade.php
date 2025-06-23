@@ -175,6 +175,7 @@
 </div>
 
 <script src="{{ asset('js/menuFunctions.js') }}" defer></script>
+<script src="{{ asset('js/alertClosingFunctions.js')}}" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const hallSelect = document.getElementById('hall_id');
@@ -570,5 +571,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<style>
+
+    /*#sidebar {*/
+    /*    width: 288px;*/
+    /*    left: -288px;*/
+    /*    box-shadow: 8px 0 15px -3px rgba(0, 0, 0, 0.1);*/
+    /*}*/
+    /*#menuContainer {*/
+    /*    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);*/
+    /*    left: 1rem;*/
+    /*}*/
+    header {
+        margin-top: 5.5rem; /* Оптимизирано отместване за мобилен режим */
+    }
+    .bg-green-50, .bg-red-50{
+        transition: opacity 0.3s ease;
+        position: relative; /* Задължително за позициониране на бутона */
+    }
+</style>
+
 </body>
 </html>

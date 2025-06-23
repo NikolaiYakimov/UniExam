@@ -111,41 +111,14 @@
 {{--        <div id="checkout"  style="width: 100%; height: 500px;"></div>--}}
         <div class="w-full overflow-x-auto">
             <div id="checkout" class="min-w-[400px] h-[800px]"></div>
-
         </div>
-
     </div>
 </div>
 
 
 <script src="{{asset('js/menuFunctions.js')}}"></script>
-{{--<script src="https://js.stripe.com/v3/"></script>--}}
-
+<script src="{{asset('js/alertClosingFunctions.js')}}"></script>
 <script>
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const alerts = document.querySelectorAll('.bg-green-50, .bg-red-50');
-
-        alerts.forEach(alert => {
-            // Автоматично затваряне
-           const autoCloseTimer=setTimeout(() => {
-               fadeOut(alert);
-            }, 5000);
-
-            // Затваряне при клик на бутона
-            const closeBtn = alert.querySelector('button');
-            if(closeBtn) {
-                closeBtn.addEventListener('click', () => {
-                    clearTimeout(autoCloseTimer);
-                    fadeOut(alert);
-                });
-            }
-        });
-        function fadeOut(element){
-            element.style.opacity = '0';
-            setTimeout(() => element.remove(), 300);
-        }
-    });
 
     document.addEventListener('DOMContentLoaded', function () {
         const stripe = Stripe("{{ config('services.stripe.key') }}");
