@@ -7,6 +7,7 @@ use App\Models\Exam;
 use App\Models\ExamRegistration;
 use App\Models\Payment;
 use App\Models\Student;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Stripe\Checkout\Session;
@@ -30,12 +31,13 @@ class  PaymentService
     {
 
         $session= Session::create([
+            'customer_email'=>Auth::user()->email,
             'payment_method_types' => ['card'],
             'line_items' => [[
                 'price_data' => [
                     'currency' => 'bgn',
                     'product_data' => [
-                        'name' => 'Ликвидационен изпит по ' . $exam->subject->subject_name,
+                        'name' => 'Ликвида  ионен изпит по ' . $exam->subject->subject_name,
                     ],
                     'unit_amount' => $exam->subject->price * 100,
                 ],
@@ -47,7 +49,7 @@ class  PaymentService
                 'student_id' => $student->id,
                 'exam_id' => $exam->id,
             ],
-            'return_url' => route('payment.success.embedded'),
+            'return_url' => route('payment.success.embedded').'?session_id={CHECKOUT_SESSION_ID}',
         ]);
         return response()->json(['clientSecret' => $session->client_secret]);
     }

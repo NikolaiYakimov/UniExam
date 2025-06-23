@@ -28,7 +28,7 @@ Route::prefix('student')->middleware(['auth', 'role:student'])->group(function (
 //    Route::get('/exams/payment/{exam}', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
 
     Route::post('/exams/payment/{exam}', [PaymentController::class, 'handlePayment'])->name('payment.handle');
-    Route::get('/exams//payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success.embedded');
+    Route::get('/exams/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success.embedded');
     Route::get('/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
 });
 

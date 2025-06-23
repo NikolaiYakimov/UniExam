@@ -42,23 +42,20 @@ class PaymentController extends Controller
     }
 
         public function paymentSuccess(Request $request){
-
-        $sessionId=$request->query('session_id');
-
-        if (!$sessionId) {
-            return back()->with('error', 'Невалидна сесия за плащане.');
-        }
-
             try {
-                $session=Session::retrieve($sessionId);
-                if($session->payment_status==='paid'){
-                    $this->createRegistrationAndPayment($session);
-                    return redirect()->route('exams')->with('success', 'Успешно плащане и записване за изпит!');
-                }
+                     $sessionId=$request->query('session_id');
+
+                     if (!$sessionId) {
+                        return back()->with('error', 'Невалидна сесия за плащане.');
+                     }
+
+                     $this->paymentService->handleSuccessfulPayment($sessionId);
+                     return redirect()->route('exams')->with('success', 'Успешно плащане и записване за изпит!');
             }catch (\Exception $e){
                 Log::error('Payment success handling failed: ' . $e->getMessage());
+                return redirect()->route('payment.cancel')->with('error', $e->getMessage());
             }
-            return redirect()->route('payment.cancel');
+
 
     }
     public function paymentCancel(Request $request){

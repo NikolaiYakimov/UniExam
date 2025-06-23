@@ -6,7 +6,7 @@
 @include('partials.head')
 <head>
     <script  src="https://js.stripe.com/v3/"></script>
-</head>>
+</head>
 
 <body class="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen font-[Inter] overflow-x-hidden">
 <!-- Student information sidebar with toggle button -->
@@ -68,7 +68,7 @@
                                 <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y ') }}</span></span>
                             </div>
                             <div class="flex items-center gap-2 text-gray-600">
-                                <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
+                                <i class="fas fa-clock w-5 text-gray-400"></i>
                                 <span>Продължителност: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format(' H:i') }} - {{ \Carbon\Carbon::parse($exam->end_time)->format(' H:i') }}</span></span>
                             </div>
                             <div class="flex items-center gap-2 text-gray-600">
@@ -108,14 +108,45 @@
         </button>
 +
         <!-- Контейнер за Embedded Checkout -->
-        <div id="embedded-checkout"></div>
+{{--        <div id="checkout"  style="width: 100%; height: 500px;"></div>--}}
+        <div class="w-full overflow-x-auto">
+            <div id="checkout" class="min-w-[400px] h-[800px]"></div>
+
+        </div>
+
     </div>
 </div>
 
 
 <script src="{{asset('js/menuFunctions.js')}}"></script>
 {{--<script src="https://js.stripe.com/v3/"></script>--}}
+
 <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.bg-green-50, .bg-red-50');
+
+        alerts.forEach(alert => {
+            // Автоматично затваряне
+           const autoCloseTimer=setTimeout(() => {
+               fadeOut(alert);
+            }, 5000);
+
+            // Затваряне при клик на бутона
+            const closeBtn = alert.querySelector('button');
+            if(closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    clearTimeout(autoCloseTimer);
+                    fadeOut(alert);
+                });
+            }
+        });
+        function fadeOut(element){
+            element.style.opacity = '0';
+            setTimeout(() => element.remove(), 300);
+        }
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
         const stripe = Stripe("{{ config('services.stripe.key') }}");
         let checkout;
@@ -145,7 +176,6 @@
                         body: JSON.stringify({ exam_id: examId })
                     });
                     console.log(response)
-                    console.log('aaaaa')
                     const { clientSecret } = await response.json();
                     console.log(clientSecret);
 
@@ -156,23 +186,23 @@
                     }).then((checkout)=>{
                         console.log('Hello')
                         paymentModal.classList.remove('hidden');
-                        checkout.mount('#embedded-checkout');                    })
+                        checkout.mount('#checkout');
+                    })
 
                     // Показване на модала
                     paymentModal.classList.remove('hidden');
                     //
-                    // // Зареждане на Checkout в контейнера
-                    // checkout.mount('#embedded-checkout');
+
 
                     // Обработка на събития
-                    checkout.on('complete', () => {
-                        paymentModal.classList.add('hidden');
-                        window.location.reload();
-                    });
-
-                    checkout.on('close', () => {
-                        paymentModal.classList.add('hidden');
-                    });
+                    // checkout.on('complete', () => {
+                    //     paymentModal.classList.add('hidden');
+                    //     window.location.reload();
+                    // });
+                    //
+                    // checkout.on('close', () => {
+                    //     paymentModal.classList.add('hidden');
+                    // });
 
                 } catch (error) {
                     console.error('Грешка:', error);
@@ -201,6 +231,11 @@
         }
         header {
             margin-top: 5.5rem; /* Оптимизирано отместване за мобилен режим */
+        }
+
+        .bg-green-50, .bg-red-50{
+            transition: opacity 0.3s ease;
+            position: relative; /* Задължително за позициониране на бутона */
         }
     }
 </style>
