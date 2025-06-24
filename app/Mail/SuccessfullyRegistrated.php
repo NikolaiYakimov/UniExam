@@ -5,6 +5,7 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -12,15 +13,19 @@ use Illuminate\Queue\SerializesModels;
 class SuccessfullyRegistrated extends Mailable
 {
 
-    //demomailtrap.co token: 967d5e85b4232306f3df9752272c588c
+
     use Queueable, SerializesModels;
+
+    public $exam;
+    public $student;
 
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($exam, $student)
     {
-        //
+        $this->student = $student;
+        $this->exam = $exam;
     }
 
     /**
@@ -29,7 +34,8 @@ class SuccessfullyRegistrated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Successfully Registrated',
+            from: new Address('no-reply@univesity.com','University Management System'),
+            subject: 'Successfully Registered for Exam',
         );
     }
 
@@ -39,7 +45,11 @@ class SuccessfullyRegistrated extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.successful-registration-for-exam',
+            with: [
+                'exam' => $this->exam,
+                'student' => $this->student,
+            ]
         );
     }
 
