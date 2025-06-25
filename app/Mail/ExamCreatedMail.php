@@ -5,27 +5,20 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SuccessfullyRegistrated extends Mailable implements ShouldQueue
+class ExamCreatedMail extends Mailable
 {
-
-
     use Queueable, SerializesModels;
-
-    public $exam;
-    public $student;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($exam, $student)
+    public function __construct()
     {
-        $this->student = $student;
-        $this->exam = $exam;
+        //
     }
 
     /**
@@ -34,8 +27,7 @@ class SuccessfullyRegistrated extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('no-reply@univesity.com','University Management System'),
-            subject: 'Successfully Registered for Exam',
+            subject: 'Exam Created Mail',
         );
     }
 
@@ -45,11 +37,7 @@ class SuccessfullyRegistrated extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.successful-registration-for-exam',
-            with: [
-                'exam' => $this->exam,
-                'student' => $this->student,
-            ]
+            markdown: 'emails.exam-created',
         );
     }
 

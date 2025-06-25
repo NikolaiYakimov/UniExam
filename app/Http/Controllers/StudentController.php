@@ -62,7 +62,7 @@ class StudentController extends Controller
             'student_id' => auth()->user()->student->id,
             'exam_id' => $exam->id,
         ]);
-        Mail::to( auth()->user()->email)->send(new SuccessfullyRegistrated($exam, auth()->user()->student));
+        Mail::to( auth()->user()->email)->queue(new SuccessfullyRegistrated($exam, auth()->user()->student));
 
         return  redirect()->route('exams')->with('success', 'Успешно се записахте за изпит!');
 

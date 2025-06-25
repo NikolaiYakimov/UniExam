@@ -63,42 +63,42 @@ class PaymentController extends Controller
         return redirect()->route('exams')->with('error',"Плащането беше отменено. Моля, опитайте отново");
     }
 
-    private function createRegistrationAndPayment(Session $session)
-    {
-        try {
-            $exam = Exam::findOrFail($session->metadata->exam_id);
-            $studentId = $session->metadata->student_id;
-
-
-            if ($exam->remainingSlots() <= 0) {
-               throw new \Exception("Няма свободни места");
-            }
-
-            if(Payment::where('stripe_payment_id',$session->payment_intent)->exists()){
-                throw new \Exception("Дублирано плащане");
-            }
-            //Use DB::transaction to be sure if one of the creating action failed , all the changes to be rollback
-            DB::transaction(function() use ($session,$exam,$studentId){
-                $registration = ExamRegistration::create([
-                    'student_id' => $session->metadata->student_id,
-                    'exam_id' => $session->metadata->exam_id,
-                ]);
-
-                Payment::create([
-                    'student_id' => $session->metadata->student_id,
-                    'exam_registration_id' => $registration->id,
-                    'stripe_payment_id' => $session->payment_intent,
-                    'amount' => $session->amount_total / 100,
-                    'currency' => $session->currency,
-                    'status' => 'paid',
-                    'payment_date' => now(),
-                ]);
-            });
-        }catch (\Exception $e){
-            $this->processRefund($session->payment_intent,$e->getMessage());
-            return redirect()->route('exams')->with('error', "Грешка: {$e->getMessage()}. Парите ще бъдат върнати.");
-        }
-    }
+//    private function createRegistrationAndPayment(Session $session)
+//    {
+//        try {
+//            $exam = Exam::findOrFail($session->metadata->exam_id);
+//            $studentId = $session->metadata->student_id;
+//
+//
+//            if ($exam->remainingSlots() <= 0) {
+//               throw new \Exception("Няма свободни места");
+//            }
+//
+//            if(Payment::where('stripe_payment_id',$session->payment_intent)->exists()){
+//                throw new \Exception("Дублирано плащане");
+//            }
+//            //Use DB::transaction to be sure if one of the creating action failed , all the changes to be rollback
+//            DB::transaction(function() use ($session,$exam,$studentId){
+//                $registration = ExamRegistration::create([
+//                    'student_id' => $session->metadata->student_id,
+//                    'exam_id' => $session->metadata->exam_id,
+//                ]);
+//
+//                Payment::create([
+//                    'student_id' => $session->metadata->student_id,
+//                    'exam_registration_id' => $registration->id,
+//                    'stripe_payment_id' => $session->payment_intent,
+//                    'amount' => $session->amount_total / 100,
+//                    'currency' => $session->currency,
+//                    'status' => 'paid',
+//                    'payment_date' => now(),
+//                ]);
+//            });
+//        }catch (\Exception $e){
+//            $this->processRefund($session->payment_intent,$e->getMessage());
+//            return redirect()->route('exams')->with('error', "Грешка: {$e->getMessage()}. Парите ще бъдат върнати.");
+//        }
+//    }
 
     private function processRefund($paymentIntentId,$reason)
     {

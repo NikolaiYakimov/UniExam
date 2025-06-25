@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Mail\SuccessfullyPaidAndRegistered;
 use Exception;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
@@ -10,6 +11,7 @@ use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Refund;
@@ -69,8 +71,11 @@ class  PaymentService
 
     public function createRegistrationAndPayment(Session $session):void
     {
-        DB::transaction(function () use ($session) {
-            $exam=Exam::findOrFail($session->metadata->exam_id);
+        $exam=Exam::findOrFail($session->metadata->exam_id);
+        $student=Student::findOrFail($session->metadata->student_id);
+
+        DB::transaction(function () use ($session,$exam) {
+//            $exam=Exam::findOrFail($session->metadata->exam_id);
             $student_id=$session->metadata->student_id;
             if($exam->remainingSlots()<=0){
                 throw new Exception("Няма свободни места");
@@ -94,6 +99,8 @@ class  PaymentService
                 'payment_date'=>now(),
             ]);
         });
+        Mail::to(auth()->user()->email)->queue(new SuccessfullyPaidAndRegistered($exam,$student));
+
     }
 
     public function processRefund(string $paymentIntentId,string $reason='Няма наличие на места'):void
