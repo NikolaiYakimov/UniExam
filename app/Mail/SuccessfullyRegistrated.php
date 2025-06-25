@@ -48,7 +48,7 @@ class SuccessfullyRegistrated extends Mailable
             view: 'emails.successful-registration-for-exam',
             with: [
                 'exam' => $this->exam,
-                'student' => $this->student,
+                'user' => $this->student,
             ]
         );
     }

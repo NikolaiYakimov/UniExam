@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SuccessfullyRegistrated;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Stripe\Stripe;
 
 class StudentController extends Controller
 {
-    public function showPaymentForm(Exam $exam)
-    {
-        return view('payment_form',compact('exam'));
-    }
+//    public function showPaymentForm(Exam $exam)
+//    {
+//        return view('payment_form',compact('exam'));
+//    }
     //Get the exams which the student didn't registe
     public function exams(): \Illuminate\Contracts\View\View
     {
@@ -60,6 +62,7 @@ class StudentController extends Controller
             'student_id' => auth()->user()->student->id,
             'exam_id' => $exam->id,
         ]);
+        Mail::to( auth()->user()->email)->send(new SuccessfullyRegistrated($exam, auth()->user()->student));
 
         return  redirect()->route('exams')->with('success', 'Успешно се записахте за изпит!');
 
