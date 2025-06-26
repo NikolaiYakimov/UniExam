@@ -1,12 +1,22 @@
-<x-mail::message>
-# Introduction
+@component('mail::message')
 
-The body of your message.
 
-<x-mail::button :url="''">
-Button Text
-</x-mail::button>
+    Дисциплина: {{ $exam->subject->subject_name }}
 
-Thanks,<br>
-{{ config('app.name') }}
-</x-mail::message>
+    Дата: {{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y') }}
+
+    Час: {{ \Carbon\Carbon::parse($exam->start_time)->format('H:i') }}
+
+    Зала: {{ $exam->hall->name }}
+
+    @component('mail::button', ['url' => route('exams')])
+        Виж детайли за изпита
+    @endcomponent
+
+    Благодарим, че използвате нашата система!<br>
+    {{ config('app.name') }}
+    <hr>
+    <p style="font-size: 0.9em; color: gray;">
+        Това съобщение е автоматично генерирано. Моля, не отговаряй на него.
+    </p>
+@endcomponent

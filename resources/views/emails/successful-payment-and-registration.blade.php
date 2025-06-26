@@ -21,4 +21,4 @@
 <p style="font-size: 0.9em; color: gray;">
     Това съобщение е автоматично генерирано. Моля, не отговаряй на него.
 </p>
-<@endcomponent>
+@endcomponent

@@ -100,7 +100,7 @@ class  PaymentService
             ]);
         });
         Mail::to(auth()->user()->email)->queue(new SuccessfullyPaidAndRegistered($exam,$student));
-
+        Log::error("HEyyy");
     }
 
     public function processRefund(string $paymentIntentId,string $reason='Няма наличие на места'):void
