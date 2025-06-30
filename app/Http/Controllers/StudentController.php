@@ -18,7 +18,7 @@ class StudentController extends Controller
 //    {
 //        return view('payment_form',compact('exam'));
 //    }
-    //Get the exams which the student didn't registe
+    //Get the exams which the student didn't register
     public function exams(): \Illuminate\Contracts\View\View
     {
         //Get the exams which the student didn't register
@@ -27,6 +27,9 @@ class StudentController extends Controller
         $registeredExamIds = $student->registrations()->pluck('exam_id');
 
         $exams=Exam::with(['teacher', 'subject'])
+            ->whereHas('subject',function ($q) use ($student){
+                $q->where('semester',$student->semester);
+            } )
             ->where('start_time', '>', now())
             ->whereNotIn('id', $registeredExamIds)
             ->get()
