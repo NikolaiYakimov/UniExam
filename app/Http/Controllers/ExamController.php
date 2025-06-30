@@ -6,12 +6,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GetBookedSlotsRequest;
 use App\Http\Requests\StoreExamRequest;
+use App\Mail\ExamCreatedMail;
+use App\Models\Student;
 use App\Services\ExamService;
 use App\Models\Exam;
 use App\Models\ExamHall;
 use App\Models\Subject;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use function Webmozart\Assert\Tests\StaticAnalysis\email;
 
 class   ExamController extends Controller
 {
@@ -149,6 +154,15 @@ class   ExamController extends Controller
             $request->validated();
 
             $exam=$this->examService->createExam($request->all());
+            Log::error($exam);
+            $students=Student::with('user')->whereHas('user',function ($q){
+                $q->whereNotNull('email');
+            })->get();
+
+            foreach($students as $student){
+                    Mail::to($student->user->email)->queue(new ExamCreatedMail($exam));
+
+            }
             return back()->with('success','Изпита е добавен успешно');
 
         }catch (\Exception $exception){

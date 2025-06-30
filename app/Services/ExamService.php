@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use App\Models\Exam;
 use App\Models\ExamHall;
 use App\Repositories\ExamRepository;
 use App\Repositories\ExamRepositoryInterface;
@@ -15,7 +16,7 @@ class ExamService{
 
     }
 
-    public function createExam(array $data){
+    public function createExam(array $data):Exam{
 
         $hall=ExamHall::findOrFail($data['hall_id']);
 

@@ -42,7 +42,7 @@ class SuccessfullyPaidAndRegistered extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.successful-payment-and-registration',
+            view: 'emails.successful-payment-and-registration',
             with: [
                 'exam' => $this->exam,
                 'student' => $this->student,

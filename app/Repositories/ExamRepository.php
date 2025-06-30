@@ -22,9 +22,10 @@ class ExamRepository implements ExamRepositoryInterface
     /*
   * Store the exam to the database
   */
-    public function store($data)
+    public function store($data):Exam
     {
-        Exam::create($data);
+       return Exam::create($data);
+
     }
 
     /*
