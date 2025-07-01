@@ -7,13 +7,14 @@ use App\Models\ExamHall;
 use App\Models\Subject;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 
 class TeacherController
 {
-    public function dashboard(){
+    public function dashboard():View{
         $teacher = Auth::user()->teacher;
-        $exams= Exam::where('teacher_id',$teacher->id)->get();
+        $exams= Exam::where('teacher_id',$teacher->id)->where('start_time','>',now())->get();
         $subjects = Subject::all();
         $halls=ExamHall::all();
         $bookedSlots = Exam::all()->map(function($exam) {
@@ -26,6 +27,14 @@ class TeacherController
         });
 
         return view('teacher_dashboard',compact('teacher','exams','subjects','halls','bookedSlots'));
+    }
+
+    public function conductedExams():View{
+        $teacher=Auth::user()->teacher;
+        $exams= Exam::where('teacher_id',$teacher->id)->where('start_time','<',Carbon::now()->toIso8601String())->get();
+        $subjects = Subject::all();
+        $halls=ExamHall::all();
+        return view('teacher_conducted_exams',compact('teacher','exams','subjects','halls'));
     }
 
 

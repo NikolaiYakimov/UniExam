@@ -9,11 +9,11 @@
 <div class="ml-0 lg:ml-80 p-4 lg:p-8 transition-all duration-300">
     @include('partials.header',[
         'title'=>"Управление на изпити",
-        'subtitle'=>'Преглед и създаване на изпитни сесии',
+        'subtitle'=>'Преглед на предстоящи изпити и възможност за добавяне',
         'button'=>[
-            'route'=>route('logout'),
-            'text'=>'Изход от системата',
-            'icon' =>'fas fa-sign-out-alt'
+            'route'=>route('conducted_exams'),
+            'text'=>' Изминали изпити',
+            'icon' =>'fa-duotone fa-solid fa-folder-open'
         ]
     ])
 

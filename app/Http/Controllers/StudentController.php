@@ -41,7 +41,7 @@ class StudentController extends Controller
         /** @var \App\Models\Student $student */
         $student = auth()->user()->student;
         $registrations=$student->registrations()
-            ->with('exam.teacher', 'exam.subject')
+            ->with(['teacher', 'subject'])
             ->get()
             ->pluck('exam');
 
