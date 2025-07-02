@@ -52,7 +52,7 @@
         @else
             <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach($exams as $exam)
-                    <div class="bg-white border border-gray-100 rounded-xl p-6 hover:shadow-md transition-all hover:border-primary-100 hover:translate-y-[-2px]">
+                    <div class="flex flex-col bg-white border border-gray-100 rounded-xl p-6 hover:shadow-md transition-all hover:border-primary-100 hover:translate-y-[-2px] ">
                         <div class="flex justify-between items-start gap-2 mb-3">
                             <h2 class="text-lg font-semibold text-gray-900">
                                 {{ $exam->subject->subject_name }}
@@ -85,6 +85,14 @@
                                 </span>
                             </div>
                         </div>
+                        <form method="POST" action="{{ route('student.exam.register', $exam) }} "  class ="mt-auto">
+                            @csrf
+                            <button type="submit"
+                                    data-exam-date="{{ $exam->start_time }}"
+                                    class="edit-exam-btn w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-blue-600 hover:bg-blue-700">
+                                <i class="fa-solid fa-file-pen"></i> Редактирай изпит
+                            </button>
+                        </form>
                     </div>
                 @endforeach
 
@@ -176,6 +184,25 @@
 
 <script src="{{ asset('js/menuFunctions.js') }}" defer></script>
 <script src="{{ asset('js/alertClosingFunctions.js')}}" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded',function (){
+   const editButtons=document.querySelectorAll('.edit-exam-btn');
+   const currentDate=new Date();
+
+   editButtons.forEach(button=>{
+       const examDateString=button.getAttribute('data-exam-date');
+       const examDate=new Date(examDateString);
+
+       const examDifference=(examDate-currentDate)/(1000*60*60);
+       if(examDifference<48){
+           button.disabled=true;
+           button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+           button.classList.add('bg-gray-300', 'cursor-not-allowed');
+       }
+   })
+    cl
+});
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const hallSelect = document.getElementById('hall_id');

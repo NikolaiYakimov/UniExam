@@ -149,7 +149,8 @@ class   ExamController extends Controller
         $this->examService=$examService;
 
     }
-    public function store(StoreExamRequest $request){
+
+    public function storeExam(StoreExamRequest $request){
         try {
             $request->validated();
 
@@ -170,6 +171,11 @@ class   ExamController extends Controller
 
         }
     }
+    public function editExam(Exam $exam)
+    {
+
+    }
+
 
     public function getBookedSlots(GetBookedSlotsRequest $request){
         try {
