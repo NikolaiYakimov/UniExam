@@ -78,7 +78,9 @@
                         </div>
                         @if($exam->exam_type === 'ликвидация')
                         <button type="button"
-                                class="w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-blue-600 hover:bg-purple-700 payment-btn"
+                                class="w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200  payment-btn
+                                 {{ $exam->remainingSlots() <= 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700' }}"
+                                {{ $exam->remainingSlots() <= 0 ? 'disabled' : '' }}
                                 data-exam-id="{{ $exam->id }}"
                                 data-subject="{{ $exam->subject->subject_name }}"
                                 data-price="{{ $exam->price }}">
