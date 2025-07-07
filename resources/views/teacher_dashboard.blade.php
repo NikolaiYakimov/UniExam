@@ -454,6 +454,12 @@ document.addEventListener('DOMContentLoaded', function() {
             slot.dataset.time = time;
             slot.textContent = time;
 
+            if(isWithin48Hours(selectedDate,time)){
+                slot.disabled=true;
+                slot.classList.remove('bg-green-500', 'hover:bg-green-600');
+                slot.classList.add('bg-grey-300','cursor-not-allowed');
+                slot.title = "Моля, изберете валидни дата и час за изпита. Те трябва да бъдат поне 48 часа след настоящия момент.";            }
+
             slot.addEventListener('click', function() {
                 if (!slot.disabled) {
                     selectTimeSlot(slot);
