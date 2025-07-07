@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded',function (){
            button.classList.add('bg-gray-300', 'cursor-not-allowed');
        }
    })
-    cl
+
 });
 </script>
 <script>
@@ -271,6 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     dateInput.addEventListener('change', function() {
         console.log('Date changed to:', dateInput.value, 'fetching new booked slots');
+        generateTimeSlots();
         fetchBookedSlots();
     });
 
@@ -289,6 +290,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    function isPastDate(dateString){
+        const today= new Date();
+        today.setHours(0,0,0,0);
+        return new Date(dateString)<today;
+    }
+    function isWithin48Hours(selectedDate,time){
+        const selectedDateTime=new Date(`${selectedDate}T${time}:00`);
+        const now=new Date();
+        const hourDifference=Math.abs(selectedDateTime-now)/(1000*60*60);
+        return hourDifference<48;
+    }
+
 
     function updateRoomDisplay() {
         const selectedRoom = hallSelect.options[hallSelect.selectedIndex].text;
@@ -413,6 +427,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function generateTimeSlots() {
         timeGrid.innerHTML = '';
+        const selectedDate=dateInput.value;
+
+        if(isPastDate(selectedDate)){
+            timeGrid.innerHTML='<div class="col-span-3 text-center py-4 text-red-600">Не можете да създавате изпити за минали дати!</div>';
+            return;
+        }
+
 
         const timeSlots = [
             // Row 1
@@ -434,12 +455,22 @@ document.addEventListener('DOMContentLoaded', function() {
             slot.dataset.time = time;
             slot.textContent = time;
 
+            if(isWithin48Hours(selectedDate,time)){
+                console.log('Greyyy');
+
+                slot.classList.remove('bg-green-500', 'hover:bg-green-600', 'transition-colors');
+                slot.classList.add('bg-gray-300', 'cursor-not-allowed');
+                slot.title = "Моля, изберете валидни дата и час за изпита. Те трябва да бъдат поне 48 часа след настоящия момент.";
+                slot.disabled = true;
+            }
+            console.log( 'HERE');
+            console.log( slot);
             slot.addEventListener('click', function() {
                 if (!slot.disabled) {
                     selectTimeSlot(slot);
                 }
             });
-
+            console.log( slot.disabled);
             timeGrid.appendChild(slot);
         });
 
