@@ -171,7 +171,7 @@ class   ExamController extends Controller
 
         }
     }
-    public function editExam(Exam $exam)
+    public function editExam(StoreExamRequest $request,Exam $exam)
     {
 
     }

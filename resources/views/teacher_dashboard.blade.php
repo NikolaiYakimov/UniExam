@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded',function (){
            button.classList.add('bg-gray-300', 'cursor-not-allowed');
        }
    })
-    cl
+
 });
 </script>
 <script>
@@ -289,6 +289,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    function isPastDate(dateString){
+        const today= new Date();
+        today.setHours(0,0,0,0);
+        return new Date(dateString)<today;
+    }
+    function isWithin48Hours(selectedDate,time){
+        const selectedDateTime=new Date(`${selectedDate}T${time}:00`);
+        const now=new Date();
+        const hourDifference=Math.abs(selectedDateTime-now)/(1000*60*60);
+        return hourDifference<48;
+    }
+
 
     function updateRoomDisplay() {
         const selectedRoom = hallSelect.options[hallSelect.selectedIndex].text;
@@ -413,6 +426,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function generateTimeSlots() {
         timeGrid.innerHTML = '';
+        const selectedDate=dateInput.value;
+
+        if(isPastDate(selectedDate)){
+            timeGrid.innerHTML='<div class="col-span-3 text-center py-4 text-red-600">Не можете да създавате изпити за минали дати!</div>';
+            return;
+        }
+
 
         const timeSlots = [
             // Row 1
