@@ -271,6 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     dateInput.addEventListener('change', function() {
         console.log('Date changed to:', dateInput.value, 'fetching new booked slots');
+        generateTimeSlots();
         fetchBookedSlots();
     });
 
@@ -455,17 +456,21 @@ document.addEventListener('DOMContentLoaded', function() {
             slot.textContent = time;
 
             if(isWithin48Hours(selectedDate,time)){
-                slot.disabled=true;
-                slot.classList.remove('bg-green-500', 'hover:bg-green-600');
-                slot.classList.add('bg-grey-300','cursor-not-allowed');
-                slot.title = "Моля, изберете валидни дата и час за изпита. Те трябва да бъдат поне 48 часа след настоящия момент.";            }
+                console.log('Greyyy');
 
+                slot.classList.remove('bg-green-500', 'hover:bg-green-600', 'transition-colors');
+                slot.classList.add('bg-gray-300', 'cursor-not-allowed');
+                slot.title = "Моля, изберете валидни дата и час за изпита. Те трябва да бъдат поне 48 часа след настоящия момент.";
+                slot.disabled = true;
+            }
+            console.log( 'HERE');
+            console.log( slot);
             slot.addEventListener('click', function() {
                 if (!slot.disabled) {
                     selectTimeSlot(slot);
                 }
             });
-
+            console.log( slot.disabled);
             timeGrid.appendChild(slot);
         });
 
