@@ -273,6 +273,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Date changed to:', dateInput.value, 'fetching new booked slots');
         generateTimeSlots();
         fetchBookedSlots();
+
+        // selectedSlots=[];
+        // formErrors.classList.add('hidden');
+        // document.getElementById('submitBtn').disabled=false;
     });
 
     // When the modal opens, refresh the booked slots
@@ -292,17 +296,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function isPastDate(dateString){
+
         const today= new Date();
         today.setHours(0,0,0,0);
         return new Date(dateString)<today;
     }
-    function isWithin48Hours(selectedDate,time){
-        const selectedDateTime=new Date(`${selectedDate}T${time}:00`);
-        const now=new Date();
-        const hourDifference=Math.abs(selectedDateTime-now)/(1000*60*60);
-        return hourDifference<48;
-    }
 
+    function isWithin48Hours(examDate){
+        const now=new Date();
+        const hourDifference=Math.abs(examDate-now)/(1000*60*60);
+        return hourDifference<48;
+
+    }
+    function  isValidDate(date,time='00:00'){
+        const examDate=new Date(`${date}T${time}`);
+        return !isPastDate(date)&&!isWithin48Hours(examDate);
+
+    }
+    function calculateExamDuration(slots){
+        return (slots.length*45) + (Math.max(slots.length-1,0)*15);
+    }
 
     function updateRoomDisplay() {
         const selectedRoom = hallSelect.options[hallSelect.selectedIndex].text;
@@ -406,12 +419,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     bookedCount++;
 
                     document.querySelectorAll('.time-slot').forEach(slot => {
-                        if(slot.disabled) return;
+                        // if(slot.disabled) return;
                         const slotTime = slot.dataset.time;
 
                         // If slot time is between start and end of booking
                         if (slotTime >= startTime && slotTime < endTime) {
-                            slot.classList.remove('bg-green-500', 'hover:bg-green-600','transition-colors');
+                            slot.classList.remove('bg-green-500', 'hover:bg-green-600','transition-colors','bg-gray-300');
                             slot.classList.add('bg-red-500','cursor-not-allowed');
                             slot.disabled = true;
                         }
@@ -431,12 +444,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateTimeSlots() {
         timeGrid.innerHTML = '';
         const selectedDate=dateInput.value;
-
-        if(isPastDate(selectedDate)){
-            timeGrid.innerHTML='<div class="col-span-3 text-center py-4 text-red-600">Не можете да създавате изпити за минали дати!</div>';
-            return;
-        }
-
 
         const timeSlots = [
             // Row 1
@@ -458,29 +465,39 @@ document.addEventListener('DOMContentLoaded', function() {
             slot.dataset.time = time;
             slot.textContent = time;
 
-            if(isWithin48Hours(selectedDate,time)){
-                console.log('Greyyy');
+            if(!isValidDate(selectedDate,time)){
 
+                slot.disabled = true;
                 slot.classList.remove('bg-green-500', 'hover:bg-green-600', 'transition-colors');
                 slot.classList.add('bg-gray-300', 'cursor-not-allowed');
                 slot.title = "Моля, изберете валидни дата и час за изпита. Те трябва да бъдат поне 48 часа след настоящия момент.";
-                slot.disabled = true;
+                // formErrors.textContent="Не може да създавате изпити за минали дати или по-малко от 48 часа от сега."
+                // formErrors.classList.remove('hidden');
             }
-            console.log( 'HERE');
-            console.log( slot);
+            // else{
+            //     // formErrors.classList.add('hidden')
+            // }
+
             slot.addEventListener('click', function() {
                 if (!slot.disabled) {
                     selectTimeSlot(slot);
                 }
             });
-            console.log( slot.disabled);
+
             timeGrid.appendChild(slot);
         });
+        if(!isValidDate(selectedDate)){
 
+            formErrors.textContent="Не може да създавате изпити за минали дати или по-малко от 48 часа от сега."
+            formErrors.classList.remove('hidden')
+        }else{
+            formErrors.classList.add('hidden');
+        }
         checkBookedSlots();
     }
 
     function selectTimeSlot(slot) {
+        if(slot.disabled) return;
         // const timeValue = slot.dataset.time;
         //
         // // If slot is already selected, deselect it and all slots after it
@@ -603,15 +620,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedDate = dateInput.value;
             const firstSlot = selectedSlots[0];
 
-            if(isPastDate(selectedDate)|| isWithin48Hours(selectedDate,firstSlot) ){
-                formErrors.textContent="Не може да създавате изпити за минали дати или по-малко от 48 часа от сега."
-                formErrors.classList.remove('hidden');
-                document.getElementById('submitBtn').disabled=true;
-            }else{
-                formErrors.classList.add('hidden');
-                document.getElementById('submitBtn').disabled=false;
             // Set the breaks with max operator, so we can avoid negative numbers when we don't pick slot
-            const totalMinutes = (selectedSlots.length * 45) +Math.max(selectedSlots.length-1)*15;
+            const totalMinutes =calculateExamDuration(selectedSlots);
 
             const startDateTime = new Date(`${selectedDate}T${firstSlot}:00`);
             const endDateTime = new Date(startDateTime.getTime() + totalMinutes * 60000  );
@@ -633,7 +643,7 @@ document.addEventListener('DOMContentLoaded', function() {
             endTimeInput.value = formatTime(endDateTime);
 
             console.log("Times:", startTimeInput.value, endTimeInput.value);
-        }
+
         }
         else {
             startTimeInput.value = '';
