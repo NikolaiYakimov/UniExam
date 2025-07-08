@@ -374,9 +374,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Reset all slots to available
         document.querySelectorAll('.time-slot').forEach(slot => {
-            slot.classList.remove('bg-red-500', 'bg-green-500', 'bg-blue-500');
-            slot.classList.add('bg-green-500');
-            slot.disabled = false;
+            if(!slot.disabled) {
+                slot.classList.remove('bg-red-500', 'bg-green-500', 'bg-blue-500');
+                slot.classList.add('bg-green-500');
+                slot.disabled = false;
+            }
         });
 
         // Mark booked slots as unavailable
@@ -404,12 +406,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     bookedCount++;
 
                     document.querySelectorAll('.time-slot').forEach(slot => {
+                        if(slot.disabled) return;
                         const slotTime = slot.dataset.time;
 
                         // If slot time is between start and end of booking
                         if (slotTime >= startTime && slotTime < endTime) {
-                            slot.classList.remove('bg-green-500');
-                            slot.classList.add('bg-red-500');
+                            slot.classList.remove('bg-green-500', 'hover:bg-green-600','transition-colors');
+                            slot.classList.add('bg-red-500','cursor-not-allowed');
                             slot.disabled = true;
                         }
                     });
@@ -546,6 +549,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateSelectedSlots() {
+
+
         console.log(selectedSlots)
         // Update visual representation
         document.querySelectorAll('.time-slot').forEach(slot => {
@@ -598,6 +603,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedDate = dateInput.value;
             const firstSlot = selectedSlots[0];
 
+            if(isPastDate(selectedDate)|| isWithin48Hours(selectedDate,firstSlot) ){
+                formErrors.textContent="Не може да създавате изпити за минали дати или по-малко от 48 часа от сега."
+                formErrors.classList.remove('hidden');
+                document.getElementById('submitBtn').disabled=true;
+            }else{
+                formErrors.classList.add('hidden');
+                document.getElementById('submitBtn').disabled=false;
             // Set the breaks with max operator, so we can avoid negative numbers when we don't pick slot
             const totalMinutes = (selectedSlots.length * 45) +Math.max(selectedSlots.length-1)*15;
 
@@ -621,6 +633,7 @@ document.addEventListener('DOMContentLoaded', function() {
             endTimeInput.value = formatTime(endDateTime);
 
             console.log("Times:", startTimeInput.value, endTimeInput.value);
+        }
         }
         else {
             startTimeInput.value = '';
