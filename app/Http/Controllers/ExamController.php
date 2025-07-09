@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Mockery\Exception;
 use function Webmozart\Assert\Tests\StaticAnalysis\email;
 
 class   ExamController extends Controller
@@ -173,7 +174,19 @@ class   ExamController extends Controller
     }
     public function editExam(StoreExamRequest $request,Exam $exam)
     {
+        try{
+            $now=Carbon::now();
+            $examStart=Carbon::parse($exam->star_time);
+            if($examStart->diffInHours($now)<=48){
+                throw new Exception('Изпита не може да бъде редактиран, тъй като започва след по-малко от 48 часа.');
+            }
+            $request->validated();
+            $this->examService->updateExam($exam,$request->all());
+            return back()->with('success','изпита е обновен успешно');
 
+        }catch (Exception $exception){
+            return back()->with('error',$exception->getMessage());
+        }
     }
 
 

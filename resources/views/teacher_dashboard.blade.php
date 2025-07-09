@@ -213,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const endTimeInput = document.getElementById('end_time');
     const examForm = document.getElementById('examForm');
     const formErrors = document.getElementById('formErrors');
+    const modalSubmitButton=document.getElementById('submitBtn');
 
     // Set default date to today
     const today = new Date();
@@ -456,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '16:00', '17:00', '18:00',
 
         ];
-
+        let hasValidSlot=false;
         // Add all time slots to the grid
         timeSlots.forEach(time => {
             const slot = document.createElement('button');
@@ -474,9 +475,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // formErrors.textContent="Не може да създавате изпити за минали дати или по-малко от 48 часа от сега."
                 // formErrors.classList.remove('hidden');
             }
-            // else{
-            //     // formErrors.classList.add('hidden')
-            // }
+            else{
+                hasValidSlot=true;
+            }
 
             slot.addEventListener('click', function() {
                 if (!slot.disabled) {
@@ -486,13 +487,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
             timeGrid.appendChild(slot);
         });
-        if(!isValidDate(selectedDate)){
+        if(hasValidSlot){
+            formErrors.classList.add('hidden');
+            modalSubmitButton.disabled=false;
+            modalSubmitButton.classList.remove('bg-gray-300');
+            modalSubmitButton.classList.add('hover:bg-blue-700','bg-blue-600');
+        } else{
 
             formErrors.textContent="Не може да създавате изпити за минали дати или по-малко от 48 часа от сега."
-            formErrors.classList.remove('hidden')
-        }else{
-            formErrors.classList.add('hidden');
+            formErrors.classList.remove('hidden');
+            modalSubmitButton.disabled=true;
+            modalSubmitButton.classList.remove('hover:bg-blue-700','bg-blue-600');
+            modalSubmitButton.classList.add('bg-gray-300');
+
         }
+        // if(hasValidSlot){
+        //     formErrors.classList.add('hidden');
+        //     modalSubmitButton.disabled=false;
+        //     modalSubmitButton.classList.remove('bg-gray-300');
+        //     modalSubmitButton.classList.add(' hover:bg-blue-700','bg-blue-600 ');
+        // }
         checkBookedSlots();
     }
 

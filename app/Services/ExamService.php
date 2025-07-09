@@ -7,6 +7,7 @@ use App\Repositories\ExamRepository;
 use App\Repositories\ExamRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Whoops\Example\Exception;
 
 class ExamService{
     protected $examRepository;
@@ -61,6 +62,45 @@ class ExamService{
         $end=$dateObj->copy()->endOfDay();
 
         return $this->examRepository->getBookedSlots($hallId,$start,$end);
+    }
+
+    function updateExam(Exam $exam,array $data):Exam
+    {
+        if($exam->subject_id!=$data['subject_id']){
+            throw new \Exception("Предмета не може да бъде променян");
+        }
+        if($exam->exam_type!=$data['exam_type']){
+            throw new \Exception('Типът на изпита не може да бъде променян');
+        }
+
+        $hall=ExamHall::findOrFail($data['hall_id']);
+        $startTime=Carbon::parse($data['start_time']);
+        $endTime=Carbon::parse($data['end_time']);
+
+        $now=Carbon::now();
+        if($startTime->isPast()||$startTime->diffInDays($now)<48){
+            throw new \Exception('Изпитът не може да бъде насрочен в миналото или по-рано от 48 часа от текущия момент. Моля, изберете валидни дата и час.');
+        }
+
+        $hasOverlap=Exam::where('hall_id',$hall->id)
+            ->where('id','!=',$exam->id)
+            ->where(function($query) use ($startTime,$endTime){
+                $query->where('end_time', '>', $startTime)
+                    ->where('start_time', '<', $endTime);
+            })->exists();
+
+        if($hasOverlap){
+            throw new \Exception("Залата е заета за ибразия от вас интервал от време.");
+        }
+
+        $exam->update([
+            'hall_id' => $data['hall_id'],
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'max_students' => $data['max_students'],
+        ]);
+        return $exam;
+
     }
 
 
