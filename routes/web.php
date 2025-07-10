@@ -39,6 +39,11 @@ Route::prefix('teacher')->middleware(['auth', 'role:teacher'])->group(function (
     Route::get('/conducted_exams', [TeacherController::class, 'conductedExams'])->name('conducted_exams');
     Route::get('/booked-slots', [ExamController::class, 'getBookedSlots'])->name('exams.booked-slots');
     Route::post('/exams', [ExamController::class, 'storeExam'])->name('exams.store');
+    Route::get('/exams/{exam}/edit-data', [ExamController::class, 'getExamEditData'])
+        ->name('exams.edit-data');
+
+    Route::put('/exams/{exam}', [ExamController::class, 'editExam'])
+        ->name('exams.update');
 });
 
 // Administrator routes

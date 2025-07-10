@@ -85,14 +85,19 @@
                                 </span>
                             </div>
                         </div>
-                        <form method="POST" action="{{ route('student.exam.register', $exam) }} "  class ="mt-auto">
-                            @csrf
-                            <button type="submit"
-                                    data-exam-date="{{ $exam->start_time }}"
-                                    class="edit-exam-btn w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-blue-600 hover:bg-blue-700">
-                                <i class="fa-solid fa-file-pen"></i> Редактирай изпит
-                            </button>
-                        </form>
+{{--                        <form method="POST" action="{{ route('student.exam.register', $exam) }} "  class ="mt-auto">--}}
+{{--                            @csrf--}}
+{{--                            <button type="submit"--}}
+{{--                                    data-exam-date="{{ $exam->start_time }}"--}}
+{{--                                    class="edit-exam-btn w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-blue-600 hover:bg-blue-700">--}}
+{{--                                <i class="fa-solid fa-file-pen"></i> Редактирай изпит--}}
+{{--                            </button>--}}
+{{--                        </form>--}}
+                        <button @click="openEditModal({{ $exam->id }})"
+                                class="edit-exam-btn w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-blue-600 hover:bg-blue-700"
+                                data-exam-date="{{$exam->start_time}}">
+                            <i class="fa-solid fa-file-pen"></i> Редактирай изпит
+                        </button>
                     </div>
                 @endforeach
 
@@ -662,6 +667,24 @@ document.addEventListener('DOMContentLoaded', function() {
         else {
             startTimeInput.value = '';
             endTimeInput.value = '';
+        }
+    }
+    function openEditModal(examId){
+        try {
+          fetch(`/exam/${examId}/edit-data`)
+              .then(response=>response.json())
+              .then(data=>{
+
+                  document.querySelector('[name="subject_id"]').value=data.subject_id;
+                  document.querySelector('[name="exam_type"]').value=data.exam_type;
+                  document.querySelector('[name="max_students"]').value=data.max_students;
+                  document.querySelector('[name="hall_id"]').value=data.hall_id
+
+
+                  showModal=true;
+              })
+        }catch (E){
+            console.log(e.getMessage)
         }
     }
 });

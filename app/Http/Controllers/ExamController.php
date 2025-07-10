@@ -189,6 +189,18 @@ class   ExamController extends Controller
         }
     }
 
+    public function getExamEditData(Exam $exam)
+    {
+        return response()->json([
+            'subject_id'=>$exam->subject_id,
+            'exam_type'=>$exam->exam_type,
+            'max_students'=>$exam->max_students,
+            'start_time'=>$exam->start_time,
+            'end_time'=>$exam->end_time,
+            'hall_id'=>$exam->hall_id
+        ]);
+    }
+
 
     public function getBookedSlots(GetBookedSlotsRequest $request){
         try {
