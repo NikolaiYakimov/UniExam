@@ -189,8 +189,10 @@ class   ExamController extends Controller
         }
     }
 
-    public function getExamEditData(Exam $exam)
+    public function getExamEditData($examId): \Illuminate\Http\JsonResponse
     {
+        $exam=Exam::findOrFail($examId);
+
         return response()->json([
             'subject_id'=>$exam->subject_id,
             'exam_type'=>$exam->exam_type,

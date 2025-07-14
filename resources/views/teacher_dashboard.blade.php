@@ -1,7 +1,7 @@
     <!DOCTYPE html>
 <html lang="bg">
 @include('partials.head')
-<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+{{--<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>--}}
 
 <body class="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen font-[Inter] overflow-x-hidden" x-data="{ showModal: false }">
 @include('partials.sidebar')
@@ -93,16 +93,20 @@
 {{--                                <i class="fa-solid fa-file-pen"></i> Редактирай изпит--}}
 {{--                            </button>--}}
 {{--                        </form>--}}
-                        <button @click="openEditModal({{ $exam->id }})"
+
+{{--                        <button @click=" showModal=true; openEditModal(@json($exam->id))"--}}
+                        <button @click=" showModal=true; openEditModal({{$exam->id}})"
+
                                 class="edit-exam-btn w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-blue-600 hover:bg-blue-700"
                                 data-exam-date="{{$exam->start_time}}">
                             <i class="fa-solid fa-file-pen"></i> Редактирай изпит
                         </button>
+
                     </div>
                 @endforeach
 
                 <div class="flex items-center justify-center">
-                    <button @click="showModal = true" class="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">
+                    <button @click=" showModal = true;resetExamForm()" class="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                         </svg>
@@ -114,14 +118,15 @@
 </div>
 
 <!-- Create Exam Modal -->
-<div x-cloak x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+<div x-cloak x-show="showModal " x-transition.opacity class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 mx-4" @click.outside="showModal = false">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Създаване на нов изпит</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4" id="modalTitle">Създаване на нов изпит</h3>
 
         <form method="POST" action="{{ route('exams.store') }}" id="examForm">
             @csrf
             <div class="space-y-4">
                 <div>
+                    <input type="hidden" name="_method" id="formMethod" value="POST">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Дисциплина</label>
                     <select name="subject_id" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">
                         @foreach($subjects as $subject)
@@ -207,6 +212,53 @@ document.addEventListener('DOMContentLoaded',function (){
    })
 
 });
+</script>
+<script>
+    let selectedSlots=[]
+    function resetExamForm(){
+        document.getElementById('modalTitle').textContent='Създаване на нов изпит';
+
+        document.getElementById('examForm').action="{{route('exams.store')}}"
+        document.getElementById('formMethod').value='POST';
+
+        document.getElementById('examForm').reset();
+
+        document.querySelector('[name="subject_id"]').disabled=false;
+        document.querySelector('[name="exam_type"]').disabled=false;
+        const today=new Date().toISOString().split('T')[0];
+        document.getElementById('exam_date').value=today;
+
+        selectedSlots=[];
+        generateTimeSlots();
+        fetchBookedSlots();
+    }
+
+    function openEditModal(examId){
+        try {
+            fetch(`/teacher/exam/${examId}/edit-data`)
+                .then(res => {
+                if (!res.ok) {
+                    throw new Error('Грешка при зареждане на данни.');
+                }
+                return res.json();
+            })
+                .then(data=>{
+                    console.log(data)
+                    document.querySelector('[name="subject_id"]').value=data.subject_id;
+                    document.querySelector('[name="exam_type"]').value=data.exam_type;
+                    document.querySelector('[name="max_students"]').value=data.max_students;
+                    document.querySelector('[name="hall_id"]').value=data.hall_id
+
+                    document.querySelector('[name="subject_id"]').disabled=true;
+                    document.querySelector('[name="exam_type"]').disabled=true;
+
+
+                    Alpine.store('showModal', true);
+                });
+        }catch (е){
+            console.error(e)
+        }
+    }
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -669,26 +721,11 @@ document.addEventListener('DOMContentLoaded', function() {
             endTimeInput.value = '';
         }
     }
-    function openEditModal(examId){
-        try {
-          fetch(`/exam/${examId}/edit-data`)
-              .then(response=>response.json())
-              .then(data=>{
 
-                  document.querySelector('[name="subject_id"]').value=data.subject_id;
-                  document.querySelector('[name="exam_type"]').value=data.exam_type;
-                  document.querySelector('[name="max_students"]').value=data.max_students;
-                  document.querySelector('[name="hall_id"]').value=data.hall_id
-
-
-                  showModal=true;
-              })
-        }catch (E){
-            console.log(e.getMessage)
-        }
-    }
 });
 </script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 <style>
 
     /*#sidebar {*/
