@@ -31,13 +31,17 @@ class ExamRepository implements ExamRepositoryInterface
     /*
      * Get the exam slots that are booked for given hall
      */
-    public function getBookedSlots($hallId, $startTime, $endTime)
+    public function getBookedSlots($hallId, $startTime, $endTime,$excludeExamId=null)
     {
-        return Exam::where('hall_id',$hallId)->
+        $query= Exam::where('hall_id',$hallId)->
             where(function ($query) use ($startTime, $endTime) {
                 $query->where('end_time', '>', $startTime)
                     ->where('start_time', '<', $endTime);
-        })->select('id', 'hall_id', 'start_time', 'end_time')
-            ->get();
+        });
+        if($excludeExamId){
+            $query->where('id','!=',$excludeExamId);
+        }
+
+        return $query->get();
     }
 }

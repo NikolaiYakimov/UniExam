@@ -96,7 +96,7 @@
 
 {{--                        <button @click=" showModal=true; openEditModal(@json($exam->id))"--}}
                         <button @click="openEditModal({{$exam->id}});showModal=true "
-                                class="edit-exam-btn w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-blue-600 hover:bg-blue-700"
+                                class=" mt-auto edit-exam-btn w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-blue-600 hover:bg-blue-700"
                                 data-exam-date="{{$exam->start_time}}">
                             <i class="fa-solid fa-file-pen"></i> Редактирай изпит
                         </button>
@@ -125,6 +125,7 @@
             <div class="space-y-4">
                 <div>
                     <input type="hidden" name="_method" id="formMethod" value="POST">
+
                     <label class="block text-sm font-medium text-gray-700 mb-2">Дисциплина</label>
                     <select name="subject_id" required class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">
                         @foreach($subjects as $subject)
@@ -168,6 +169,10 @@
                         <h4 class="text-center font-medium mb-2">Стая <span id="selected_room">---</span></h4>
                         <div id="time_slots_grid" class="grid grid-cols-3 gap-2">
                             <!-- Time slots will be generated here -->
+                            <div id="loadingIndicator" class="text-center py-4 hidden">
+                                <i class="fas fa-spinner fa-spin text-blue-500"></i>
+                                <span class="ml-2 text-gray-600">Зареждане на слотове...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -194,7 +199,8 @@
 <script src="{{ asset('js/alertClosingFunctions.js')}}" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Дефиниране на DOM елементи
+
+        // Define and initialize  DOM elements
         const hallSelect = document.getElementById('hall_id');
         const dateInput = document.getElementById('exam_date');
         const timeGrid = document.getElementById('time_slots_grid');
@@ -207,14 +213,14 @@
         const formMethod = document.getElementById('formMethod');
         const loadingIndicator = document.getElementById('loadingIndicator');
 
-        // Променливи за състоянието
+
         let selectedSlots = [];
         let bookedSlots = [];
 
         // Инициализация на основни стойности
         const today = new Date();
         dateInput.value = today.toISOString().split('T')[0];
-        updateRoomDisplay();
+        // updateRoomDisplay();
 
         // Обработчик за подаване на формата
         examForm.addEventListener('submit', function(e) {
@@ -284,7 +290,6 @@
             return (slots.length * 45) + (Math.max(slots.length - 1, 0) * 15);
         }
 
-        // Основна функция за генериране на времеви слотове
         function generateTimeSlots() {
             if (!timeGrid) return;
 
@@ -307,6 +312,7 @@
                 if (!isValidDate(selectedDate, time)) {
                     slot.disabled = true;
                     slot.classList.replace('bg-green-500', 'bg-gray-300');
+                    slot.classList.add('cursor-not-allowed')
                     slot.classList.remove('hover:bg-green-600');
                     slot.title = "Моля, изберете валидни дата и час за изпита.";
                 } else {
@@ -410,7 +416,7 @@
         }
 
         // Функция за зареждане на заетите слотове
-        async function fetchBookedSlots() {
+        async function fetchBookedSlots(excludeExamId=null) {
             const selectedDate = dateInput.value;
             const selectedHallId = hallSelect.value;
 
@@ -420,7 +426,9 @@
             if (loadingIndicator) loadingIndicator.classList.remove('hidden');
 
             try {
-                const url = `{{ route('exams.booked-slots') }}?date=${encodeURIComponent(selectedDate)}&hall_id=${encodeURIComponent(selectedHallId)}`;
+
+                const url = `{{ route('exams.booked-slots') }}?date=${encodeURIComponent(selectedDate)}&hall_id=${encodeURIComponent(selectedHallId)}${excludeExamId ? `&exclude_exam_id=${excludeExamId}`:''}`;
+
                 const response = await fetch(url);
 
                 if (!response.ok) throw new Error('Грешка при зареждане');
@@ -515,7 +523,7 @@
 
                     updateRoomDisplay();
                     generateTimeSlots();
-                    fetchBookedSlots();
+                    fetchBookedSlots(examId);
                 })
                 .catch(error => {
                     console.error('Грешка при зареждане на данните за изпит:', error);
@@ -532,6 +540,7 @@
             if (hoursDifference < 48) {
                 button.disabled = true;
                 button.classList.replace('bg-blue-600', 'bg-gray-300');
+                button.classList.add('cursor-not-allowed');
                 button.classList.remove('hover:bg-blue-700');
             }
         });

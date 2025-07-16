@@ -55,13 +55,13 @@ class ExamService{
         );
     }
 
-    public function getBookedSlots(int $hallId,string $date){
+    public function getBookedSlots(int $hallId,string $date,int $excludeExamId=null){
 
         $dateObj=Carbon::parse($date);
         $start=$dateObj->copy()->startOfDay();
         $end=$dateObj->copy()->endOfDay();
 
-        return $this->examRepository->getBookedSlots($hallId,$start,$end);
+        return $this->examRepository->getBookedSlots($hallId,$start,$end,$excludeExamId);
     }
 
     function updateExam(Exam $exam,array $data):Exam
@@ -78,12 +78,12 @@ class ExamService{
         $endTime=Carbon::parse($data['end_time']);
 
         $now=Carbon::now();
-        if($startTime->isPast()||$startTime->diffInDays($now)<48){
+        if($startTime->isPast()||$startTime->diffInHours($now)<48){
             throw new \Exception('Изпитът не може да бъде насрочен в миналото или по-рано от 48 часа от текущия момент. Моля, изберете валидни дата и час.');
         }
 
         $hasOverlap=Exam::where('hall_id',$hall->id)
-            ->where('id','!=',$exam->id)
+            ->where('id', '!=', $exam->id)
             ->where(function($query) use ($startTime,$endTime){
                 $query->where('end_time', '>', $startTime)
                     ->where('start_time', '<', $endTime);

@@ -176,7 +176,7 @@ class   ExamController extends Controller
     {
         try{
             $now=Carbon::now();
-            $examStart=Carbon::parse($exam->star_time);
+            $examStart=Carbon::parse($exam->start_time);
             if($examStart->diffInHours($now)<=48){
                 throw new Exception('Изпита не може да бъде редактиран, тъй като започва след по-малко от 48 часа.');
             }
@@ -206,7 +206,8 @@ class   ExamController extends Controller
 
     public function getBookedSlots(GetBookedSlotsRequest $request){
         try {
-            $slots=$this->examService->getBookedSlots($request->hall_id,$request->date);
+            $excludeExamId = $request->input('exclude_exam_id', null);
+            $slots=$this->examService->getBookedSlots($request->hall_id,$request->date,$excludeExamId);
 
             return response()->json([
                 'bookedSlots'=>$slots->map(function($exam){

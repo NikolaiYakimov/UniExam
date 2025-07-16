@@ -47,7 +47,7 @@
                                     {{ $exam->exam_type }}
                                 </span>
                                 <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $exam->remainingSlots() > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                    {{ $exam->remainingSlots() }} места
+                                    {{ $exam->remainingSlots() }} Свободни места
                                 </span>
                             </div>
                         </div>

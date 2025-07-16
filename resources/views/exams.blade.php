@@ -205,12 +205,12 @@
             left: 1rem;
         }
         header {
-            margin-top: 5.5rem; /* Оптимизирано отместване за мобилен режим */
+            margin-top: 5.5rem;
         }
 
         .bg-green-50, .bg-red-50{
             transition: opacity 0.3s ease;
-            position: relative; /* Задължително за позициониране на бутона */
+            position: relative;
         }
     }
 </style>
