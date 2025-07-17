@@ -78,7 +78,7 @@ class ExamService{
         $endTime=Carbon::parse($data['end_time']);
 
         $now=Carbon::now();
-        if($startTime->isPast()||$startTime->diffInHours($now)<48){
+        if($startTime->isPast()||$now->diffInHours($startTime,false)<=48){
             throw new \Exception('Изпитът не може да бъде насрочен в миналото или по-рано от 48 часа от текущия момент. Моля, изберете валидни дата и час.');
         }
 
@@ -92,7 +92,7 @@ class ExamService{
         if($hasOverlap){
             throw new \Exception("Залата е заета за ибразия от вас интервал от време.");
         }
-
+//        Log::debug('Tук съм');
         $exam->update([
             'hall_id' => $data['hall_id'],
             'start_time' => $startTime,

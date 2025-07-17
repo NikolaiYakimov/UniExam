@@ -42,7 +42,7 @@ Route::prefix('teacher')->middleware(['auth', 'role:teacher'])->group(function (
     Route::get('/exam/{id}/edit-data', [ExamController::class, 'getExamEditData'])
         ->name('exams.edit-data');
 
-    Route::put('/exams/{exam}', [ExamController::class, 'editExam'])
+    Route::put('/edit-exams/{examId}', [ExamController::class, 'editExam'])
         ->name('exams.update');
 });
 

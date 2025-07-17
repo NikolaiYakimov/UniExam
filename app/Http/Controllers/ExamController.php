@@ -172,17 +172,29 @@ class   ExamController extends Controller
 
         }
     }
-    public function editExam(StoreExamRequest $request,Exam $exam)
+    public function editExam(StoreExamRequest $request,int $examId)
     {
         try{
+           Log::debug("Тук е: ".$examId);
+            $exam=Exam::findOrFail($examId);
             $now=Carbon::now();
             $examStart=Carbon::parse($exam->start_time);
-            if($examStart->diffInHours($now)<=48){
+            Log::debug($examStart);
+            Log::debug($now);
+            Log::debug($examStart->diffInHours($now));
+
+            \Log::debug("Current time: " . $now);
+            \Log::debug("Exam start: " . $examStart);
+            \Log::debug("Hours difference: " . $now->diffInHours($examStart, false));
+            if($examStart->isPast()){
+                throw new \Exception('Датата на изпита е вече минала и не може да се редактира');
+            }
+            if($now->diffInHours($examStart,false)<=48){
                 throw new Exception('Изпита не може да бъде редактиран, тъй като започва след по-малко от 48 часа.');
             }
             $request->validated();
             $this->examService->updateExam($exam,$request->all());
-            return back()->with('success','изпита е обновен успешно');
+            return back()->with('success','Изпита беше редактиран успешно!');
 
         }catch (Exception $exception){
             return back()->with('error',$exception->getMessage());
@@ -192,7 +204,7 @@ class   ExamController extends Controller
     public function getExamEditData($examId): \Illuminate\Http\JsonResponse
     {
         $exam=Exam::findOrFail($examId);
-
+        Log::debug($exam);
         return response()->json([
             'subject_id'=>$exam->subject_id,
             'exam_type'=>$exam->exam_type,

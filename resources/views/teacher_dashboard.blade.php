@@ -505,7 +505,9 @@
         window.openEditModal = function(examId) {
             document.getElementById('modalTitle').textContent = 'Редактиране на изпит';
             document.getElementById('submitBtn').textContent="Редактирай";
-            examForm.action = `{{ route('exams.update', ['exam' => ':examId']) }}`.replace(':examId', examId);
+            const baseUrl = "{{ route('exams.update', ['examId' => ':idExam']) }}";
+
+            examForm.action = baseUrl.replace(':idExam',examId);
             formMethod.value = 'PUT';
 
             fetch(`/teacher/exam/${examId}/edit-data`)
@@ -518,8 +520,8 @@
                     document.querySelector('[name="hall_id"]').value = data.hall_id;
                     dateInput.value = data.start_time.substring(0, 10);
 
-                    document.querySelector('[name="subject_id"]').disabled = true;
-                    document.querySelector('[name="exam_type"]').disabled = true;
+                    document.querySelector('[name="subject_id"]').readonly = true;
+                    document.querySelector('[name="exam_type"]').readonly = true;
 
                     updateRoomDisplay();
                     generateTimeSlots();
