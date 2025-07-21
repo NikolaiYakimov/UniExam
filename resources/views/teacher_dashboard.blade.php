@@ -20,26 +20,7 @@
     <main>
         @include('partials.alerts')
 
-        <div class="prose max-w-none mb-8">
-            <h2 class="text-2xl font-bold text-gray-900">Преподавателски профил</h2>
-            <div class="flex items-center gap-4 text-gray-600 mt-4">
-                <div class="flex-1">
-                    <h1 class="text-xl font-semibold text-gray-900 mb-2">
-                        {{ $teacher->title }} {{ $teacher->user->first_name }} {{ $teacher->user->second_name }} {{ $teacher->user->last_name }}
-                    </h1>
-                    <div class="flex items-center gap-4 flex-wrap">
-                            <span class="flex items-center gap-1.5">
-                                <i class="fas fa-envelope text-gray-400"></i>
-                                {{ $teacher->user->email }}
-                            </span>
-                        <span class="flex items-center gap-1.5">
-                                <i class="fas fa-clipboard-list text-gray-400"></i>
-                                {{ $teacher->exams_count }} активни изпита
-                            </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         @if($exams->isEmpty())
             <div class="text-center p-8 bg-white border border-gray-100 shadow-sm rounded-xl">

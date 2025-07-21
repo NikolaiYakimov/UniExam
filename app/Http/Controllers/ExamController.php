@@ -175,7 +175,6 @@ class   ExamController extends Controller
     public function editExam(StoreExamRequest $request,int $examId)
     {
         try{
-           Log::debug("Тук е: ".$examId);
             $exam=Exam::findOrFail($examId);
             $now=Carbon::now();
             $examStart=Carbon::parse($exam->start_time);

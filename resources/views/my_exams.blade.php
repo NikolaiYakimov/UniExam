@@ -70,6 +70,15 @@
                                 <span>Зала: <span class="font-medium text-gray-800">{{ $exam->hall->name }}</span></span>
                             </div>
                         </div>
+
+                        <form method="POST" action="{{ route('student.exam.unregister', $exam) }}">
+                            @csrf
+                            <button type="submit"
+                                    class="w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700">
+                                <i class="fas fa-edit mr-2"></i> Отпиши се
+                            </button>
+                        </form>
+
                     </div>
                 @endforeach
             </div>

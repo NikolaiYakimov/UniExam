@@ -25,6 +25,7 @@ Route::prefix('student')->middleware(['auth', 'role:student'])->group(function (
     Route::get('/exams', [StudentController::class, 'exams'])->name('exams');
     Route::get('/my_exams', [StudentController::class, 'myExams'])->name('my_exams');
     Route::post('/exams/{exam}/register', [StudentController::class, 'register'])->name('student.exam.register');
+    Route::post('/exams/{exam}/unregister', [StudentController::class, 'unregisterExam'])->name('student.exam.unregister');
 
 //    Route::get('/exams/payment/{exam}', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
 

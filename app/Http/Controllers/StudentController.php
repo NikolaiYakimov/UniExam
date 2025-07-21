@@ -70,6 +70,25 @@ class StudentController extends Controller
         return  redirect()->route('exams')->with('success', 'Успешно се записахте за изпит!');
 
     }
+    public function unregisterExam(Exam $exam): \Illuminate\Http\RedirectResponse
+    {
+        $studentId=auth()->user()->student->id;
+        $registration=ExamRegistration::where('student_id',$studentId)
+            ->where('exam_id',$exam->id)->first();
+
+        if(!$registration){
+            return back()->with("error","Не може да се опишете, защото не сте записани за този изпит!");
+        }
+        if($exam->start_time->isPast()){
+            return back()->with("error","Отписването е невъзможно, тъй като изпита вече е минал");
+        }
+
+        if($exam->start_time->diffInHours(now(),true)<48){
+            return back()->with("error","Отисването от дадения изпит е невъзможно по-малко от 48 часа преди изпита");
+        }
+        $registration->delete();
+        return back()->with("success","Успешно се отписахте от изпита");
+    }
 
 }
 

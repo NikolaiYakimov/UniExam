@@ -15,7 +15,11 @@
             <div class="w-10 h-10 rounded-lg  flex items-center justify-center mr-3 overflow-hidden ">
                 <img src="{{ asset('images/tu-image.png') }}" alt="Лого" class="w-full h-full object-cover " loading="lazy">
             </div>
-            Студентски профил
+            @if(Auth::user()->role==='student')
+                Студентски профил
+            @elseif(Auth::user()->role==='teacher')
+                Преподавателски профил
+            @endif
         </h2>
 
         <div class="space-y-5 flex-1">
@@ -24,8 +28,19 @@
                     <i class="fas fa-user text-xl text-primary-600"></i>
                 </div>
                 <div>
-                    <p class="font-medium text-gray-900">{{ Auth::user()->first_name }} {{ Auth::user()->second_name }} {{ Auth::user()->last_name }}</p>
-                    <p class="text-sm text-gray-500 mt-1">№: <span class="font-mono">{{ Auth::user()->faculty_number }}</span></p>
+                    <p class="font-medium text-gray-900">
+                        @if(Auth::user()->role==='teacher')
+                         {{$teacher->title}}
+                         @endif
+                            {{ Auth::user()->first_name }} {{ Auth::user()->second_name }} {{ Auth::user()->last_name }}</p>
+                        @if(Auth::user()->role==='student')
+                            <p class="text-sm text-gray-500 mt-1">№: <span class="font-mono">{{ Auth::user()->student->faculty_number }}</span></p>
+                        @else
+                        <p class="text-sm text-gray-500 mt-1">
+                        <i class="fas fa-clipboard-list text-gray-400"></i>
+                        {{ $teacher->exams_count }} активни изпита
+                        </p>
+                    @endif
                 </div>
             </div>
 
