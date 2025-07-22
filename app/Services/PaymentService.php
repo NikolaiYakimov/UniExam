@@ -29,7 +29,7 @@ class  PaymentService
     /**
      * @throws ApiErrorException
      */
-    public function createCheckoutSession(Exam $exam, Student $student )
+    public function  createCheckoutSession(Exam $exam, Student $student )
     {
 
         $session= Session::create([
@@ -103,18 +103,30 @@ class  PaymentService
         Log::error("HEyyy");
     }
 
-    public function processRefund(string $paymentIntentId,string $reason='Няма наличие на места'):void
+    public function processRefund(string $paymentIntentId,string $reason='Няма наличие на места'): bool
     {
         try{
-            Refund::create([
-                'payment_intent'=>$paymentIntentId,
-                'reason'=>$reason,
-            ]);
+           $payment=Payment::where('stripe_payment_id', $paymentIntentId)->first();
+           if(!$payment){
+               throw new Exception("Такова плащане не беше намерено");
+           }
+           if($payment->status!=='paid'){
+               throw new Exception("Само изпитите който са платени успешно могат да бъдат върнати");
+           }
+           Refund::create([
+               'payment_id'=>$payment->id,
+               'reason'=>$reason,
+           ]);
+           $payment->status='refunded';
+           $payment->save();
+           return true;
         } catch (ApiErrorException $e) {
             Log::error('Refund failed', [
                 'payment_intent' => $paymentIntentId,
                 'error' => $e->getMessage()
             ]);
+            Log::error('Refund failed: ' . $e->getMessage());
+            return false;
         }
 
     }

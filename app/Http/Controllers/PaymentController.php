@@ -100,18 +100,15 @@ class PaymentController extends Controller
 //        }
 //    }
 
-    private function processRefund($paymentIntentId,$reason)
+    public function processRefund(Request $request): \Illuminate\Http\JsonResponse
     {
-        try {
-            $refund = Refund::create([
-                'payment_intent' => $paymentIntentId,
-                'reason' => 'requested_by_customer'
-            ]);
-        }catch (\Exception $e){
-            Log::error('Refund failed', [
-                'payment_intent' => $paymentIntentId,
-                'error' => $e->getMessage()
-            ]);
-        }
+        $paymentIntent=$request->input('paymentIntent');
+        $reason=$request->input('reason','Refund request');
+
+        $success = $this->paymentService->processRefund($paymentIntent, $reason);
+
+        return $success
+            ? response()->json(['message' => 'Refund successful'])
+            : response()->json(['error' => 'Refund failed'], 500);
     }
 }
