@@ -14,7 +14,12 @@ class TeacherController
 {
     public function dashboard():View{
         $teacher = Auth::user()->teacher;
-        $exams= Exam::where('teacher_id',$teacher->id)->where('start_time','>',now())->get();
+        $exams= Exam::where('teacher_id',$teacher->id)
+            ->where('start_time','>',now())
+            ->orderBy('start_time', 'desc')
+            ->get();
+//            ->sortByDesc('start_time')
+//            ->values();
         $subjects = Subject::all();
         $halls=ExamHall::all();
         $bookedSlots = Exam::all()->map(function($exam) {
@@ -31,7 +36,11 @@ class TeacherController
 
     public function conductedExams():View{
         $teacher=Auth::user()->teacher;
-        $exams= Exam::where('teacher_id',$teacher->id)->where('start_time','<',Carbon::now()->toIso8601String())->get();
+        $exams= Exam::where('teacher_id',$teacher->id)
+            ->where('start_time','<',Carbon::now()->toIso8601String())
+            ->orderBy('start_time', 'desc')
+            ->get();
+//        ->sortByDesc('start_time');
         $subjects = Subject::all();
         $halls=ExamHall::all();
         return view('teacher_conducted_exams',compact('teacher','exams','subjects','halls'));

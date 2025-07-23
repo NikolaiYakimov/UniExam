@@ -70,15 +70,17 @@
                                 <span>Зала: <span class="font-medium text-gray-800">{{ $exam->hall->name }}</span></span>
                             </div>
                         </div>
-
+                        @if($exam->start_time->isPast())
+                        @else
                         <form method="POST" action="{{ route('student.exam.unregister', $exam) }}">
                             @csrf
                             <button type="submit"
-                                    class="w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700">
+                                    class="recorded-exam w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700"
+                                    data-exam-date="{{$exam->start_time}}">
                                 <i class="fas fa-edit mr-2"></i> Отпиши се
                             </button>
                         </form>
-
+                        @endif
                     </div>
                 @endforeach
             </div>
@@ -88,6 +90,23 @@
 
 <script src="{{asset('js/menuFunctions.js')}}" defer></script>
 <script src="{{asset('js/alertClosingFunctions.js')}}" defer></script>
+<script>
+    const examsButtons=document.querySelectorAll('.recorded-exam');
+
+    examsButtons.forEach(button=>{
+        const examDateString=button.getAttribute("data-exam-date")
+        const examDate=new Date(examDateString);
+        const hourDifference=(examDate- new Date())/(1000*60*60);
+
+        if(hourDifference<48){
+            button.disabled=true;
+            button.classList.replace('bg-red-600', 'bg-gray-300');
+            button.classList.add('cursor-not-allowed');
+            button.classList.remove('hover:bg-red-700');
+        }
+    });
+
+</script>
 </body>
 
 <style>

@@ -39,21 +39,28 @@ class StudentController extends Controller
             } )
             ->where('start_time', '>', now())
             ->whereNotIn('id', $registeredExamIds)
+            ->orderBy('start_time','desc')
             ->get()
             ->filter(fn($exam) => $exam->remainingSlots() > 0);
+
+        //Sort the exams by date
+//        $sortedExams=$exams->sortBy()
 
         return view('exams', compact('exams'));
     }
         public function myExams(){
         /** @var \App\Models\Student $student */
         $student = auth()->user()->student;
-        $registrations=$student->registrations()
+        $registeredExams=$student->registrations()
             ->with(['exam.teacher', 'exam.subject'])
             ->get()
-            ->pluck('exam');
+            ->pluck('exam')
+            ->sortByDesc('start_time')
+            ->values();
+
 
         return view('my_exams',[
-            'exams' => $registrations,
+            'exams' => $registeredExams,
             'student' => $student
 ]);
         }
@@ -98,7 +105,7 @@ class StudentController extends Controller
 //            $payment=Payment::where('exam_registration_id',$registration->id)
 //            ->where('student_id',\auth()->user()->student->id)->first();
 //            if($payment && $payment->status === "paid"){
-                $refundSuccess=$this->paymentService->processRefund($registration->payment->stripe_payment_id,"Refund upon unregistration");
+                $refundSuccess=$this->paymentService->processRefund($registration->payment->stripe_payment_id,"requested_by_customer");
                 if(!$refundSuccess){
                     return back()->with('error',"Грешка при връщането на парите");
                 }

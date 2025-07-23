@@ -103,10 +103,11 @@ class  PaymentService
         Log::error("HEyyy");
     }
 
-    public function processRefund(string $paymentIntentId,string $reason='Няма наличие на места'): bool
+    public function processRefund(string $paymentIntentId,string $reason='requested_by_customer'): bool
     {
         try{
            $payment=Payment::where('stripe_payment_id', $paymentIntentId)->first();
+           Log::debug($payment);
            if(!$payment){
                throw new Exception("Такова плащане не беше намерено");
            }
@@ -114,17 +115,19 @@ class  PaymentService
                throw new Exception("Само изпитите който са платени успешно могат да бъдат върнати");
            }
            Refund::create([
-               'payment_id'=>$payment->id,
+               'payment_intent'=>$paymentIntentId,
                'reason'=>$reason,
            ]);
            $payment->status='refunded';
            $payment->save();
+           Log::debug("Payment is successful");
            return true;
         } catch (ApiErrorException $e) {
             Log::error('Refund failed', [
                 'payment_intent' => $paymentIntentId,
                 'error' => $e->getMessage()
             ]);
+            Log::error('------------------------------------------------');
             Log::error('Refund failed: ' . $e->getMessage());
             return false;
         }
