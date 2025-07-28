@@ -146,16 +146,13 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}",
                         },
                         body: JSON.stringify({ exam_id: examId })
                     });
-                    console.log(response)
-                    const { clientSecret } = await response.json();
-                    console.log(clientSecret);
 
+                    const { clientSecret } = await response.json();
                     // Инициализиране на Embedded Checkout
-                    // checkout = stripe.embeddedCheckout({ clientSecret });
                     stripe.initEmbeddedCheckout({
                         clientSecret
                     }).then((checkout)=>{

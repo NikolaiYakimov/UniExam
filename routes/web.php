@@ -36,15 +36,30 @@ Route::prefix('student')->middleware(['auth', 'role:student'])->group(function (
 
 // Teacher routes
 Route::prefix('teacher')->middleware(['auth', 'role:teacher'])->group(function () {
-    Route::get('/teacher_dashboard', [TeacherController::class, 'dashboard'])->name('teacher_dashboard');
-    Route::get('/conducted_exams', [TeacherController::class, 'conductedExams'])->name('conducted_exams');
-    Route::get('/booked-slots', [ExamController::class, 'getBookedSlots'])->name('exams.booked-slots');
-    Route::post('/exams', [ExamController::class, 'storeExam'])->name('exams.store');
+    Route::get('/teacher_dashboard', [TeacherController::class, 'dashboard'])
+        ->name('teacher_dashboard');
+
+    Route::get('/conducted_exams', [TeacherController::class, 'conductedExams'])
+        ->name('conducted_exams');
+
+    Route::get('/booked-slots', [ExamController::class, 'getBookedSlots'])
+        ->name('exams.booked-slots');
+
+    Route::post('/exams', [ExamController::class, 'storeExam'])
+        ->name('exams.store');
+
     Route::get('/exam/{id}/edit-data', [ExamController::class, 'getExamEditData'])
         ->name('exams.edit-data');
 
     Route::put('/edit-exams/{examId}', [ExamController::class, 'editExam'])
         ->name('exams.update');
+
+    Route::get('/exam/{exam}',[TeacherController::class,'examDetails'])
+        ->name('teacher.exam.details');
+
+    Route::post('/exam/{exam}/grades', [TeacherController::class, 'updateGrades'])
+        ->name('teacher.exam.grades.update');
+
 });
 
 // Administrator routes

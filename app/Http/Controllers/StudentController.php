@@ -52,19 +52,20 @@ class StudentController extends Controller
         /** @var \App\Models\Student $student */
         $student = auth()->user()->student;
         $registeredExams=$student->registrations()
-            ->with(['exam.teacher', 'exam.subject'])
+            ->with(['exam.teacher', 'exam.subject','exam.hall'])
             ->get()
             ->pluck('exam')
             ->sortByDesc('start_time')
             ->values();
 
 
-        return view('my_exams',[
-            'exams' => $registeredExams,
-            'student' => $student
-]);
+            return view('my_exams',[
+                'exams' => $registeredExams,
+                'student' => $student
+            ]);
         }
-    public function register(Request $request, Exam $exam)
+
+    public function register( Exam $exam)
     {
         if ($exam->remainingSlots() <= 0) {
             return back()->with('error', 'Няма свободни места!');

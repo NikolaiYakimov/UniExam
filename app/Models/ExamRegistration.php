@@ -16,6 +16,9 @@ class ExamRegistration extends Model
 
     use HasFactory;
     protected $fillable = ['student_id','exam_id','grade'];
+    protected $casts = [
+        'grade' => 'float'
+    ];
 
     public function student(): BelongsTo
     {
