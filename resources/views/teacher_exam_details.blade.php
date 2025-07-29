@@ -53,12 +53,13 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $registration->student->faculty_number }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $registration->student->user->first_name }}
+                                    {{$registration->student->user->second_name}}
                                     {{ $registration->student->user->last_name }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <input type="number" name="grades[{{ $registration->id }}]"
                                            value="{{ $registration->grade }}"
-                                           min="2" max="6" step="0.5"
+                                           min="2" max="6" step="0.1"
                                            class="w-20 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                 </td>
                             </tr>
