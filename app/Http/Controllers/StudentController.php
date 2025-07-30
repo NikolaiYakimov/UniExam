@@ -33,6 +33,12 @@ class StudentController extends Controller
         $student = Auth::user()->student;
         $registeredExamIds = $student->registrations()->pluck('exam_id');
 
+        $subjectGrades=$student->registrations()
+            ->with('exam')
+            ->whereNotNull('grade')
+            ->get()
+             ->groupBy('exam.subject_id');
+
         $exams=Exam::with(['teacher', 'subject'])
             ->whereHas('subject',function ($q) use ($student){
                 $q->where('semester',$student->semester);
@@ -41,7 +47,40 @@ class StudentController extends Controller
             ->whereNotIn('id', $registeredExamIds)
             ->orderBy('start_time','desc')
             ->get()
-            ->filter(fn($exam) => $exam->remainingSlots() > 0);
+            ->filter(function($exam) use ($subjectGrades,$student){
+            if($exam->remainingSlots()<=0){
+                return false;
+            }
+            $subjectId=$exam->subject_id;
+            if(!isset($subjectGrades[$subjectId])){
+                return $exam->exam_type==='редовен';
+            }
+
+            $grade=$subjectGrades[$subjectId];
+            //Check if we have grade over 2(3,...,6)
+            $hasPassingGrade=$grade->contains('grade','>=',3);
+            if($hasPassingGrade){
+                return false;
+            }
+            //Check for regular exam with grade 2
+             $hasFailedRegularExam=$grade->contains(function($registration){
+                 return $registration->grade==2&& $registration->exam->exam_type==='редовен';
+             });
+            $hasFailedCorrectiveExam=$grade->contains(function($registration){
+               return $registration->grade==2 && $registration->exam->exam_type==='поправителен';
+            });
+
+            switch ($exam->exam_type) {
+                   case 'редовен':
+                       return !$hasFailedRegularExam;
+                   case 'поправителен':
+                        return $hasFailedRegularExam && !$hasFailedCorrectiveExam;
+                   case 'ликвидация':
+                        return $hasFailedRegularExam ;
+                   default:
+                        return true;
+               }
+            });
 
         //Sort the exams by date
 //        $sortedExams=$exams->sortBy()
