@@ -41,7 +41,10 @@ class StudentController extends Controller
 
         $exams=Exam::with(['teacher', 'subject'])
             ->whereHas('subject',function ($q) use ($student){
-                $q->where('semester',$student->semester);
+                $q->where('semester',$student->semester)
+                    ->whereHas('specialties',function ($q) use ($student){
+                        $q->where('specialty_id',$student->specialty_id);
+                    });
             } )
             ->where('start_time', '>', now())
             ->whereNotIn('id', $registeredExamIds)

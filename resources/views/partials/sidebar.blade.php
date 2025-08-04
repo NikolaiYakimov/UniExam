@@ -48,8 +48,8 @@
                 @if(Auth::user()->role==='student')
                 <div>
                     @if(Auth::user()->role==='student')
-                    <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Специалност</p>
-                    <p class="font-medium text-gray-800">{{ Auth::user()->student->major }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Специалност/Факултет</p>
+                    <p class="font-medium text-gray-800">{{ Auth::user()->student->specialty->name }} / {{Auth::user()->student->faculty->name}}</p>
                     @elseif(Auth::user()->role==='teacher')
                         <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Факултет</p>
                         <p class="font-medium text-gray-800">{{ Auth::user()->teacher->faculty }}</p>
