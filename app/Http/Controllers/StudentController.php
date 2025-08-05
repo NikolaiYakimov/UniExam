@@ -79,7 +79,7 @@ class StudentController extends Controller
                    case 'поправителен':
                         return $hasFailedRegularExam && !$hasFailedCorrectiveExam;
                    case 'ликвидация':
-                        return $hasFailedRegularExam ;
+                        return $hasFailedCorrectiveExam;
                    default:
                         return true;
                }
