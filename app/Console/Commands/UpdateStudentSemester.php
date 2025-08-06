@@ -13,7 +13,7 @@ class  UpdateStudentSemester extends Command
      *
      * @var string
      */
-    protected $signature = 'student:update-semester';
+    protected $signature = 'students:update-semesters';
 
     /**
      * The console command description.
@@ -35,6 +35,7 @@ class  UpdateStudentSemester extends Command
 
     public function handle()
     {
+        \Log::info('Командата update-semesters стартира');
     if($this->semesterService->updateCurrentSemester()){
         $this->info('Semester has been updated');
     }else{

@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Stripe\Stripe;
 
@@ -123,7 +124,7 @@ class StudentController extends Controller
             'exam_id' => $exam->id,
         ]);
         Mail::to( auth()->user()->email)->queue(new SuccessfullyRegistrated($exam, auth()->user()->student));
-
+        Log::debug("aaaaaaaaaaaaaaaaaaa");
         return  redirect()->route('exams')->with('success', 'Успешно се записахте за изпит!');
 
     }
