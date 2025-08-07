@@ -24,6 +24,8 @@ public function updateCurrentSemester(): bool
 
         if($currentSemester){
             $currentSemester->is_current=false;
+            $currentSemester->start_date=Carbon::parse($currentSemester->start_date)->addYears();
+            $currentSemester->end_date = Carbon::parse($currentSemester->end_date)->addYear();
             $currentSemester->save();
         }
 
