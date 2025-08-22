@@ -32,6 +32,17 @@ class StudentController extends Controller
         $this->paymentService = $paymentService;
     }
 
+    public function getStudentProfile():  \Illuminate\Contracts\View\View
+    {
+        $user = Auth::user();
+        $student=$user->student->load('faculty','specialty','group');
+
+        return view('profile',[
+            'user'=>$user,
+            'student'=>$student
+        ]);
+
+    }
 
     public function exams(): \Illuminate\Contracts\View\View
     {

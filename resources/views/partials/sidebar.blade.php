@@ -76,9 +76,15 @@
                 </div>
                 <div>
                     <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Статус</p>
+                    @if(Auth::user()->student->semester<8)
                     <p class="font-medium text-green-600 flex items-center gap-1.5">
                         <i class="fas fa-check-circle"></i>Активен
                     </p>
+                    @else
+                        <p class="font-medium text-red-600 flex items-center gap-1.5">
+                            <i class="fas fa-times-circle"></i>Неактивен
+                        </p>
+                    @endif
                 </div>
             </div>
         </div>

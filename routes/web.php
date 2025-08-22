@@ -22,6 +22,7 @@ Route::post('stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
 
 // Student routes
 Route::prefix('student')->middleware(['auth', 'role:student'])->group(function () {
+    Route::get('/student-profile', [StudentController::class, 'getStudentProfile'])->name('profile');
     Route::get('/exams', [StudentController::class, 'exams'])->name('exams');
     Route::get('/my_exams', [StudentController::class, 'myExams'])->name('my_exams');
     Route::post('/exams/{exam}/register', [StudentController::class, 'register'])->name('student.exam.register');
