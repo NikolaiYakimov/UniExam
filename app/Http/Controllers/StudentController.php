@@ -7,11 +7,15 @@ use App\Mail\SuccessfullyRegistrated;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
 use App\Models\Payment;
+use App\Models\Student;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use PhpParser\Node\Expr\Cast\Double;
+
 use Stripe\Stripe;
 
 class StudentController extends Controller
@@ -26,6 +30,23 @@ class StudentController extends Controller
     public function __construct(PaymentService $paymentService)
     {
         $this->paymentService = $paymentService;
+    }
+
+    private function canRegisterForExam(Exam $exam,Collection $subjectGrades, Student $student)
+    {
+        $subjectId=$exam->subject_id;
+        $grades=$subjectGrades[$subjectId] ?? collect();
+        $isCurrentSemester=$exam->subject->semester== $student->semester;
+        $isPastSemester=$exam->subject->semester<$student->semester;
+
+        if($grades->contains('grade','>=',3))
+        {
+            return false;
+        }
+
+        $hasFailedRegularExam=$grades->contains(fn($reg)=>$reg->grade==2&& $reg->exam->exam_type==="редовен");
+        $hasFailedCorrectiveExam = $grades->contains(fn($reg) => $reg->grade == 2 && $reg->exam->exam_type === 'поправителен');
+        $hasFailedLiquidationExam = $grades->contains(fn($reg) => $reg->grade == 2 && $reg->exam->exam_type === 'ликвидация');
     }
     public function exams(): \Illuminate\Contracts\View\View
     {
@@ -94,6 +115,8 @@ class StudentController extends Controller
                         if($hasPassingGrade){
                             return false;
                         }
+                    }else{
+                        return false;
                     }
                     return in_array($exam->exam_type, ['поправителен','ликвидация']);
                 }
@@ -151,8 +174,10 @@ class StudentController extends Controller
     }
     public function unregisterExam(Exam $exam,PaymentController $paymentController): \Illuminate\Http\RedirectResponse
     {
-        $studentId=auth()->user()->student->id;
-        $registration=ExamRegistration::where('student_id',$studentId)
+        $student=auth()->user()->student;
+        $isPastSemester=$exam->subject->semester<$student->semester;
+
+        $registration=ExamRegistration::where('student_id',$student->id)
             ->where('exam_id',$exam->id)->first();
 
         if(!$registration){
@@ -166,7 +191,7 @@ class StudentController extends Controller
             return back()->with("error","Отисването от дадения изпит е невъзможно по-малко от 48 часа преди изпита");
         }
 
-        if($exam->exam_type==="ликвидация"&&$registration->payment){
+        if(($exam->exam_type==="ликвидация"||$isPastSemester)&&$registration->payment){
 //            $payment=Payment::where('exam_registration_id',$registration->id)
 //            ->where('student_id',\auth()->user()->student->id)->first();
 //            if($payment && $payment->status === "paid"){
