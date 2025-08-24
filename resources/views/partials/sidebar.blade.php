@@ -34,7 +34,7 @@
                          @endif
                             {{ Auth::user()->first_name }} {{ Auth::user()->second_name }} {{ Auth::user()->last_name }}</p>
                         @if(Auth::user()->role==='student')
-                            <p class="text-sm text-gray-500 mt-1">№: <span class="font-mono">{{ Auth::user()->student->faculty_number }}</span></p>
+                            <p class="text-sm text-gray-500 mt-1">Фак. №: <span class="font-mono">{{ Auth::user()->student->faculty_number }}</span></p>
                         @else
                         <p class="text-sm text-gray-500 mt-1">
                         <i class="fas fa-clipboard-list text-gray-400"></i>
