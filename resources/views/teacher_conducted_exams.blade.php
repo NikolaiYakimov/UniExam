@@ -52,7 +52,7 @@
         @else
             <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach($exams as $exam)
-                    <div class="bg-white border border-gray-100 rounded-xl p-6 hover:shadow-md transition-all hover:border-primary-100 hover:translate-y-[-2px]">
+                    <div class="bg-white border border-gray-100 rounded-xl p-6 hover:shadow-md transition-all hover:border-primary-100 hover:translate-y-[-2px] flex flex-col h-full">
                         <div class="flex justify-between items-start gap-2 mb-3">
                             <h2 class="text-lg font-semibold text-gray-900">
                                 {{ $exam->subject->subject_name }}
@@ -65,7 +65,7 @@
                             </span>
                         </div>
 
-                        <div class="space-y-3 mb-5">
+                        <div class="space-y-3 mb-5 flex-grow">
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
                                 <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y') }}</span></span>
@@ -84,8 +84,17 @@
                                     {{ $exam->remainingSlots() }}/{{ $exam->max_students }} места
                                 </span>
                             </div>
+
+                        </div>
+                        <div class="flex items-center gap-2 text-gray-600">
+
+                            <a href="{{ route('teacher.exam.details', $exam->id) }}"
+                               class="mt-auto  inline-block w-full px-4 py-2.5 text-center rounded-xl text-white font-medium transition-colors duration-200 bg-blue-600 hover:bg-blue-700">
+                                <i class="fa-solid fa-file-pen"></i> Въведи оценки
+                            </a>
                         </div>
                     </div>
+
                 @endforeach
 
 

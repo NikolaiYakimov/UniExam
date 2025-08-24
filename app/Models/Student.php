@@ -15,7 +15,7 @@ class Student extends Model
 
 
    use HasFactory;
-   protected $fillable = ['user_id','faculty_number','faculty','major','semester','group'];
+   protected $fillable = ['user_id','faculty_number','faculty_id','specialty_id','semester','group_id'];
 
 
    public function user():BelongsTo
@@ -26,5 +26,18 @@ class Student extends Model
    {
        return $this->hasMany(ExamRegistration::class);
    }
+
+   public function faculty():BelongsTo
+   {
+       return $this->belongsTo(Faculty::class);
+   }
+
+   public function specialty():BelongsTo{
+        return $this->belongsTo(Specialty::class);
+   }
+   public function group():BelongsTo{
+       return $this->belongsTo(Group::class);
+   }
+
 
 }

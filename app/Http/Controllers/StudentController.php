@@ -7,10 +7,15 @@ use App\Mail\SuccessfullyRegistrated;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
 use App\Models\Payment;
+use App\Models\Student;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use PhpParser\Node\Expr\Cast\Double;
+
 use Stripe\Stripe;
 
 class StudentController extends Controller
@@ -26,22 +31,106 @@ class StudentController extends Controller
     {
         $this->paymentService = $paymentService;
     }
+
+    public function getStudentProfile():  \Illuminate\Contracts\View\View
+    {
+        $user = Auth::user();
+        $student=$user->student->load('faculty','specialty','group');
+
+        return view('profile',[
+            'user'=>$user,
+            'student'=>$student
+        ]);
+
+    }
+
     public function exams(): \Illuminate\Contracts\View\View
     {
         //Get the exams which the student didn't register
-        /** @var \App\Models\Student $student */
+        /** @var Student $student */
         $student = Auth::user()->student;
         $registeredExamIds = $student->registrations()->pluck('exam_id');
 
+        $subjectGrades=$student->registrations()
+            ->with('exam')
+            ->whereNotNull('grade')
+            ->get()
+             ->groupBy('exam.subject_id');
+
         $exams=Exam::with(['teacher', 'subject'])
             ->whereHas('subject',function ($q) use ($student){
-                $q->where('semester',$student->semester);
+                $q->where('semester','<=',$student->semester)
+                    ->whereHas('specialties',function ($q) use ($student){
+                        $q->where('specialty_id',$student->specialty_id);
+                    });
             } )
             ->where('start_time', '>', now())
             ->whereNotIn('id', $registeredExamIds)
             ->orderBy('start_time','desc')
             ->get()
-            ->filter(fn($exam) => $exam->remainingSlots() > 0);
+            ->filter(function($exam) use ($subjectGrades,$student){
+                if($exam->remainingSlots()<=0){
+                return false;
+                }
+                $subjectId=$exam->subject_id;
+                $isCurrentSemester=$exam->subject->semester== $student->semester;
+                $isPastSemester=$exam->subject->semester<$student->semester;
+
+                $grades = $subjectGrades[$subjectId]?? collect();
+
+                //Check if we have grade over 2(3,...,6)
+                if ( $grades->contains('grade', '>=', 3)) {
+                    return false;
+                }
+
+                if($isCurrentSemester) {
+
+                //Check for regular exam with grade 2
+//                $hasFailedRegularExam = $grade->contains(function ($registration) {
+//                    return $registration->grade == 2 && $registration->exam->exam_type === 'редовен';
+//                });
+//                $hasFailedCorrectiveExam = $grade->contains(function ($registration) {
+//                    return $registration->grade == 2 && $registration->exam->exam_type === 'поправителен';
+//                });
+
+                    $regularGrade=$grades->firstWhere('exam.exam_type', 'редовен')?->grade;
+                    $correctiveGrade = $grades->firstWhere('exam.exam_type', 'поправителен')?->grade;
+
+                    $regularExamPassed = Exam::where('subject_id', $subjectId)
+                        ->where('exam_type', 'редовен')
+                        ->where('start_time', '<', now())
+                        ->exists();
+
+                    $correctiveExamPassed = Exam::where('subject_id', $subjectId)
+                        ->where('exam_type', 'поправителен')
+                        ->where('start_time', '<', now())
+                        ->exists();
+
+                    switch ($exam->exam_type) {
+                    case 'редовен':
+                        return is_null($regularGrade);
+                    case 'поправителен':
+                        return $regularGrade==2 ||(is_null($regularGrade) && $regularExamPassed);
+                    case 'ликвидация':
+                        return  $correctiveGrade == 2 ||
+                            (is_null($correctiveGrade) && $correctiveExamPassed);
+//                            || (is_null($regularGrade) && $regularExamPassed);
+                    default:
+                        return true;
+                }
+            }
+                if($isPastSemester){
+                    if(isset($subjectGrades[$subjectId])){
+                        $hasPassingGrade=$subjectGrades[$subjectId]->contains('grade', '>=', 3);
+                        if($hasPassingGrade){
+                            return false;
+                        }
+                    }
+
+                    return in_array($exam->exam_type, ['поправителен','ликвидация']);
+                }
+                return false;
+            });
 
         //Sort the exams by date
 //        $sortedExams=$exams->sortBy()
@@ -49,30 +138,38 @@ class StudentController extends Controller
         return view('exams', compact('exams'));
     }
         public function myExams(){
-        /** @var \App\Models\Student $student */
+        /** @var Student $student */
         $student = auth()->user()->student;
         $registeredExams=$student->registrations()
-            ->with(['exam.teacher', 'exam.subject'])
+            ->with(['exam.teacher', 'exam.subject','exam.hall'])
             ->get()
             ->pluck('exam')
             ->sortByDesc('start_time')
             ->values();
 
 
-        return view('my_exams',[
-            'exams' => $registeredExams,
-            'student' => $student
-]);
+            return view('my_exams',[
+                'exams' => $registeredExams,
+                'student' => $student
+            ]);
         }
-    public function register(Request $request, Exam $exam)
+
+    public function register( Exam $exam)
     {
+        $student = auth()->user()->student;
+        $isPastSemester=$exam->subject->semester<$student->semester;
         if ($exam->remainingSlots() <= 0) {
             return back()->with('error', 'Няма свободни места!');
         }
-        if ($exam->registrations()->where('student_id', auth()->user()->student->id)->exists()) {
+//        if ($exam->registrations()->where('student_id', auth()->user()->student->id)->exists()) {
+        if ($exam->registrations()->where('student_id',$student->id)->exists()){
             return back()->with('error', 'Вече сте записани за този изпит!');
         }
-        if($exam->exam_type==='ликвидация'){
+        if($isPastSemester && $exam->exam_type==='редовен'){
+            return back()->with('error','Не е позволено да се явяваш на редовни изпити от по-долен курс! Позволено е да се явиш само на поправката или ликвидацията на по-долния курс!');
+
+        }
+        if($exam->exam_type==='ликвидация' || $isPastSemester){
             return redirect()->route('payment.handle',['exam'=>$exam]);
         }
         ExamRegistration::create([
@@ -80,14 +177,16 @@ class StudentController extends Controller
             'exam_id' => $exam->id,
         ]);
         Mail::to( auth()->user()->email)->queue(new SuccessfullyRegistrated($exam, auth()->user()->student));
-
+        Log::debug("aaaaaaaaaaaaaaaaaaa");
         return  redirect()->route('exams')->with('success', 'Успешно се записахте за изпит!');
 
     }
     public function unregisterExam(Exam $exam,PaymentController $paymentController): \Illuminate\Http\RedirectResponse
     {
-        $studentId=auth()->user()->student->id;
-        $registration=ExamRegistration::where('student_id',$studentId)
+        $student=auth()->user()->student;
+        $isPastSemester=$exam->subject->semester<$student->semester;
+
+        $registration=ExamRegistration::where('student_id',$student->id)
             ->where('exam_id',$exam->id)->first();
 
         if(!$registration){
@@ -101,7 +200,7 @@ class StudentController extends Controller
             return back()->with("error","Отисването от дадения изпит е невъзможно по-малко от 48 часа преди изпита");
         }
 
-        if($exam->exam_type==="ликвидация"&&$registration->payment){
+        if(($exam->exam_type==="ликвидация"||$isPastSemester)&&$registration->payment){
 //            $payment=Payment::where('exam_registration_id',$registration->id)
 //            ->where('student_id',\auth()->user()->student->id)->first();
 //            if($payment && $payment->status === "paid"){

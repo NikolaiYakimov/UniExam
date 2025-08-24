@@ -36,7 +36,12 @@
         </div>
         @else
             <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+
                 @foreach ($exams as $exam)
+
+                    @php
+                    $registration=$exam->registrations->where('student_id',auth()->user()->student->id)->first();
+                    @endphp
                     <div class="bg-white border border-gray-100 rounded-xl p-4 sm:p-6 hover:shadow-md transition-all hover:border-primary-100 hover:translate-y-[-2px]">
                         <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-2 mb-3">
                             <h2 class="text-lg font-semibold text-gray-900 leading-tight">
@@ -68,6 +73,16 @@
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-university w-5 text-gray-400"></i>
                                 <span>Зала: <span class="font-medium text-gray-800">{{ $exam->hall->name }}</span></span>
+                            </div>
+
+                            <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-star w-5 text-gray-400"></i>
+                                <span>Оценка:
+                                    @if($registration && $registration->grade)
+                                        <span class="font-medium text-gray-800">{{ $registration->grade }}</span>
+                                    @else
+                                        <span class="text-gray-500 italic">---</span>
+                                @endif
                             </div>
                         </div>
                         @if($exam->start_time->isPast())

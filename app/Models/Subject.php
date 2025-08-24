@@ -25,4 +25,10 @@ class Subject extends Model
     {
         return $this->hasMany(Exam::class);
     }
+
+    public function specialties()
+    {
+        return $this->belongsToMany(Specialty::class, 'subject_specialty');
+    }
+
 }

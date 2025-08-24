@@ -76,7 +76,7 @@
                                 <span>Зала: <span class="font-medium text-gray-800">{{ $exam->hall->name }}</span></span>
                             </div>
                         </div>
-                        @if($exam->exam_type === 'ликвидация')
+                        @if($exam->exam_type === 'ликвидация' || $exam->subject->semester <Auth::user()->student->semester)
                         <button type="button"
                                 class="w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200  payment-btn
                                  {{ $exam->remainingSlots() <= 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700' }}"
@@ -146,16 +146,13 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}",
                         },
                         body: JSON.stringify({ exam_id: examId })
                     });
-                    console.log(response)
-                    const { clientSecret } = await response.json();
-                    console.log(clientSecret);
 
+                    const { clientSecret } = await response.json();
                     // Инициализиране на Embedded Checkout
-                    // checkout = stripe.embeddedCheckout({ clientSecret });
                     stripe.initEmbeddedCheckout({
                         clientSecret
                     }).then((checkout)=>{
