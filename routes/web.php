@@ -6,6 +6,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MailController;
 
@@ -22,11 +23,15 @@ Route::post('stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
 
 // Student routes
 Route::prefix('student')->middleware(['auth', 'role:student'])->group(function () {
-    Route::get('/student-profile', [StudentController::class, 'getStudentProfile'])->name('profile');
     Route::get('/exams', [StudentController::class, 'exams'])->name('exams');
     Route::get('/my_exams', [StudentController::class, 'myExams'])->name('my_exams');
     Route::post('/exams/{exam}/register', [StudentController::class, 'register'])->name('student.exam.register');
     Route::post('/exams/{exam}/unregister', [StudentController::class, 'unregisterExam'])->name('student.exam.unregister');
+
+    Route::get('/student-profile', [StudentController::class, 'getStudentProfile'])->name('profile');
+    Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/password', [UserController::class, 'updatePassword'])->name('profile.password');
 
 //    Route::get('/exams/payment/{exam}', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
 
