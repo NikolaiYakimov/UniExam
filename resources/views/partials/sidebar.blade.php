@@ -74,6 +74,7 @@
                     <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Телефонен номер</p>
                     <p class="font-medium text-gray-800">{{ Auth::user()->phone }}</p>
                 </div>
+                    @if(Auth::user()->role==='student')
                 <div>
                     <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Статус</p>
                     @if(Auth::user()->student->semester<8)
@@ -86,6 +87,7 @@
                         </p>
                     @endif
                 </div>
+                    @endif
             </div>
         </div>
 

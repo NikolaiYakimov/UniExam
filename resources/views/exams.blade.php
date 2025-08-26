@@ -9,12 +9,30 @@
 </head>
 
 <body class="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen font-[Inter] overflow-x-hidden">
-<!-- Student information sidebar with toggle button -->
+
+
 @include('partials.sidebar')
 
-<!-- Основно съдържание -->
+<div class="mb-6 bg-white border border-gray-100 rounded-xl shadow-sm p-2">
+    <nav class="flex flex-wrap gap-2">
+        <a href="{{ route('exams') }}"
+           class="px-4 py-2 rounded-lg font-medium transition-colors duration-200
+                  {{ Request::routeIs('exams') ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'text-gray-600 hover:bg-gray-50' }}">
+            <i class="fas fa-calendar-alt mr-2"></i> Достъпни изпити
+        </a>
+        <a href="{{ route('my_exams') }}"
+           class="px-4 py-2 rounded-lg font-medium transition-colors duration-200
+                  {{ Request::routeIs('my_exams') ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'text-gray-600 hover:bg-gray-50' }}">
+            <i class="fas fa-list-alt mr-2"></i> Моите изпити
+        </a>
+    </nav>
+</div>
 
-<div class="ml-0 lg:ml-80 p-4 lg:p-8 transition-all duration-300">
+
+
+{{--<div class="ml-0 lg:ml-80 p-4 lg:p-8 transition-all duration-300">--}}
+
+
 
     <!-- Хедър -->
     @include('partials.header',[

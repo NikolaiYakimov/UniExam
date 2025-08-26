@@ -3,10 +3,14 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use \Illuminate\Contracts\Validation\Validator ;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use function Webmozart\Assert\Tests\StaticAnalysis\email;
 
 class  UpdateProfileRequest extends FormRequest
 {
+
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -35,7 +39,7 @@ class  UpdateProfileRequest extends FormRequest
             'specialty_id' => ['prohibited'],
             'group_id' => ['prohibited'],
             'email'=>['sometimes','email','max:50',"unique:users,email,{$userId}"],
-            'phone'=>['string','sometimes','digit:10',],
+            'phone'=>['string','sometimes','digits:10',],
         ];
     }
     protected function prepareForValidation():void
@@ -58,7 +62,16 @@ class  UpdateProfileRequest extends FormRequest
         return [
             'email.email'=>'Моля въведете валиден имейл адрес.',
             'email.unique'=>'Този имейл вече е зает.',
-            'phone.digit'=>'Телефония номер трябва да съдържа 10 цифри'
+            'phone.digits'=>'Телефония номер трябва да съдържа 10 цифри'
         ];
     }
+
+//    protected function failedValidation(Validator $validator)
+//    {
+//        session()->flash('error',$validator->errors()->first());
+//        throw new HttpResponseException(
+//            redirect()->back()->withInput()
+//        );
+//    }
+
 }

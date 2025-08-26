@@ -3,7 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Password;
+//use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password;
 
 class UpdatePasswordRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class UpdatePasswordRequest extends FormRequest
     {
         return [
             'current_password' => ['required', 'current_password'],
-            'new_password' => ['required', Password::min(8)->letters()->numbers(),'string', 'confirmed'],
+            'new_password' => ['required','min:8','regex:/^(?=.*[A-Za-z])(?=.*\d)$/','string', 'confirmed'],
             'new_password_confirmation' => ['required', 'string'],
         ];
     }
@@ -32,8 +33,10 @@ class UpdatePasswordRequest extends FormRequest
     {
         return [
             'current_password.current_password' => 'Текущата парола е грешна!',
+            'current_password.required' => 'Текущата парола е задължителна!',
             'new_password.confirmed' => 'Паролата за потвърждение не съвпада с новата парола!',
             'new_password.min' => 'Новата парола трябва да е поне 8 символа!',
+            'new_password.regex'=>'Новата парола трябва да съдържа поне една буква и цифра!',
             'new_password_confirmation.required' => 'Потвърди новата парола!'
 
         ];

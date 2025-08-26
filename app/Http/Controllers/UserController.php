@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateProfileRequest;
 use App\Mail\PasswordChangedMail;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -17,12 +18,16 @@ class UserController extends Controller
      }
 
      public function updateProfile(UpdateProfileRequest $request,UserService $service){
+         Log::info('aaaaa');
+         Log::debug("abbbb");
          $service->updateProfile($request->user(),$request->validated());
          return back()->with('success',"Профилът е обновен успешно");
 
      }
      public function updatePassword(UpdatePasswordRequest $request,UserService $service)
      {
+         Log::info('Туккк съм');
+         Log::debug("Айдеее");
          $service->updatePassword($request->user(),$request->validated());
          try{
              if(!empty($user->email)){
