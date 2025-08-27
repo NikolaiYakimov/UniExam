@@ -361,7 +361,9 @@
                 </div>
 
                 <div class="flex-1">
-                    <form id="personalInfoForm" class="info-grid">
+                    <form id="personalInfoForm" method="POST" action="{{route('profile.update')}}" class="info-grid">
+                        @csrf
+                        @method('PUT')
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Пълно име</label>
                             <input type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}"
@@ -377,13 +379,15 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Имейл адрес</label>
                             <input type="email" name="email" value="{{ Auth::user()->email }}"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" disabled>
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('email') border-red-500 @enderror" disabled>
+                            @error('email') <p class="text-red-600 text-sm mt-1 ">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
                             <input type="tel" name="phone" value="{{ Auth::user()->phone }}"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" disabled>
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('phone') border-red-500 @enderror" disabled >
+                            @error('phone') <p class="text-red-600 text-sm mt-1 ">{{ $message }}</p> @enderror
                         </div>
                     </form>
                 </div>
@@ -457,23 +461,28 @@
 
                 <div>
                     <h3 class="text-lg font-medium text-gray-800 mb-4">Смяна на парола</h3>
-                    <form id="changePasswordForm" class="space-y-4">
+                    <form id="changePasswordForm" method="POST" action="{{route('profile.password')}}" class="space-y-4">
+                        @csrf
+                        @method('PUT')
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Настояща парола</label>
                             <input type="password" name="current_password"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('current_password') border-red-500 @enderror">
+                            @error('current_password') <p class="text-red-600 text-sm mt-1 ">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Нова парола</label>
                             <input type="password" name="new_password"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('current_password') border-red-500 @enderror">
+                            @error('new_password') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Потвърди новата парола</label>
                             <input type="password" name="new_password_confirmation"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('current_password') border-red-500 @enderror">
+                            @error('new_password_confirmation') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <button type="submit" class="px-5 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-medium transition-colors flex items-center">
@@ -499,6 +508,9 @@
         const personalFormActions = document.getElementById('personalFormActions');
         const personalInfoForm = document.getElementById('personalInfoForm');
         const personalInputs = personalInfoForm.querySelectorAll('input[type="email"], input[type="tel"]');
+        const storePersonalInputs=Array.from(personalInputs).map(inp=>inp.value);
+
+        console.log(storePersonalInputs);
 
         editPersonalBtn.addEventListener('click', function() {
             personalInputs.forEach(input => {
@@ -511,11 +523,11 @@
         });
 
         cancelPersonalBtn.addEventListener('click', function() {
-            personalInputs.forEach(input => {
+            personalInputs.forEach((input,index) => {
                 input.disabled = true;
                 input.classList.remove('bg-white', 'ring-2', 'ring-indigo-100');
                 input.classList.add('bg-gray-50');
-                // Reset form values here if needed
+                input.value=storePersonalInputs[index];
             });
             personalFormActions.classList.add('hidden');
             editPersonalBtn.classList.remove('hidden');
@@ -523,43 +535,14 @@
 
         // Handle form submissions
         personalInfoForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Add form submission logic here
-            console.log('Personal info form submitted');
 
-            // Simulate successful submission
-            personalInputs.forEach(input => {
-                input.disabled = true;
-                input.classList.remove('bg-white', 'ring-2', 'ring-indigo-100');
-                input.classList.add('bg-gray-50');
-            });
             personalFormActions.classList.add('hidden');
             editPersonalBtn.classList.remove('hidden');
 
-            // Show success message
-            alert('Информацията е запазена успешно!');
+
         });
 
-        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Add password change logic here
-            console.log('Password change form submitted');
 
-            // Show success message
-            alert('Паролата е сменена успешно!');
-            this.reset();
-        });
-
-        // Handle avatar upload
-        document.getElementById('avatarUpload').addEventListener('change', function(e) {
-            if (this.files && this.files[0]) {
-                // Add avatar upload logic here
-                console.log('Avatar upload triggered');
-
-                // Simulate successful upload
-                alert('Снимката е качена успешно!');
-            }
-        });
     });
 </script>
 
