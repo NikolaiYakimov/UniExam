@@ -242,7 +242,7 @@ class   ExamController extends Controller
                 'trace' => $exception->getTraceAsString()
             ]);
             return response()->json([
-                'error'=>'Грешка при зареждане на запазените часове ',
+                'error'=>'Грешка при зареждане на запазените часоcе ',
                 'message'=>$exception->getMessage()
             ],500);
         }

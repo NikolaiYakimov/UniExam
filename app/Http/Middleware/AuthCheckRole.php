@@ -17,13 +17,19 @@ class AuthCheckRole
     {
 
         //If the user is not logged in
-        if(!auth()->check()){
-            return redirect()->route('login');
-        }
+//        if(!auth()->check()){
+//            return redirect()->route('login');
+//        }
+         if(!auth()->check()) {
+             return response()->json(['error' => 'Unauthorized'], 401);
+         }
 
         $user = auth()->user();
-        if (!$user || $user->role !== $role) {
-            abort(403,'Нямате достъп до тази страница  ');
+//        if (!$user || $user->role !== $role) {
+//            abort(403,'Нямате достъп до тази страница  ');
+//        }
+        if(!$user|| $user->role!==$role) {
+            return response()->json(['error' => 'Нямате достъп до тази страница'], 401);
         }
 
         return $next($request);

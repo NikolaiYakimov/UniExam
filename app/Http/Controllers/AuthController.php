@@ -21,7 +21,16 @@ class AuthController extends Controller
     }
 
     public function login(LoginRequest $request){
-        return $this->authService->login($request->validated());
+//        return $this->authService->login($request->validated());
+        $credentials = $request->validated();
+        if(Auth::attempt($credentials)){
+            $request->session()->regenerate();
+            if($request->expectsJson()){
+                return response()->json([
+                    'redirect'=>$this->authService->redirectByRole(Auth::user()->role),
+                ]);
+            }
+        }
     }
 
     public function logout(Request $request):\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse

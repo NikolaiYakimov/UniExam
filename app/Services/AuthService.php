@@ -7,15 +7,16 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthService
 {
-public function login(array $credentials){
-    if(Auth::attempt($credentials)){
-        request()->session()->regenerate();
-        return $this->redirectByRole(Auth::user()->role);
-    }
-    return back()->withErrors(['username'=>'Грешно потребителско име или парола.']);
-}
+//public function login(array $credentials){
+//    if(Auth::attempt($credentials)){
+//        request()->session()->regenerate();
+//        if($req)
+////        return $this->redirectByRole(Auth::user()->role);
+//    }
+//    return back()->withErrors(['username'=>'Грешно потребителско име или парола.']);
+//}
 
-    private function redirectByRole(string $role){
+    public function redirectByRole(string $role){
         return match($role){
             'administrator' =>redirect()->route('administrator_dashboard'),
             'teacher' => redirect()->route('teacher_dashboard'),
