@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('subject_id')->constrained()->cascadeOnDelete();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
-            $table->boolean('has_attestation')->default(false)->index();
+            $table->boolean('has_attestation')->default(true)->index();
             $table->timestamps();
 
             $table->unique(['subject_id', 'student_id']);

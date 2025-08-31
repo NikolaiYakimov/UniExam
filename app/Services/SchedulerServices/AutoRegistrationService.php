@@ -23,6 +23,10 @@ class AutoRegistrationService
             if($exam->end_time<now()){
                 continue;
             }
+            if(!$exam->hasAvailableSlots()){
+                Log::info("Exam {$exam->id} has no available slots, skipping auto-registration.");
+                continue;
+            }
             $specialtyIds=$exam->subject->specialties->pluck('id')->toArray();
 
             $students=Student::whereHas('subjects',function($query) use($exam){
@@ -36,6 +40,10 @@ class AutoRegistrationService
                 ->get();
 
             foreach ($students as $student){
+                if (!$exam->hasAvailableSlots()) {
+                    Log::info("No more available slots for exam {$exam->id}, stopping auto-registration.");
+                    break;
+                }
                 try{
                     ExamRegistration::create([
                         'exam_id'=>$exam->id,
@@ -44,6 +52,7 @@ class AutoRegistrationService
                     ]);
                     $registeredCount++;
                     Log::info("Auto-registered student {$student->id} for exam {$exam->id} as walk-in.");
+                    $exam->refresh();
                 }catch (\Exception $e){
                     Log::error("Failed to auto-register student {$student->id} for exam {$exam->id}: " . $e->getMessage());
                 }
