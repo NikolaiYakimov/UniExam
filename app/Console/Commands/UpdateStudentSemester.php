@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\SemesterService;
-use Carbon\Carbon;
+use App\Services\SchedulerServices\SemesterService;
 use Illuminate\Console\Command;
 
 class  UpdateStudentSemester extends Command

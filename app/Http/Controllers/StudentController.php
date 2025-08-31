@@ -82,6 +82,7 @@ class StudentController extends Controller
                 if ( $grades->contains('grade', '>=', 3)) {
                     return false;
                 }
+                $hasAttestation=$student->hasAttestationForSubject($subjectId);
 
                 if($isCurrentSemester) {
 
@@ -108,21 +109,21 @@ class StudentController extends Controller
 
                     switch ($exam->exam_type) {
                     case 'редовен':
-                        return is_null($regularGrade);
+                        return is_null($regularGrade) && $hasAttestation;
                     case 'поправителен':
-                        return $regularGrade==2 ||(is_null($regularGrade) && $regularExamPassed);
+                        return ($regularGrade==2 ||(is_null($regularGrade) && $regularExamPassed))&&$hasAttestation;
                     case 'ликвидация':
-                        return  $correctiveGrade == 2 ||
-                            (is_null($correctiveGrade) && $correctiveExamPassed);
+                        return  ($correctiveGrade == 2 ||
+                            (is_null($correctiveGrade) && $correctiveExamPassed))&&$hasAttestation;
 //                            || (is_null($regularGrade) && $regularExamPassed);
                     default:
-                        return true;
+                        return $hasAttestation;
                 }
             }
                 if($isPastSemester){
                     if(isset($subjectGrades[$subjectId])){
                         $hasPassingGrade=$subjectGrades[$subjectId]->contains('grade', '>=', 3);
-                        if($hasPassingGrade){
+                        if($hasPassingGrade||!$hasAttestation){
                             return false;
                         }
                     }
@@ -136,7 +137,10 @@ class StudentController extends Controller
 //        $sortedExams=$exams->sortBy()
 
         return view('exams', compact('exams'));
+
     }
+
+
         public function myExams(){
         /** @var Student $student */
         $student = auth()->user()->student;
@@ -158,6 +162,7 @@ class StudentController extends Controller
     {
         $student = auth()->user()->student;
         $isPastSemester=$exam->subject->semester<$student->semester;
+        $hasAttestation=$student->hasAttestationForSubject($exam->subject_id);
         if ($exam->remainingSlots() <= 0) {
             return back()->with('error', 'Няма свободни места!');
         }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,5 +40,14 @@ class Student extends Model
        return $this->belongsTo(Group::class);
    }
 
+    public function subjects():BelongsToMany
+    {
+        return $this->belongsToMany(Subject::class,'subject_student')
+            ->withPivot('has_attestation');
+    }
+
+    public function hasAttestationForSubject(int $subjectId): bool{
+        return $this->subjects()->where('subject_id',$subjectId)->wherePivot('has_attestation',true)->exists();
+    }
 
 }

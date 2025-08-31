@@ -31,4 +31,8 @@ class Subject extends Model
         return $this->belongsToMany(Specialty::class, 'subject_specialty');
     }
 
+    public function students(){
+        return $this->belongsToMany(Student::class, 'subject_student')->withPivot('has_attestation');
+    }
+
 }

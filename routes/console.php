@@ -10,6 +10,7 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('students:update-semesters')->daily();
+Schedule::command('exam:student-auto-registration')->dailyAt('00:01');
 //Artisan::command('students:update-semesters', function () {
 //    \Log::info('Командата students:update-semesters се изпълнява!');
 //    $this->comment('Командата students:update-semesters работи.');

@@ -65,4 +65,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(Administrator::class);
     }
+
+    public function subjects(){
+        return $this->belongsToMany(Subject::class,'subject_student')
+            ->withPivot('has_attestation');
+    }
+
+    public function hasAttestationForSubject(int $subjectId): bool{
+        return $this->subjects()->where('subject_id',$subjectId)->wherePivot('has_attestation',true)->exists();
+    }
+
 }
