@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock, faEye, faEyeSlash, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import './Login.css';
-import universityLogo from './assets/university-logo.png';
 import logo from './assets/university-logo.png';
 
 
@@ -12,26 +12,30 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState([]);
 
+    const navigate = useNavigate();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors([]);
-        try{
-            const response=await fetch('/login',{
-                method:'POST',
-                headers:{
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },body: JSON.stringify({username,password})
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+                body: JSON.stringify({ username, password }),
             });
-            const data=await response.json();
-            if(response.ok){
-                window.location.href=data.redirect;
-            }else{
-                setErrors([data.message])
+            const data = await response.json();
+            if (response.ok) {
+                const url = new URL(data.redirect, window.location.origin);
+                navigate(url.pathname);
+            } else {
+                setErrors([data.message]);
             }
-        }catch (error){
-            setErrors([data.message]);
+        } catch (error) {
+            setErrors([error.message]);
         }
         // Валидация
         const newErrors = [];
