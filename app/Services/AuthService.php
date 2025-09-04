@@ -16,12 +16,16 @@ class AuthService
 //    return back()->withErrors(['username'=>'Грешно потребителско име или парола.']);
 //}
 
-    public function redirectByRole(string $role){
-        return match($role){
-            'administrator' =>redirect()->route('administrator_dashboard'),
-            'teacher' => redirect()->route('teacher_dashboard'),
-            'student' => redirect()->route('exams'),
-            default => redirect()->route('login'),
+    public function redirectByRole(string $role)
+    {
+        // Return the target route URL instead of a RedirectResponse so
+        // that callers can handle the navigation (e.g. in React) without
+        // receiving a serialized redirect object.
+        return match ($role) {
+            'administrator' => route('admin.dashboard', [], false),
+            'teacher'       => route('teacher_dashboard', [], false),
+            'student'       => route('exams', [], false),
+            default         => route('login', [], false),
         };
     }
 
