@@ -15,7 +15,7 @@ class Teacher extends Model
 {
   use HasFactory;
 
-  protected $fillable = [ 'user_id','title','department','faculty'];
+  protected $fillable = [ 'user_id','title','specialty_id','faculty_id'];
 
 
 
@@ -27,7 +27,14 @@ class Teacher extends Model
   public function user(): BelongsTo{
       return $this->BelongsTo(User::class);
   }
+    public function faculty():BelongsTo
+    {
+        return $this->belongsTo(Faculty::class);
+    }
 
+    public function specialty():BelongsTo{
+        return $this->belongsTo(Specialty::class);
+    }
 
     public function getExamsCountAttribute()
     {

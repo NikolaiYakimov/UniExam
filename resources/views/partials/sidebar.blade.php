@@ -237,7 +237,7 @@
                 @elseif(Auth::user()->role === 'teacher')
                     <div>
                         <p class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Факултет</p>
-                        <p class="font-medium text-gray-800">{{ Auth::user()->teacher->faculty }}</p>
+                        <p class="font-medium text-gray-800">{{ Auth::user()->teacher->faculty->name }}</p>
                     </div>
                 @endif
 

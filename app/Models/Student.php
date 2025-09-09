@@ -36,6 +36,7 @@ class Student extends Model
    public function specialty():BelongsTo{
         return $this->belongsTo(Specialty::class);
    }
+
    public function group():BelongsTo{
        return $this->belongsTo(Group::class);
    }
