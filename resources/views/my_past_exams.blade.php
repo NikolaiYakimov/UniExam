@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="bg">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моите изпити</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+</head>
+
+{{--<body class="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen font-[Inter] overflow-x-hidden">--}}
+<body class="bg-gradient-to-br from-indigo-50 to-blue-50 min-h-screen overflow-x-hidden">
+<!-- Header -->
+@include('partials.header')
+
+<div class="page-layout ">
+    <!-- Sidebar -->
+    @include('partials.sidebar')
+
+    <!-- Основно съдържание -->
+    <div id="mainContent" class="ml-0 lg:ml-0 p-4 lg:p-8 transition-all duration-300">
+        <!-- Page Header -->
+        <div class="bg-white/90 backdrop-blur-md shadow-sm py-4 mb-6 rounded-xl border border-gray-100">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-6 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Изминали изпити</h1>
+                    <p class="text-sm text-gray-500 mt-1">Преглед на изминалите изпити</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Alerts --}}
+        @include('partials.alerts')
+
+        @if($exams->isEmpty())
+            <div class="text-center p-8 bg-white border border-gray-100 shadow-sm rounded-xl">
+                <i class="fas fa-calendar-times text-4xl text-gray-300 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-700 mb-2">Няма записани изпити</h3>
+                <p class="text-gray-500">Все още нямате записани изпити. Моля, изберете от списъка с достъпни изпити.</p>
+            </div>
+        @else
+            <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+                @foreach ($exams as $exam)
+                    @php
+                        $registration = $exam->registrations->where('student_id', auth()->user()->student->id)->first();
+                    @endphp
+                    <div class="bg-white border border-gray-100 rounded-xl p-4 sm:p-6 hover:shadow-md transition-all hover:border-primary-100 hover:translate-y-[-2px]">
+                        <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-2 mb-3">
+                            <h2 class="text-lg font-semibold text-gray-900 leading-tight">
+                                {{ $exam->subject->subject_name }}
+                            </h2>
+                            <div class="flex flex-wrap gap-2">
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        {{ $exam->exam_type }}
+                                    </span>
+                                <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $exam->remainingSlots() > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $exam->remainingSlots() }} Свободни места
+                                    </span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 mb-5">
+                            <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-chalkboard-teacher w-5 text-gray-400"></i>
+                                <span>Преподавател: <span class="font-medium text-gray-800">{{ $exam->teacher->user->first_name }} {{ $exam->teacher->user->last_name }}</span></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
+                                <span>Дата: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format('d.m.Y ') }}</span></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-clock w-5 text-gray-400"></i>
+                                <span>Продължителност: <span class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($exam->start_time)->format(' H:i') }} - {{ \Carbon\Carbon::parse($exam->end_time)->format(' H:i') }}</span></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-university w-5 text-gray-400"></i>
+                                <span>Зала: <span class="font-medium text-gray-800">{{ $exam->hall->name }}</span></span>
+                            </div>
+
+                            <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-star w-5 text-gray-400"></i>
+                                <span>Оценка:
+                                        @if($registration && $registration->grade)
+                                        <span class="font-medium text-gray-800">{{ $registration->grade }}</span>
+                                    @else
+                                        <span class="text-gray-500 italic">---</span>
+                                    @endif
+                                    </span>
+                            </div>
+                        </div>
+
+                        @if($exam->start_time->isPast())
+                            <!-- Изпитът вече е минал -->
+                        @else
+                            <form method="POST" action="{{ route('student.exam.unregister', $exam) }}">
+                                @csrf
+                                <button type="submit"
+                                        class="recorded-exam w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700"
+                                        data-exam-date="{{$exam->start_time}}">
+                                    <i class="fas fa-edit mr-2"></i> Отпиши се
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+</div>
+
+<script src="{{ asset('js/menuFunctions.js') }}" defer></script>
+<script src="{{ asset('js/alertClosingFunctions.js') }}" defer></script>
+<script>
+    const examsButtons = document.querySelectorAll('.recorded-exam');
+
+    examsButtons.forEach(button => {
+        const examDateString = button.getAttribute("data-exam-date")
+        const examDate = new Date(examDateString);
+        const hourDifference = (examDate - new Date()) / (1000 * 60 * 60);
+
+        if (hourDifference < 48) {
+            button.disabled = true;
+            button.classList.replace('bg-red-600', 'bg-gray-300');
+            button.classList.add('cursor-not-allowed');
+            button.classList.remove('hover:bg-red-700');
+        }
+    });
+</script>
+</body>
+</html>

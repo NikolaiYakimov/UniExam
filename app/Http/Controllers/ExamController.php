@@ -14,6 +14,7 @@ use App\Models\ExamHall;
 use App\Models\Subject;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Mockery\Exception;
@@ -150,7 +151,27 @@ class   ExamController extends Controller
         $this->examService=$examService;
 
     }
+    public function exams()
+    {
+        $student = Auth::user()->student;
+        $exams = $this->examService->getAvailableExams($student);
 
+        return view('exams', compact('exams'));
+//        try {
+//            $student = Auth::user()->student;
+//            $exams = $this->examService->getAvailableExams($student);
+//
+//            return response()->json([
+//                'success' => true,
+//                'data' => $exams
+//            ]);
+//        } catch (\Exception $e) {
+//            return response()->json([
+//                'success' => false,
+//                'message' => 'Failed to load exams'
+//            ], 500);
+//        }
+    }
     public function storeExam(StoreExamRequest $request){
         try {
             $request->validated();

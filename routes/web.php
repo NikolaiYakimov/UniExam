@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ExamRegistrationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
@@ -23,10 +24,11 @@ Route::post('stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
 
 // Student routes
 Route::prefix('student')->middleware(['auth', 'role:student'])->group(function () {
-    Route::get('/exams', [StudentController::class, 'exams'])->name('exams');
-    Route::get('/my_exams', [StudentController::class, 'myExams'])->name('my_exams');
-    Route::post('/exams/{exam}/register', [StudentController::class, 'register'])->name('student.exam.register');
-    Route::post('/exams/{exam}/unregister', [StudentController::class, 'unregisterExam'])->name('student.exam.unregister');
+    Route::get('/exams', [ExamController::class, 'exams'])->name('exams');
+    Route::get('/my_exams', [ExamRegistrationController::class, 'myExams'])->name('my_exams');
+    Route::get('/my_past_exams', [ExamRegistrationController::class, 'myPastExam'])->name('my_past_exams');
+    Route::post('/exams/{exam}/register', [ExamRegistrationController::class, 'register'])->name('student.exam.register');
+    Route::post('/exams/{exam}/unregister', [ExamRegistrationController::class, 'unregisterExam'])->name('student.exam.unregister');
 
     Route::get('/student-profile', [StudentController::class, 'getStudentProfile'])->name('profile');
     Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
@@ -66,6 +68,15 @@ Route::prefix('teacher')->middleware(['auth', 'role:teacher'])->group(function (
     Route::post('/exam/{exam}/grades', [TeacherController::class, 'updateGrades'])
         ->name('teacher.exam.grades.update');
 
+   ///____
+    Route::get('/subjects', [TeacherController::class, 'subjects'])
+        ->name('teacher.subjects');
+
+    Route::get('/subjects/{subject}/students', [TeacherController::class, 'subjectStudents'])
+        ->name('teacher.subject.students');
+
+    Route::post('/subjects/{subject}/students/{student}/toggle-attestation', [TeacherController::class, 'toggleAttestation'])
+        ->name('teacher.subject.toggle_attestation');
 });
 
 // Administrator routes

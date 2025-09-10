@@ -34,5 +34,9 @@ class Subject extends Model
     public function students(){
         return $this->belongsToMany(Student::class, 'subject_student')->withPivot('has_attestation');
     }
+    public function teachers(): BelongsToMany
+    {
+        return $this->belongsToMany(Teacher::class, 'subject_teacher');
+    }
 
 }

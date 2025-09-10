@@ -157,24 +157,36 @@
             <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="#">
                 <i class="fa fa-home me-2 text-gray-500"></i>Начало
             </a>
-            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('exams') }}">
-                <i class="fa fa-file-pen me-2 text-gray-500"></i>Достъпни изпити
-            </a>
+
+
             @if(Auth::user()->role==='teacher')
+                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('teacher_dashboard') }}">
+                    <i class="fa fa-file-pen me-2 text-gray-500"></i>Изпити
+                </a>
             <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('conducted_exams') }}">
                 <i class="fa fa-calendar me-2 text-gray-500"></i>Изминали изпити
             </a>
             @else
+                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('exams') }}">
+                    <i class="fa fa-file-pen me-2 text-gray-500"></i>Достъпни изпити
+                </a>
                 <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('my_exams') }}">
                     <i class="fa fa-calendar me-2 text-gray-500"></i>Предстоящи изпити
                 </a>
             @endif
-            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="#">
+            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{route('my_past_exams')}}">
                 <i class="fa fa-wallet me-2 text-gray-500"></i>Изминали изпити
             </a>
+            @if(Auth::user()->role==='teacher')
+                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('teacher.subjects') }}">
+                    <i class="fa fa-wallet me-2 text-gray-500"></i>Управление на заверки
+                </a>
+            @else
             <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="#">
                 <i class="fa fa-wallet me-2 text-gray-500"></i>Плащания
             </a>
+            @endif
+
             <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('profile') }}">
                 <i class="fas fa-user me-2 text-gray-500"></i>Моят профил
             </a>

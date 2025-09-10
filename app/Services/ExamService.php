@@ -3,11 +3,14 @@
 namespace App\Services;
 use App\Models\Exam;
 use App\Models\ExamHall;
+use App\Models\Student;
 use App\Repositories\ExamRepository;
 use App\Repositories\ExamRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Whoops\Example\Exception;
+use Illuminate\Support\Collection;
+
 
 class ExamService{
     protected $examRepository;
@@ -102,6 +105,97 @@ class ExamService{
         return $exam;
 
     }
+    public function getAvailableExams(Student $student): Collection
+    {
+        $exams = $this->examRepository->getExamsForStudent($student);
+        $subjectGrades = $this->getStudentSubjectGrades($student);
 
+        return $exams->filter(function ($exam) use ($subjectGrades, $student) {
+            return $this->isExamAvailable($exam, $subjectGrades, $student);
+        });
+    }
+
+    protected function getStudentSubjectGrades(Student $student): Collection
+    {
+        return $student->registrations()
+            ->with('exam')
+            ->whereNotNull('grade')
+            ->get()
+            ->groupBy('exam.subject_id');
+    }
+
+    protected function isExamAvailable(Exam $exam, Collection $subjectGrades, Student $student): bool
+    {
+        if ($exam->remainingSlots() <= 0) {
+            return false;
+        }
+
+        $subjectId = $exam->subject_id;
+        $isCurrentSemester = $exam->subject->semester == $student->semester;
+        $isPastSemester = $exam->subject->semester < $student->semester;
+
+        $grades = $subjectGrades[$subjectId] ?? collect();
+
+        // Проверка дали имаме оценка над 2 (3,...,6)
+        if ($grades->contains('grade', '>=', 3)) {
+            return false;
+        }
+
+        $hasAttestation = $student->hasAttestationForSubject($subjectId);
+
+        if ($isCurrentSemester) {
+            return $this->checkCurrentSemesterExam($exam, $student, $grades, $hasAttestation);
+        }
+
+        if ($isPastSemester) {
+            return $this->checkPastSemesterExam($exam, $student, $grades, $hasAttestation);
+        }
+
+        return false;
+    }
+
+    protected function checkCurrentSemesterExam(Exam $exam, Student $student, Collection $grades, bool $hasAttestation): bool
+    {
+
+        $subjectId = $exam->subject_id;
+        $regularGrade = $grades->firstWhere('exam.exam_type', 'редовен')?->grade;
+        $correctiveGrade = $grades->firstWhere('exam.exam_type', 'поправителен')?->grade;
+
+        // Използваме repository за получаване на изпити по предмет и тип
+        $regularExamPassed = $this->examRepository
+            ->getExamsBySubjectAndType($subjectId, 'редовен')
+            ->isNotEmpty();
+
+        $correctiveExamPassed = $this->examRepository
+            ->getExamsBySubjectAndType($subjectId, 'поправителен')
+            ->isNotEmpty();
+
+        switch ($exam->exam_type) {
+            case 'редовен':
+                return is_null($regularGrade) && $hasAttestation;
+            case 'поправителен':
+                return ($regularGrade == 2 || (is_null($regularGrade) && $regularExamPassed)) && $hasAttestation;
+            case 'ликвидация':
+                return ($correctiveGrade == 2 ||
+                        (is_null($correctiveGrade) && $correctiveExamPassed)) && $hasAttestation;
+            default:
+                return $hasAttestation;
+        }
+    }
+
+
+    protected function checkPastSemesterExam(Exam $exam, Student $student, Collection $grades, bool $hasAttestation): bool
+    {
+        $subjectId = $exam->subject_id;
+
+        if (isset($grades[$subjectId])) {
+            $hasPassingGrade = $grades[$subjectId]->contains('grade', '>=', 3);
+            if ($hasPassingGrade || !$hasAttestation) {
+                return false;
+            }
+        }
+
+        return in_array($exam->exam_type, ['поправителен', 'ликвидация']);
+    }
 
 }

@@ -8,6 +8,7 @@ use App\Models\Exam;
 use App\Models\ExamRegistration;
 use App\Models\Payment;
 use App\Models\Student;
+use App\Services\ExamService;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -27,9 +28,11 @@ class StudentController extends Controller
     //Get the exams which the student didn't register
     protected $paymentService;
 
-    public function __construct(PaymentService $paymentService)
+    public function __construct(PaymentService $paymentService, ExamService $examService)
     {
         $this->paymentService = $paymentService;
+        $this->examService = $examService;
+
     }
 
     public function getStudentProfile():  \Illuminate\Contracts\View\View
@@ -46,99 +49,100 @@ class StudentController extends Controller
 
     public function exams(): \Illuminate\Contracts\View\View
     {
-        //Get the exams which the student didn't register
-        /** @var Student $student */
+//        //Get the exams which the student didn't register
+//        /** @var Student $student */
+//        $student = Auth::user()->student;
+//        $registeredExamIds = $student->registrations()->pluck('exam_id');
+//
+//        $subjectGrades=$student->registrations()
+//            ->with('exam')
+//            ->whereNotNull('grade')
+//            ->get()
+//             ->groupBy('exam.subject_id');
+//
+//        $exams=Exam::with(['teacher', 'subject'])
+//            ->whereHas('subject',function ($q) use ($student){
+//                $q->where('semester','<=',$student->semester)
+//                    ->whereHas('specialties',function ($q) use ($student){
+//                        $q->where('specialty_id',$student->specialty_id);
+//                    });
+//            } )
+//            ->where('start_time', '>', now())
+//            ->whereNotIn('id', $registeredExamIds)
+//            ->orderBy('start_time','desc')
+//            ->get()
+//            ->filter(function($exam) use ($subjectGrades,$student){
+//                if($exam->remainingSlots()<=0){
+//                return false;
+//                }
+//                $subjectId=$exam->subject_id;
+//                $isCurrentSemester=$exam->subject->semester== $student->semester;
+//                $isPastSemester=$exam->subject->semester<$student->semester;
+//
+//                $grades = $subjectGrades[$subjectId]?? collect();
+//
+//                //Check if we have grade over 2(3,...,6)
+//                if ( $grades->contains('grade', '>=', 3)) {
+//                    return false;
+//                }
+//                $hasAttestation=$student->hasAttestationForSubject($subjectId);
+//
+//
+//                if($isCurrentSemester) {
+//
+//
+//                    $regularGrade=$grades->firstWhere('exam.exam_type', 'редовен')?->grade;
+//                    $correctiveGrade = $grades->firstWhere('exam.exam_type', 'поправителен')?->grade;
+//
+//                    $regularExamPassed = Exam::where('subject_id', $subjectId)
+//                        ->where('exam_type', 'редовен')
+//                        ->where('start_time', '<', now())
+//                        ->exists();
+//
+//                    $correctiveExamPassed = Exam::where('subject_id', $subjectId)
+//                        ->where('exam_type', 'поправителен')
+//                        ->where('start_time', '<', now())
+//                        ->exists();
+//
+//                    switch ($exam->exam_type) {
+//                    case 'редовен':
+//                        return is_null($regularGrade) && $hasAttestation;
+//                    case 'поправителен':
+//                        return ($regularGrade==2 ||(is_null($regularGrade) && $regularExamPassed))&&$hasAttestation;
+//                    case 'ликвидация':
+//                        return  ($correctiveGrade == 2 ||
+//                            (is_null($correctiveGrade) && $correctiveExamPassed))&&$hasAttestation;
+////                            || (is_null($regularGrade) && $regularExamPassed);
+//                    default:
+//                        return $hasAttestation;
+//                }
+//            }
+//                if($isPastSemester){
+//                    if(isset($subjectGrades[$subjectId])){
+//                        $hasPassingGrade=$subjectGrades[$subjectId]->contains('grade', '>=', 3);
+//                        if($hasPassingGrade||!$hasAttestation){
+//                            return false;
+//                        }
+//                    }
+//
+//                    return in_array($exam->exam_type, ['поправителен','ликвидация']);
+//                }
+//                return false;
+//            });
+//
+//        //Sort the exams by date
+////        $sortedExams=$exams->sortBy()
+//
+//        return view('exams', compact('exams'));
+
+
         $student = Auth::user()->student;
-        $registeredExamIds = $student->registrations()->pluck('exam_id');
-
-        $subjectGrades=$student->registrations()
-            ->with('exam')
-            ->whereNotNull('grade')
-            ->get()
-             ->groupBy('exam.subject_id');
-
-        $exams=Exam::with(['teacher', 'subject'])
-            ->whereHas('subject',function ($q) use ($student){
-                $q->where('semester','<=',$student->semester)
-                    ->whereHas('specialties',function ($q) use ($student){
-                        $q->where('specialty_id',$student->specialty_id);
-                    });
-            } )
-            ->where('start_time', '>', now())
-            ->whereNotIn('id', $registeredExamIds)
-            ->orderBy('start_time','desc')
-            ->get()
-            ->filter(function($exam) use ($subjectGrades,$student){
-                if($exam->remainingSlots()<=0){
-                return false;
-                }
-                $subjectId=$exam->subject_id;
-                $isCurrentSemester=$exam->subject->semester== $student->semester;
-                $isPastSemester=$exam->subject->semester<$student->semester;
-
-                $grades = $subjectGrades[$subjectId]?? collect();
-
-                //Check if we have grade over 2(3,...,6)
-                if ( $grades->contains('grade', '>=', 3)) {
-                    return false;
-                }
-                $hasAttestation=$student->hasAttestationForSubject($subjectId);
-
-                if($isCurrentSemester) {
-
-                //Check for regular exam with grade 2
-//                $hasFailedRegularExam = $grade->contains(function ($registration) {
-//                    return $registration->grade == 2 && $registration->exam->exam_type === 'редовен';
-//                });
-//                $hasFailedCorrectiveExam = $grade->contains(function ($registration) {
-//                    return $registration->grade == 2 && $registration->exam->exam_type === 'поправителен';
-//                });
-
-                    $regularGrade=$grades->firstWhere('exam.exam_type', 'редовен')?->grade;
-                    $correctiveGrade = $grades->firstWhere('exam.exam_type', 'поправителен')?->grade;
-
-                    $regularExamPassed = Exam::where('subject_id', $subjectId)
-                        ->where('exam_type', 'редовен')
-                        ->where('start_time', '<', now())
-                        ->exists();
-
-                    $correctiveExamPassed = Exam::where('subject_id', $subjectId)
-                        ->where('exam_type', 'поправителен')
-                        ->where('start_time', '<', now())
-                        ->exists();
-
-                    switch ($exam->exam_type) {
-                    case 'редовен':
-                        return is_null($regularGrade) && $hasAttestation;
-                    case 'поправителен':
-                        return ($regularGrade==2 ||(is_null($regularGrade) && $regularExamPassed))&&$hasAttestation;
-                    case 'ликвидация':
-                        return  ($correctiveGrade == 2 ||
-                            (is_null($correctiveGrade) && $correctiveExamPassed))&&$hasAttestation;
-//                            || (is_null($regularGrade) && $regularExamPassed);
-                    default:
-                        return $hasAttestation;
-                }
-            }
-                if($isPastSemester){
-                    if(isset($subjectGrades[$subjectId])){
-                        $hasPassingGrade=$subjectGrades[$subjectId]->contains('grade', '>=', 3);
-                        if($hasPassingGrade||!$hasAttestation){
-                            return false;
-                        }
-                    }
-
-                    return in_array($exam->exam_type, ['поправителен','ликвидация']);
-                }
-                return false;
-            });
-
-        //Sort the exams by date
-//        $sortedExams=$exams->sortBy()
+        $exams = $this->examService->getAvailableExams($student);
 
         return view('exams', compact('exams'));
-
     }
+
+
 
 
         public function myExams(){
