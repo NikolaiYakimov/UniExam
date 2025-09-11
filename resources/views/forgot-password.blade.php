@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Университетски портал – Вход</title>
+    <title>Университетски портал – Възстановяване на парола</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -188,9 +188,17 @@
     <!-- Университетско лого -->
     <img src="{{ asset('images/university-logo.png') }}" alt="Университетско лого" class="logo">
 
-    <h2 class="login-title">Вход в студентския портал</h2>
+    <h2 class="login-title">Възстановяване на парола</h2>
 
-    <!-- Display errors when we give wrong credentials  -->
+    <!-- Display status message -->
+    @if(session('status'))
+        <div class="alert alert-success alert-dismissible fade show">
+            {{ session('status') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    <!-- Display errors -->
     @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show">
             @foreach($errors->all() as $error)
@@ -200,63 +208,31 @@
         </div>
     @endif
 
-{{--    @if(session('status'))--}}
-{{--        <div class="alert alert-success alert-dismissible fade show">--}}
-{{--            {{ session('status') }}--}}
-{{--            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>--}}
-{{--        </div>--}}
-{{--    @endif--}}
-
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('password.email') }}">
         @csrf
 
         <div class="mb-3">
             <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" name="username" value="{{ old('username') }}"
-                       class="form-control form-control-lg @error('username') is-invalid @enderror"
-                       placeholder="Потребителско име" required autofocus>
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" name="email" value="{{ old('email') }}"
+                       class="form-control form-control-lg @error('email') is-invalid @enderror"
+                       placeholder="Имейл адрес" required autofocus>
             </div>
-            @error('username')
+            @error('email')
             <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
         </div>
-
-        <div class="mb-3 position-relative">
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" name="password" id="password"
-                       class="form-control form-control-lg @error('password') is-invalid @enderror"
-                       placeholder="Парола" required>
-                <span class="password-toggle" id="togglePassword">
-                    <i class="fas fa-eye"></i>
-                </span>
-            </div>
-            <div class="mb-3 text-end">
-                <a href="{{ route('password.request') }}">Забравена парола?</a>
-            </div>
-            @error('password')
-            <div class="invalid-feedback d-block">{{ $message }}</div>
-            @enderror
-        </div>
-
-{{--        <div class="mb-3 form-check">--}}
-{{--            <input type="checkbox" class="form-check-input" id="remember" name="remember">--}}
-{{--            <label class="form-check-label" for="remember">Запомни ме</label>--}}
-{{--            <a href="{{ route('password.request') }}" class="float-end">Забравена парола?</a>--}}
-{{--        </div>--}}
 
         <button type="submit" class="btn btn-primary btn-login btn-lg w-100 mb-3">
-            <i class="fas fa-sign-in-alt me-2"></i>Вход
+            <i class="fas fa-paper-plane me-2"></i>Изпрати линк за възстановяване
         </button>
 
     </form>
 
-{{--    <div class="form-footer">--}}
-{{--        Нямате акаунт? <a href="{{ route('register') }}">Регистрирайте се</a>--}}
-{{--    </div>--}}
+    <div class="form-footer">
+        <a href="{{ route('login') }}">Обратно към входа</a>
+    </div>
 </div>
-<script src="{{asset('js/login.js')}}" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exam;
+use App\Models\Student;
 use App\Models\ExamHall;
 use App\Models\ExamRegistration;
 use App\Models\Subject;
@@ -14,8 +15,19 @@ use Illuminate\View\View;
 
 class TeacherController
 {
-    // Добавяме следните методи
-    // Добавяме следните методи
+
+    public function getTeacherProfile():  \Illuminate\Contracts\View\View
+    {
+        $user = Auth::user();
+        $teacher=$user->teacher->load('faculty','specialty');
+
+        return view('teacher_profile',[
+            'user'=>$user,
+            'teacher'=>$teacher,
+        ]);
+
+    }
+
     public function subjects(): View
     {
         $teacher = Auth::user()->teacher;

@@ -217,7 +217,7 @@
                             <div class="flex items-center gap-2 text-gray-600">
                                 <i class="fas fa-users w-5 text-gray-400"></i>
                                 <span class="font-medium {{ $exam->remainingSlots() > 0 ? 'text-green-700' : 'text-red-700' }}">
-                                        {{ $exam->remainingSlots() }}/{{ $exam->max_students }} места
+                                        {{ $exam->remainingSlots() }}/{{  $exam->max_students+ceil($exam->max_students*0.1)}} места
                                     </span>
                             </div>
                         </div>

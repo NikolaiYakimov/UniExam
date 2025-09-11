@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Exam;
 use App\Models\ExamHall;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Repositories\ExamRepository;
 use App\Repositories\ExamRepositoryInterface;
 use Carbon\Carbon;
@@ -33,7 +34,6 @@ class ExamService{
         if($startTime->lt($hallOpeningTime)){
             throw new \Exception("Залата отваря в {$hall->opening_time}");
         }
-        //TODO:I can create Custom Exception instead using \Exception
         if($endTime->gt($hallClosingTime)){
             throw new \Exception("Залата затваря в {$hall->closing_time}");
 
@@ -85,24 +85,26 @@ class ExamService{
             throw new \Exception('Изпитът не може да бъде насрочен в миналото или по-рано от 48 часа от текущия момент. Моля, изберете валидни дата и час.');
         }
 
-        $hasOverlap=Exam::where('hall_id',$hall->id)
-            ->where('id', '!=', $exam->id)
-            ->where(function($query) use ($startTime,$endTime){
-                $query->where('end_time', '>', $startTime)
-                    ->where('start_time', '<', $endTime);
-            })->exists();
+        $hasOverlap=$this->examRepository->hasOverlap($hall->id,$startTime,$endTime);
+
 
         if($hasOverlap){
             throw new \Exception("Залата е заета за ибразия от вас интервал от време.");
         }
-//        Log::debug('Tук съм');
-        $exam->update([
+        $updateData = [
             'hall_id' => $data['hall_id'],
             'start_time' => $startTime,
             'end_time' => $endTime,
             'max_students' => $data['max_students'],
-        ]);
-        return $exam;
+        ];
+//        $exam->update([
+//            'hall_id' => $data['hall_id'],
+//            'start_time' => $startTime,
+//            'end_time' => $endTime,
+//            'max_students' => $data['max_students'],
+//        ]);
+        return $this->examRepository->update($exam, $updateData);
+//        return $exam;
 
     }
     public function getAvailableExams(Student $student): Collection
@@ -197,5 +199,47 @@ class ExamService{
 
         return in_array($exam->exam_type, ['поправителен', 'ликвидация']);
     }
+
+    public function getUpcomingExams(Teacher $teacher): Collection
+    {
+//        $teacher = Auth::user()->teacher;
+        return $this->examRepository->getTeacherUpcomingExams($teacher->id);
+    }
+
+    public function getConductedExams()
+    {
+        $teacher = Auth::user()->teacher;
+        return $this->examRepository->getConductedExams($teacher->id);
+    }
+
+    public function getExamDetails($examId)
+    {
+        $teacher = Auth::user()->teacher;
+        $exam = $this->examRepository->getExamDetails($examId);
+
+        if ($exam->teacher_id !== $teacher->id) {
+            abort(403);
+        }
+
+        return $exam;
+    }
+
+    public function updateGrades($examId, $grades)
+    {
+        $teacher = Auth::user()->teacher;
+        $exam = $this->examRepository->getExamDetails($examId);
+
+        if ($exam->teacher_id !== $teacher->id) {
+            abort(403);
+        }
+
+        $this->examRepository->updateExamGrades($examId, $grades);
+    }
+
+    public function getBookedTimeSlots()
+    {
+        return $this->examRepository->getBookedTimeSlots();
+    }
+
 
 }

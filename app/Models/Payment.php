@@ -24,6 +24,4 @@ class Payment extends Model
         return $this->BelongsTo(ExamRegistration::class,'exam_registration_id');
     }
 
-
-
 }

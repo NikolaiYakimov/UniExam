@@ -202,6 +202,8 @@
                 Студентски профил
             @elseif(Auth::user()->role === 'teacher')
                 Преподавателски профил
+            @elseif(Auth::user()->role === 'administrator')
+                Администраторкси профил
             @endif
         </h2>
 

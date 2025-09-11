@@ -13,137 +13,21 @@ use App\Models\Exam;
 use App\Models\ExamHall;
 use App\Models\Subject;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Mockery\Exception;
 use function Webmozart\Assert\Tests\StaticAnalysis\email;
+use App\Http\Controllers\Controller;
+
+use Illuminate\View\View;
 
 class   ExamController extends Controller
 {
-//  public function store(StoreExamRequest $request){
-//        \Log::info($request->all());
-//
-//      $request->validated();
-//
-//      try {
-//      $hall = ExamHall::findOrFail($request->hall_id);
-//
-//      // Parse the date-time strings from the form to Carbon instances
-//      $startTime = Carbon::parse($request->start_time);
-//      $endTime = Carbon::parse($request->end_time);
-//
-//      $openingTime=Carbon::parse($hall->opening_time)->setDate($startTime->year,$startTime->month,$startTime->day);
-//      $closingTime=Carbon::parse($hall->closing_time)->setDate($startTime->year,$startTime->month,$startTime->day);
-//
-//      if($startTime->lt($openingTime)){
-//          return redirect()->back()->withErrors(['start_time'=>"Залата отваря в {$hall->opening_time}"]);
-//      }
-//      if($endTime->gt($closingTime)){
-//          return redirect()->back()->withErrors(['end_time'=>"Залата затваря в {$hall->closing_time}"]);
-//      }
-//
-//      $existingExams=Exam::where('hall_id',$request->hall_id)
-//          ->where(function($query) use($startTime,$endTime){
-//              $query->where('start_time','<',$endTime)
-//                  ->where('end_time','>',$startTime);
-//          })->exists();
-//
-//          if ($existingExams) {
-//          return back()->withErrors(['hall' => 'Залата е заета през избрания интервал!']);
-//      }
-//
-//      // Create the exam with the parsed Carbon dates
-//      $exam = Exam::create([
-//         'teacher_id'=>auth()->user()->teacher->id,
-//          'subject_id' =>$request->subject_id,
-//          'hall_id' =>$request->hall_id,
-//          'start_time' =>$startTime,
-//          'end_time' =>$endTime,
-//          'max_students'=>$request->max_students,
-//          'exam_type'=>$request->exam_type,
-//          'price'=>$request->exam_type==='ликвидация'?$request->price:0,
-//      ]);
-//
-//      // Check if the exam was created successfully
-//      if ($exam) {
-//          return redirect()->back()->with('success','Изпита е добавен успешно');
-//      } else {
-//          return back()->withErrors(['error' => 'Не успяхме да създадем изпита. Моля, опитайте отново.']);
-//      }
-//
-//      } catch (\Exception $exception){
-//          return back()->withErrors(['error' => 'Грешка: ' . $exception->getMessage()]);
-//      }
-//  }
-//
-//
-//
-//    /**
-//     * Fetch all booked slots for a given date and room
-//     */
-//    public function getBookedSlots(GetBookedSlotsRequest $request) {
-//        try {
-//            // Validate inputs
-//            $validated = $request->validated();
-//
-//
-//                $date = Carbon::parse($request->date);
-//                $startOfDay = $date->copy()->startOfDay();
-//                $endOfDay = $date->copy()->endOfDay();
-//
-//
-//
-//            // Simplified query to reduce complexity
-//            $bookedSlots = Exam::where('hall_id', $request->hall_id)
-//                ->where(function($query) use ($startOfDay, $endOfDay) {
-//                    $query->where('end_time', '>', $startOfDay)
-//                        ->where('start_time', '<', $endOfDay);
-//                })
-//                ->get(['id','hall_id', 'start_time', 'end_time']);
-//
-//
-//
-//            $formattedSlots = $bookedSlots->map(function($exam) {
-//
-//                    return [
-//                        'id' => $exam->id,
-//                        'hall_id' => $exam->hall_id,
-//                        'start' => $exam->start_time->toIso8601String(),
-//                        'end' => $exam->end_time->toIso8601String()
-//                    ];
-//            })->filter(); // Remove any null values
-//
-//            // Return a well-formed response
-//            $response = [
-//                'bookedSlots' => $formattedSlots,
-//                'date' => $request->date,
-//                'hall_id' => $request->hall_id,
-//                'count' => $formattedSlots->count(),
-//                'timestamp' => now()->toIso8601String()
-//            ];
-//
-//            return response()->json($response);
-//        }catch (\Illuminate\Validation\ValidationException $e) {
-//            return response()->json([
-//                'error' => 'Validation error',
-//                'messages' => $e->errors()
-//            ], 422);
-//        } catch (\Exception $e) {
-//            \Log::error('Unhandled exception in getBookedSlots', [
-//                'error' => $e->getMessage(),
-//                'file' => $e->getFile(),
-//                'line' => $e->getLine(),
-//                'trace' => $e->getTraceAsString()
-//            ]);
-//
-//            return response()->json([
-//                'error' => 'Server error',
-//                'message' => $e->getMessage()
-//            ], 500);
-//        }
-//    }
+
 
     protected $examService;
 
@@ -177,7 +61,6 @@ class   ExamController extends Controller
             $request->validated();
 
             $exam=$this->examService->createExam($request->all());
-            Log::error($exam);
             $students=Student::with('user')->whereHas('user',function ($q){
                 $q->whereNotNull('email');
             })->get();
@@ -187,10 +70,18 @@ class   ExamController extends Controller
 
             }
             return back()->with('success','Изпита е добавен успешно');
+//            return response()->json([
+//                'success' => true,
+//                'message' => 'Изпита е добавен успешно',
+//                'exam' => $exam
+//            ]);
 
         }catch (\Exception $exception){
-            return back()->with('error',$exception->getMessage());
-
+//            return back()->with('error',$exception->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage()
+            ], 500);
         }
     }
     public function editExam(StoreExamRequest $request,int $examId)
@@ -199,32 +90,49 @@ class   ExamController extends Controller
             $exam=Exam::findOrFail($examId);
             $now=Carbon::now();
             $examStart=Carbon::parse($exam->start_time);
-            Log::debug($examStart);
-            Log::debug($now);
-            Log::debug($examStart->diffInHours($now));
+//            Log::debug($examStart);
+//            Log::debug($now);
+//            Log::debug($examStart->diffInHours($now));
 
-            \Log::debug("Current time: " . $now);
-            \Log::debug("Exam start: " . $examStart);
-            \Log::debug("Hours difference: " . $now->diffInHours($examStart, false));
+//            \Log::debug("Current time: " . $now);
+//            \Log::debug("Exam start: " . $examStart);
+//            \Log::debug("Hours difference: " . $now->diffInHours($examStart, false));
             if($examStart->isPast()){
                 throw new \Exception('Датата на изпита е вече минала и не може да се редактира');
+//                return response()->json([
+//                    'success' => false,
+//                    'message' => 'Датата на изпита е вече минала и не може да се редактира'
+//                ], 422);
             }
+
             if($now->diffInHours($examStart,false)<=48){
                 throw new Exception('Изпита не може да бъде редактиран, тъй като започва след по-малко от 48 часа.');
+//                return response()->json([
+//                    'success' => false,
+//                    'message' => 'Изпита не може да бъде редактиран, тъй като започва след по-малко от 48 часа.'
+//                ], 422);
             }
-            $request->validated();
-            $this->examService->updateExam($exam,$request->all());
+            $validated=$request->validated();
+            $this->examService->updateExam($exam,$validated);
             return back()->with('success','Изпита беше редактиран успешно!');
+//            return response()->json([
+//                'success' => true,
+//                'message' => 'Изпита беше редактиран успешно!',
+//                'data' => $exam
+//            ]);
 
         }catch (Exception $exception){
             return back()->with('error',$exception->getMessage());
+//            return response()->json([
+//                'success' => false,
+//                'message' => $exception->getMessage()
+//            ], 500);
         }
     }
 
     public function getExamEditData($examId): \Illuminate\Http\JsonResponse
     {
         $exam=Exam::findOrFail($examId);
-        Log::debug($exam);
         return response()->json([
             'subject_id'=>$exam->subject_id,
             'exam_type'=>$exam->exam_type,
@@ -268,4 +176,110 @@ class   ExamController extends Controller
             ],500);
         }
     }
+
+    public function teacherUpcomingExams():
+//    JsonResponse
+    View
+    {
+//        try {
+            $teacher = Auth::user()->teacher;
+            $exams = $this->examService->getUpcomingExams($teacher);
+            $subjects = Subject::all();
+            $halls = ExamHall::all();
+//        $bookedSlots = $this->examService->getBookedTimeSlots();
+
+//        return view('teacher_dashboard', compact('teacher', 'exams', 'subjects', 'halls', 'bookedSlots'));
+        return view('teacher_dashboard', compact('teacher', 'exams', 'subjects', 'halls'));
+
+//            return response()->json([
+//                "exams"=>$exams,
+//                "teacher"=>$teacher,
+//                "subjects"=>$subjects,
+//                "halls"=>$halls,
+//            ]);
+//        }catch (\Exception $e){
+//            return response()->json([
+//                'message' => 'Failed to load upcoming exams'
+//            ], 500);
+//        }
+    }
+
+    public function conductedExams():
+//    JsonResponse
+    View
+    {
+//        try {
+            $teacher = Auth::user()->teacher;
+            $exams = $this->examService->getConductedExams();
+            $subjects = Subject::all();
+            $halls = ExamHall::all();
+
+        return view('teacher_conducted_exams', compact('teacher', 'exams', 'subjects', 'halls'));
+//            return response()->json([
+//                'success' => true,
+//                'data' => [
+//                    'teacher' => $teacher,
+//                    'exams' => $exams,
+//                    'subjects' => $subjects,
+//                    'halls' => $halls
+//                ]
+//            ]);
+//        }catch (\Exception $exception){
+//            Log::error($exception->getMessage());
+//            return response()->json([
+//                'success' => false,
+//                'message' => 'Failed to load conducted exams'
+//            ], 500);
+//        }
+    }
+
+    public function examDetails($examId):
+//    JsonResponse
+    View
+    {
+//        try {
+
+            $exam = $this->examService->getExamDetails($examId);
+            $teacher = Auth::user()->teacher;
+
+            return view('teacher_exam_details', compact('exam', 'teacher'));
+//            return response()->json([
+//                'success' => true,
+//                'data' => [
+//                    'exam' => $exam,
+//                    'teacher' => $teacher
+//                ]
+//            ]);
+
+//        }catch (\Exception $exception){
+////            return response()->json([
+////                'success' => false,
+////                'message' => 'Exam not found'
+////            ], 404);
+//
+//        }
+    }
+    public function updateGrades(Request $request, $examId)
+    {
+        $request->validate([
+            'grades' => 'required|array',
+            'grades.*' => 'nullable|numeric|min:2|max:6'
+        ]);
+            try {
+                $this->examService->updateGrades($examId, $request->grades);
+
+                return back()->with('success', 'Оценките бяха актуализирани успешно!');
+//                return response()->json([
+//                    'success' => true,
+//                    'message' => 'Оценките бяха актуализирани успешно!'
+//                ]);
+            }catch (\Exception $exception){
+//                return response()->json([
+//                    'success' => false,
+//                    'message' => $exception->getMessage()
+//                ], 500);
+                return back()->with('error',$exception->getMessage());
+            }
+    }
+
 }

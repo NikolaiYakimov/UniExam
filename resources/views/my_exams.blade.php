@@ -419,14 +419,14 @@
                             </div>
 
                             <div class="flex items-center gap-2 text-gray-600">
-                                <i class="fas fa-star w-5 text-gray-400"></i>
-                                <span>Оценка:
-                                        @if($registration && $registration->grade)
-                                        <span class="font-medium text-gray-800">{{ $registration->grade }}</span>
-                                    @else
-                                        <span class="text-gray-500 italic">---</span>
-                                    @endif
-                                    </span>
+{{--                                <i class="fas fa-star w-5 text-gray-400"></i>--}}
+{{--                                <span>Оценка:--}}
+{{--                                        @if($registration && $registration->grade)--}}
+{{--                                        <span class="font-medium text-gray-800">{{ $registration->grade }}</span>--}}
+{{--                                    @else--}}
+{{--                                        <span class="text-gray-500 italic">---</span>--}}
+{{--                                    @endif--}}
+{{--                                    </span>--}}
                             </div>
                         </div>
 

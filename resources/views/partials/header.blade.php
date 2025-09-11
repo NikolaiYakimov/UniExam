@@ -154,42 +154,74 @@
         </a>
 
         <div class="header-nav ms-10">
-            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="#">
-                <i class="fa fa-home me-2 text-gray-500"></i>Начало
-            </a>
+{{--            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="#">--}}
+{{--                <i class="fa fa-home me-2 text-gray-500"></i>Начало--}}
+{{--            </a>--}}
 
 
             @if(Auth::user()->role==='teacher')
                 <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('teacher_dashboard') }}">
-                    <i class="fa fa-file-pen me-2 text-gray-500"></i>Изпити
+                    <i class="fa fa-file-pen me-2 text-gray-500"></i>Предстоящи изпити
                 </a>
-            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('conducted_exams') }}">
-                <i class="fa fa-calendar me-2 text-gray-500"></i>Изминали изпити
-            </a>
-            @else
+                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('conducted_exams') }}">
+                    <i class="fa fa-calendar me-2 text-gray-500"></i>Изминали изпити
+                 </a>
+                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('teacher.subjects') }}">
+                    <i class="fa fa-clipboard-check  me-2 text-gray-500"></i>Управление на заверки
+                </a>
+                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('teacher.profile') }}">
+                    <i class="fas fa-user me-2 text-gray-500"></i>Моят профил
+                </a>
+            @elseif(Auth::user()->role==='student')
                 <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('exams') }}">
                     <i class="fa fa-file-pen me-2 text-gray-500"></i>Достъпни изпити
                 </a>
                 <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('my_exams') }}">
                     <i class="fa fa-calendar me-2 text-gray-500"></i>Предстоящи изпити
                 </a>
-            @endif
-            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{route('my_past_exams')}}">
-                <i class="fa fa-wallet me-2 text-gray-500"></i>Изминали изпити
-            </a>
-            @if(Auth::user()->role==='teacher')
-                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('teacher.subjects') }}">
-                    <i class="fa fa-wallet me-2 text-gray-500"></i>Управление на заверки
+                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{route('my_past_exams')}}">
+                    <i class="fa fa-wallet me-2 text-gray-500"></i>Изминали изпити
                 </a>
-            @else
-            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="#">
-                <i class="fa fa-wallet me-2 text-gray-500"></i>Плащания
-            </a>
-            @endif
+                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{route('payments.student_payments')}}">
+                    <i class="fa fa-wallet me-2 text-gray-500"></i>Плащания
+                </a>
+                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('student.profile') }}">
+                    <i class="fas fa-user me-2 text-gray-500"></i>Моят профил
+                </a>
+            @elseif(Auth::user()->role==='administrator')
+                <a class="nav-link flex items-center text-gray-700" href="{{ route('admin.subjects.uni_subjects') }}">
+                    <i class="fa fa-file-pen me-2 text-gray-500"></i>Изпити
+                </a>
 
-            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('profile') }}">
-                <i class="fas fa-user me-2 text-gray-500"></i>Моят профил
-            </a>
+                <a class="nav-link flex items-center text-gray-700" href="{{route('admin.users.uni_users')}}">
+                    <i class="fa fa-wallet me-2 text-gray-500"></i>Създаване на потребители
+                </a>
+                <a class="nav-link flex items-center text-gray-700" href="{{ route('teacher.subjects') }}">
+                    <i class="fa fa-clipboard-check me-2 text-gray-500"></i>Управление на заверки
+                </a>
+                <a class="nav-link flex items-center text-gray-700" href="{{ route('teacher.profile') }}">
+                    <i class="fas fa-user me-2 text-gray-500"></i>Моят профил
+                </a>
+
+
+
+            @endif
+{{--            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{route('my_past_exams')}}">--}}
+{{--                <i class="fa fa-wallet me-2 text-gray-500"></i>Изминали изпити--}}
+{{--            </a>--}}
+{{--            @if(Auth::user()->role==='teacher')--}}
+{{--                <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('teacher.subjects') }}">--}}
+{{--                    <i class="fa fa-wallet me-2 text-gray-500"></i>Управление на заверки--}}
+{{--                </a>--}}
+{{--            @else--}}
+{{--            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{route('payments.student_payments')}}">--}}
+{{--                <i class="fa fa-wallet me-2 text-gray-500"></i>Плащания--}}
+{{--            </a>--}}
+{{--            @endif--}}
+
+{{--            <a class="nav-link flex items-center text-gray-700 hover:bg-gray-100" href="{{ route('profile') }}">--}}
+{{--                <i class="fas fa-user me-2 text-gray-500"></i>Моят профил--}}
+{{--            </a>--}}
         </div>
 
         <div class="d-flex align-items-center gap-3 ms-auto profile-section">
@@ -203,9 +235,14 @@
                         <i class="fa fa-user-circle"></i> {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
                     </button>
                     <ul class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 hidden">
-                        <li><a class="dropdown-item block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="{{ route('profile') }}">Моят профил</a></li>
+                        @if(Auth::user()->role==='student')
+                        <li><a class="dropdown-item block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="{{ route('student.profile') }}">Моят профил</a></li>
+                        @elseif(Auth::user()->role==='teacher')
+                            <li><a class="dropdown-item block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="{{ route('teacher.profile') }}">Моят профил</a></li>
+                        @endif
                         <li><hr class="dropdown-divider my-2 border-gray-200"></li>
                         <li>
+
                             <form method="post" action="{{ route('logout') }}">@csrf
                                 <button class="dropdown-item text-danger block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" type="submit">Изход</button>
                             </form>
@@ -220,24 +257,55 @@
         </div>
 
         <div class="mobile-nav-dropdown" id="mobileNavDropdown">
-            <a class="nav-link flex items-center text-gray-700" href="#">
-                <i class="fa fa-home me-2 text-gray-500"></i>Начало
-            </a>
+{{--            <a class="nav-link flex items-center text-gray-700" href="#">--}}
+{{--                <i class="fa fa-home me-2 text-gray-500"></i>Начало--}}
+{{--            </a>--}}
+            @if(Auth::user()->role==='student')
             <a class="nav-link flex items-center text-gray-700" href="{{ route('exams') }}">
                 <i class="fa fa-file-pen me-2 text-gray-500"></i>Достъпни изпити
             </a>
             <a class="nav-link flex items-center text-gray-700" href="{{ route('my_exams') }}">
                 <i class="fa fa-calendar me-2 text-gray-500"></i>Предстоящи изпити
             </a>
-            <a class="nav-link flex items-center text-gray-700" href="#">
+            <a class="nav-link flex items-center text-gray-700" href="{{route('my_past_exams')}}">
                 <i class="fa fa-wallet me-2 text-gray-500"></i>Изминали изпити
             </a>
-            <a class="nav-link flex items-center text-gray-700" href="#">
+            <a class="nav-link flex items-center text-gray-700" href="{{ route('payments.student_payments') }}">
                 <i class="fa fa-wallet me-2 text-gray-500"></i>Плащания
             </a>
-            <a class="nav-link flex items-center text-gray-700" href="{{ route('profile') }}">
+            <a class="nav-link flex items-center text-gray-700" href="{{ route('student.profile') }}">
                 <i class="fas fa-user me-2 text-gray-500"></i>Моят профил
             </a>
+            @elseif(Auth::user()->role==='teacher')
+            <a class="nav-link flex items-center text-gray-700" href="{{ route('teacher_dashboard') }}">
+                <i class="fa fa-file-pen me-2 text-gray-500"></i>Изпити
+            </a>
+
+            <a class="nav-link flex items-center text-gray-700" href="{{route('conducted_exams')}}">
+                <i class="fa fa-wallet me-2 text-gray-500"></i>Изминали изпити
+            </a>
+            <a class="nav-link flex items-center text-gray-700" href="{{ route('teacher.subjects') }}">
+                <i class="fa fa-clipboard-check me-2 text-gray-500"></i>Управление на заверки
+            </a>
+            <a class="nav-link flex items-center text-gray-700" href="{{ route('teacher.profile') }}">
+                <i class="fas fa-user me-2 text-gray-500"></i>Моят профил
+            </a>
+            @elseif(Auth::user()->role==='administrator')
+                <a class="nav-link flex items-center text-gray-700" href="{{ route('admin.subjects.uni_subjects') }}">
+                    <i class="fa fa-file-pen me-2 text-gray-500"></i>Изпити
+                </a>
+
+                <a class="nav-link flex items-center text-gray-700" href="{{route('admin.users.uni_users')}}">
+                    <i class="fa fa-wallet me-2 text-gray-500"></i>Изминали изпити
+                </a>
+                <a class="nav-link flex items-center text-gray-700" href="{{ route('teacher.subjects') }}">
+                    <i class="fa fa-clipboard-check me-2 text-gray-500"></i>Управление на заверки
+                </a>
+                <a class="nav-link flex items-center text-gray-700" href="{{ route('teacher.profile') }}">
+                    <i class="fas fa-user me-2 text-gray-500"></i>Моят профил
+                </a>
+
+            @endif
         </div>
     </div>
 </header>

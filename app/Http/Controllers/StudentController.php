@@ -40,7 +40,7 @@ class StudentController extends Controller
         $user = Auth::user();
         $student=$user->student->load('faculty','specialty','group');
 
-        return view('profile',[
+        return view('student_profile',[
             'user'=>$user,
             'student'=>$student
         ]);

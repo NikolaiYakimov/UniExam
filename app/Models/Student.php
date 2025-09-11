@@ -51,4 +51,8 @@ class Student extends Model
         return $this->subjects()->where('subject_id',$subjectId)->wherePivot('has_attestation',true)->exists();
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

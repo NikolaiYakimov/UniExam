@@ -16,7 +16,7 @@
                     <h1 class="text-2xl font-bold text-gray-800">Управление на заверки</h1>
                     <p class="text-sm text-gray-500 mt-1">{{ $subject->subject_name }} - {{ $subject->description }}</p>
                 </div>
-                <a href="{{ route('teacher.subjects') }}" class="inline-flex items-center gap-1 px-4 py-2.5 bg-gray-500 text-white rounded-lg shadow hover:bg-gray-600 transition-colors">
+                <a href="{{ route('teacher.subjects') }}" class="inline-flex items-center gap-1 px-4 py-2.5 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition-colors">
                     <i class="fa-solid fa-arrow-left"></i>
                     Назад към предмети
                 </a>
@@ -50,7 +50,7 @@
                             @foreach($students as $student)
                                 <tr class="border-b border-gray-100 hover:bg-gray-50">
                                     <td class="py-4 text-gray-700">{{ $student->faculty_number }}</td>
-                                    <td class="py-4 text-gray-700">{{ $student->user->name }}</td>
+                                    <td class="py-4 text-gray-700">{{ $student->user->first_name}} {{ $student->user->second_name}} {{ $student->user->last_name}}</td>
                                     <td class="py-4 text-gray-700">{{ $student->specialty->name }}</td>
                                     <td class="py-4">
                                 <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $student->pivot->has_attestation ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -97,8 +97,10 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({}) // Empty body since we're not sending data
                 })
                     .then(response => response.json())
                     .then(data => {
@@ -119,6 +121,7 @@
                             // Показване на съобщение за успех
                             alert('Статусът на заверката е променен успешно!');
                         } else {
+                            console.log(data)
                             alert('Възникна грешка при промяна на заверката.');
                         }
                     })

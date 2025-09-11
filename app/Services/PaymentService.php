@@ -100,14 +100,12 @@ class  PaymentService
             ]);
         });
         Mail::to(auth()->user()->email)->queue(new SuccessfullyPaidAndRegistered($exam,$student));
-        Log::error("HEyyy");
     }
 
     public function processRefund(string $paymentIntentId,string $reason='requested_by_customer'): bool
     {
         try{
            $payment=Payment::where('stripe_payment_id', $paymentIntentId)->first();
-           Log::debug($payment);
            if(!$payment){
                throw new Exception("Такова плащане не беше намерено");
            }
@@ -120,18 +118,18 @@ class  PaymentService
            ]);
            $payment->status='refunded';
            $payment->save();
-           Log::debug("Payment is successful");
            return true;
         } catch (ApiErrorException $e) {
             Log::error('Refund failed', [
                 'payment_intent' => $paymentIntentId,
                 'error' => $e->getMessage()
             ]);
-            Log::error('------------------------------------------------');
-            Log::error('Refund failed: ' . $e->getMessage());
+
             return false;
         }
 
     }
 
 }
+//Добре сега искам да покажем и функционалноста за показване на изминалите изпити
+// и показването на оценка под формата пак на една точка както предишната точка:

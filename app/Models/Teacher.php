@@ -36,7 +36,7 @@ class Teacher extends Model
     public function specialty():BelongsTo{
         return $this->belongsTo(Specialty::class);
     }
-    // Заменете subjects() метода с:
+
     public function subjects(): BelongsToMany
     {
         return $this->belongsToMany(Subject::class, 'subject_teacher');

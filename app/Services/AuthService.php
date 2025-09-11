@@ -17,7 +17,7 @@ public function login(array $credentials){
 
     private function redirectByRole(string $role){
         return match($role){
-            'administrator' =>redirect()->route('administrator_dashboard'),
+            'administrator' =>redirect()->route('admin.subjects.uni_subjects'),
             'teacher' => redirect()->route('teacher_dashboard'),
             'student' => redirect()->route('exams'),
             default => redirect()->route('login'),

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Repositories\PaymentRepository;
 use Illuminate\Support\Facades\Log;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
@@ -17,24 +18,40 @@ use Illuminate\Support\Facades\Auth;
 class PaymentController extends Controller
 {
     protected $paymentService;
-
-    public function __construct(PaymentService $paymentService)
+    protected $paymentRepository;
+    public function __construct(PaymentService $paymentService,PaymentRepository $paymentRepository)
     {
         $this->paymentService = $paymentService;
+        $this->paymentRepository = $paymentRepository;
     }
+
+    public function student_payments()
+    {
+        try {
+            $student = auth()->user()->student;
+            $payments = $this->paymentRepository->getPaymentRecords($student);
+
+            return view('student_payments', compact('payments'));
+//                    return response()->json([
+//            'payments' => $payments,
+//            'student' => $student]);
+//
+        }catch (\Exception $e) {
+            Log::error('Error fetching payments: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Грешка при зареждане на плащанията.');
+//            response()->json([
+//                'message' => 'error',
+//                'description'  => 'Грешка при зареждане на плащанията']);
+        }
+       }
 
     public function handlePayment(Exam $exam){
 
         try{
             return $this->paymentService->createCheckoutSession($exam, auth()->user()->student);
 
-//            return redirect()->away($session->url,303);
         }catch (\Exception $e){
-//            Log::error('Payment initiation failed: ' . $e->getMessage());
-////            return back()->with('error', 'Грешка при плащане: ' . $e->getMessage());
-//            return response()->json([
-//                'error' => 'Грешка при плащане: ' . $e->getMessage()
-//            ], 500);
+
             Log::error('Payment initiation failed: ' . $e->getMessage());
             return response()->json(['error' => 'Грешка при плащане: ' . $e->getMessage()], 500);
         }

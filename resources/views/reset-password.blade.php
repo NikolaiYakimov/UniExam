@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Университетски портал – Вход</title>
+    <title>Университетски портал – Нова парола</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -188,9 +188,9 @@
     <!-- Университетско лого -->
     <img src="{{ asset('images/university-logo.png') }}" alt="Университетско лого" class="logo">
 
-    <h2 class="login-title">Вход в студентския портал</h2>
+    <h2 class="login-title">Задаване на нова парола</h2>
 
-    <!-- Display errors when we give wrong credentials  -->
+    <!-- Display errors -->
     @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show">
             @foreach($errors->all() as $error)
@@ -200,24 +200,19 @@
         </div>
     @endif
 
-{{--    @if(session('status'))--}}
-{{--        <div class="alert alert-success alert-dismissible fade show">--}}
-{{--            {{ session('status') }}--}}
-{{--            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>--}}
-{{--        </div>--}}
-{{--    @endif--}}
-
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('password.update') }}">
         @csrf
+
+        <input type="hidden" name="token" value="{{ $token }}">
 
         <div class="mb-3">
             <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" name="username" value="{{ old('username') }}"
-                       class="form-control form-control-lg @error('username') is-invalid @enderror"
-                       placeholder="Потребителско име" required autofocus>
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" name="email" value="{{ $email ?? old('email') }}"
+                       class="form-control form-control-lg @error('email') is-invalid @enderror"
+                       placeholder="Имейл адрес" required autofocus>
             </div>
-            @error('username')
+            @error('email')
             <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
         </div>
@@ -227,36 +222,61 @@
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
                 <input type="password" name="password" id="password"
                        class="form-control form-control-lg @error('password') is-invalid @enderror"
-                       placeholder="Парола" required>
+                       placeholder="Нова парола" required>
                 <span class="password-toggle" id="togglePassword">
                     <i class="fas fa-eye"></i>
                 </span>
-            </div>
-            <div class="mb-3 text-end">
-                <a href="{{ route('password.request') }}">Забравена парола?</a>
             </div>
             @error('password')
             <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
         </div>
 
-{{--        <div class="mb-3 form-check">--}}
-{{--            <input type="checkbox" class="form-check-input" id="remember" name="remember">--}}
-{{--            <label class="form-check-label" for="remember">Запомни ме</label>--}}
-{{--            <a href="{{ route('password.request') }}" class="float-end">Забравена парола?</a>--}}
-{{--        </div>--}}
+        <div class="mb-3 position-relative">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" name="password_confirmation" id="password-confirm"
+                       class="form-control form-control-lg"
+                       placeholder="Потвърди новата парола" required>
+                <span class="password-toggle" id="togglePasswordConfirm">
+                    <i class="fas fa-eye"></i>
+                </span>
+            </div>
+        </div>
 
         <button type="submit" class="btn btn-primary btn-login btn-lg w-100 mb-3">
-            <i class="fas fa-sign-in-alt me-2"></i>Вход
+            <i class="fas fa-save me-2"></i>Запази новата парола
         </button>
 
     </form>
 
-{{--    <div class="form-footer">--}}
-{{--        Нямате акаунт? <a href="{{ route('register') }}">Регистрирайте се</a>--}}
-{{--    </div>--}}
+    <div class="form-footer">
+        <a href="{{ route('login') }}">Обратно към входа</a>
+    </div>
 </div>
-<script src="{{asset('js/login.js')}}" defer></script>
+<script>
+    // Password visibility toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.querySelector('#togglePassword');
+        const togglePasswordConfirm = document.querySelector('#togglePasswordConfirm');
+        const password = document.querySelector('#password');
+        const passwordConfirm = document.querySelector('#password-confirm');
+
+        togglePassword.addEventListener('click', function() {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+
+        togglePasswordConfirm.addEventListener('click', function() {
+            const type = passwordConfirm.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordConfirm.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
