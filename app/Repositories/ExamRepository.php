@@ -55,7 +55,8 @@ class ExamRepository implements ExamRepositoryInterface
     {
         $registeredExamIds = $student->registrations()->pluck('exam_id');
 
-        return Exam::with(['teacher', 'subject'])
+//        return Exam::with(['teacher.user', 'subject','hall'])
+        return Exam::with(['teacher.user', 'subject','hall'])
             ->whereHas('subject', function ($q) use ($student) {
                 $q->where('semester', '<=', $student->semester)
                     ->whereHas('specialties', function ($q) use ($student) {
@@ -65,6 +66,7 @@ class ExamRepository implements ExamRepositoryInterface
             ->where('start_time', '>', now())
             ->whereNotIn('id', $registeredExamIds)
             ->orderBy('start_time', 'desc')
+//            ->withCount('registrations')
             ->get();
     }
 

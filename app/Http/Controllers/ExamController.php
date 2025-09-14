@@ -37,10 +37,10 @@ class   ExamController extends Controller
     }
     public function exams()
     {
-        $student = Auth::user()->student;
-        $exams = $this->examService->getAvailableExams($student);
+//        $student = Auth::user()->student;
+//        $exams = $this->examService->getAvailableExams($student);
 
-        return view('exams', compact('exams'));
+//        return view('exams', compact('exams'));
 //        try {
 //            $student = Auth::user()->student;
 //            $exams = $this->examService->getAvailableExams($student);
@@ -55,6 +55,57 @@ class   ExamController extends Controller
 //                'message' => 'Failed to load exams'
 //            ], 500);
 //        }
+        try {
+            $student = Auth::user()->student;
+            $exams = $this->examService->getAvailableExams($student);
+            Log::info($exams);
+            $examReg=$exams->values()->all();
+            return response()->json([
+                'success' => true,
+                'data' => $examReg,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load exams'
+            ], 500);
+        }
+    }
+    public function apiRegister($examId)
+    {
+        try {
+            $exam = Exam::findOrFail($examId);
+            $student = Auth::user()->student;
+
+            // Проверка дали студентът може да се запише
+            if ($exam->remainingSlots() <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Няма свободни места за този изпит'
+                ], 400);
+            }
+
+            // Проверка дали студентът вече е записан
+            if ($exam->students()->where('student_id', $student->id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Вече сте записани за този изпит'
+                ], 400);
+            }
+
+            // Записване на студента за изпита
+            $exam->students()->attach($student->id);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Успешно се записахте за изпита'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Грешка при записване за изпита'
+            ], 500);
+        }
     }
     public function storeExam(StoreExamRequest $request){
         try {

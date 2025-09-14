@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Models\User;
 use App\Services\AuthService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -27,5 +30,85 @@ class AuthController extends Controller
     public function logout(Request $request):\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
         return $this->authService->logout($request);
+    }
+
+// ... други методи
+//
+//    public function apiLogin(Request $request)
+//    {
+//        $request->validate([
+//            'username' => 'required',
+//            'password' => 'required',
+//        ]);
+//
+//        $user = User::where('username', $request->username)->first();
+//
+//        if (!$user || !Hash::check($request->password, $user->password)) {
+//            throw ValidationException::withMessages([
+//                'username' => ['Грешно потребителско име или парола.'],
+//            ]);
+//        }
+//
+//        $token = $user->createToken('api-token')->plainTextToken;
+//
+//        return response()->json([
+//            'token' => $token,
+//            'user' => $user,
+//            'redirect' => $this->apiRedirectByRole($user->role)->getTargetUrl()
+//        ]);
+//    }
+//
+//    public function apiLogout(Request $request)
+//    {
+//        $request->user()->currentAccessToken()->delete();
+//
+//        return response()->json(['message' => 'Успешно излязохте от системата.']);
+//    }
+//
+//// Помощен метод за API
+//    private function apiRedirectByRole(string $role)
+//    {
+//        $routes = [
+//            'administrator' => '/admin/dashboard',
+//            'teacher' => '/teacher/dashboard',
+//            'student' => '/student/exams',
+//        ];
+//
+//        return $routes[$role] ?? '/login';
+//    }
+
+    public function apiLogin(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+
+        $user = User::where('username', $request->username)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Грешно потребителско име или парола.'
+            ], 401);
+        }
+
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => $user,
+            'redirect' => $this->apiRedirectByRole($user->role)
+        ]);
+    }
+
+    private function apiRedirectByRole(string $role)
+    {
+        $routes = [
+            'administrator' => '/admin/dashboard',
+            'teacher' => '/teacher/dashboard',
+            'student' => '/student/exams',
+        ];
+
+        return $routes[$role] ?? '/login';
     }
 }
