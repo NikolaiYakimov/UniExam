@@ -77,7 +77,7 @@ Route::get('/{any?}', function () {
 //    Route::get('/booked-slots', [ExamController::class, 'getBookedSlots'])
 //        ->name('exams.booked-slots');
 //
-//    Route::post('/exams', [ExamController::class, 'storeExam'])
+//    Route::post('/examStore', [ExamController::class, 'storeExam'])
 //        ->name('exams.store');
 //
 //    Route::get('/exam/{id}/edit-data', [ExamController::class, 'getExamEditData'])

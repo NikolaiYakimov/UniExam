@@ -135,19 +135,206 @@
 // }
 //
 // export default App;
+// import { AuthProvider, useAuth } from './hooks/useAuth';
+// import Login from './components/Login';
+// import Exams from './components/Exam';
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import './App.css';
+//
+// function AppContent() {
+//     const { isAuthenticated, isLoading, user } = useAuth();
+//
+//     if (isLoading) {
+//         return (
+//             <div className="d-flex justify-content-center align-items-center min-vh-100">
+//                 <div className="spinner-border text-primary" role="status">
+//                     <span className="visually-hidden">Зареждане...</span>
+//                 </div>
+//             </div>
+//         );
+//     }
+//
+//     return (
+//         <Router>
+//             <Routes>
+//                 <Route
+//                     path="/login"
+//                     element={!isAuthenticated ? <Login /> : <Navigate to="/exams" />}
+//                 />
+//                 <Route
+//                     path="/exams"
+//                     element={isAuthenticated ? <Exams /> : <Navigate to="/login" />}
+//                 />
+//                 <Route
+//                     path="/"
+//                     element={<Navigate to={isAuthenticated ? "/exams" : "/login"} />}
+//                 />
+//                 <Route
+//                     path="*"
+//                     element={<Navigate to={isAuthenticated ? "/exams" : "/login"} />}
+//                 />
+//             </Routes>
+//         </Router>
+//     );
+// }
+//
+// function App() {
+//     return (
+//         <AuthProvider>
+//             <AppContent />
+//         </AuthProvider>
+//     );
+// }
+//
+// export default App;
+// import { AuthProvider, useAuth } from './hooks/useAuth';
+// import Login from './components/Login';
+// import Exams from './components/Exam';
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import './App.css';
+//
+// function AppContent() {
+//     const { isAuthenticated, isLoading, user } = useAuth();
+//
+//     if (isLoading) {
+//         return (
+//             <div className="d-flex justify-content-center align-items-center min-vh-100 w-100">
+//                 <div className="spinner-border text-primary" role="status">
+//                     <span className="visually-hidden">Зареждане...</span>
+//                 </div>
+//             </div>
+//         );
+//     }
+//
+//     return (
+//         <Router>
+//             <Routes>
+//                 <Route
+//                     path="/login"
+//                     element={!isAuthenticated ? <Login /> : <Navigate to="/exams" />}
+//                 />
+//                 <Route
+//                     path="/exams"
+//                     element={isAuthenticated ? <Exams /> : <Navigate to="/login" />}
+//                 />
+//                 <Route
+//                     path="/"
+//                     element={<Navigate to={isAuthenticated ? "/exams" : "/login"} />}
+//                 />
+//                 <Route
+//                     path="*"
+//                     element={<Navigate to={isAuthenticated ? "/exams" : "/login"} />}
+//                 />
+//             </Routes>
+//         </Router>
+//     );
+// }
+//
+// function App() {
+//     return (
+//         <AuthProvider>
+//             <AppContent />
+//         </AuthProvider>
+//     );
+// }
+//
+// export default App;
+// import { AuthProvider, useAuth } from './hooks/useAuth';
+// import Login from './components/Login';
+// import Exams from './components/Exam';
+// import Dashboard from './components/Dashboard'; // Импортване на Dashboard компонента
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import './App.css';
+//
+// function AppContent() {
+//     const { isAuthenticated, isLoading, user } = useAuth();
+//
+//     if (isLoading) {
+//         return (
+//             <div className="d-flex justify-content-center align-items-center min-vh-100 w-100">
+//                 <div className="spinner-border text-primary" role="status">
+//                     <span className="visually-hidden">Зареждане...</span>
+//                 </div>
+//             </div>
+//         );
+//     }
+//
+//     return (
+//         <Router>
+//             <Routes>
+//                 <Route
+//                     path="/login"
+//                     element={!isAuthenticated ? <Login /> : <Navigate to={getRedirectPath(user)} />}
+//                 />
+//                 <Route
+//                     path="/exams"
+//                     element={isAuthenticated && user?.role === 'student' ? <Exams /> : <Navigate to="/login" />}
+//                 />
+//                 <Route
+//                     path="/dashboard"
+//                     element={isAuthenticated && (user?.role === 'administrator' || user?.role === 'teacher') ? <Dashboard /> : <Navigate to="/login" />}
+//                 />
+//                 <Route
+//                     path="/"
+//                     element={<Navigate to={isAuthenticated ? getRedirectPath(user) : "/login"} />}
+//                 />
+//                 <Route
+//                     path="*"
+//                     element={<Navigate to={isAuthenticated ? getRedirectPath(user) : "/login"} />}
+//                 />
+//             </Routes>
+//         </Router>
+//     );
+// }
+//
+// // Помощна функция за определяне на пътя за пренасочване според ролята
+// function getRedirectPath(user) {
+//     if (!user) return '/login';
+//
+//     switch (user.role) {
+//         case 'student':
+//             return '/exams';
+//         case 'administrator':
+//         case 'teacher':
+//             return '/dashboard';
+//         default:
+//             return '/login';
+//     }
+// }
+//
+// function App() {
+//     return (
+//         <AuthProvider>
+//             <AppContent />
+//         </AuthProvider>
+//     );
+// }
+//
+// export default App;
+// App.jsx
 import { AuthProvider, useAuth } from './hooks/useAuth';
-import Login from './components/Login';
 import Exams from './components/Exam';
+import Dashboard from './components/Dashboard';
+import Login from './components/Login';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import MyExams from "./components/MyExams.jsx";
+import MyPastExams from "./components/MyPastExams.jsx";
+import StudentPayments from "./components/StudentPayments.jsx";
+import StudentProfile from './components/StudentProfile';
+import TeacherDashboard from './components/TeacherDashboard.jsx';
+
 
 function AppContent() {
     const { isAuthenticated, isLoading, user } = useAuth();
 
     if (isLoading) {
         return (
-            <div className="d-flex justify-content-center align-items-center min-vh-100">
+            <div className="d-flex justify-content-center align-items-center min-vh-100 w-100">
                 <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Зареждане...</span>
                 </div>
@@ -156,27 +343,63 @@ function AppContent() {
     }
 
     return (
-        <Router>
+        <Router basename="/">
             <Routes>
                 <Route
                     path="/login"
-                    element={!isAuthenticated ? <Login /> : <Navigate to="/exams" />}
+                    element={!isAuthenticated ? <Login /> : <Navigate to={getRedirectPath(user)} />}
+                />
+                <Route
+                    path="/my-exams"
+                    element={isAuthenticated && user?.role === 'student' ? <MyExams /> : <Navigate to="/login" />}
                 />
                 <Route
                     path="/exams"
-                    element={isAuthenticated ? <Exams /> : <Navigate to="/login" />}
+                    element={isAuthenticated && user?.role === 'student' ? <Exams /> : <Navigate to="/login" />}
+                />
+                <Route
+                    path="/my-past-exams"
+                    element={isAuthenticated && user?.role === 'student' ? <MyPastExams /> : <Navigate to="/login" />}
+                />
+                <Route
+                    path="/payments"
+                    element={isAuthenticated && user?.role === 'student' ? <StudentPayments /> : <Navigate to="/login" />}
+                />
+                <Route
+                    path="/student-profile"
+                    element={isAuthenticated && user?.role === 'student' ? <StudentProfile /> : <Navigate to="/login" />}
+                />
+
+                <Route
+                    path="/upcoming-exams"
+                    element={isAuthenticated &&  user?.role === 'teacher' ? <TeacherDashboard /> : <Navigate to="/login" />}
                 />
                 <Route
                     path="/"
-                    element={<Navigate to={isAuthenticated ? "/exams" : "/login"} />}
+                    element={<Navigate to={isAuthenticated ? getRedirectPath(user) : "/login"} />}
                 />
                 <Route
                     path="*"
-                    element={<Navigate to={isAuthenticated ? "/exams" : "/login"} />}
+                    element={<Navigate to={isAuthenticated ? getRedirectPath(user) : "/login"} />}
                 />
             </Routes>
         </Router>
     );
+}
+
+// Помощна функция за определяне на пътя за пренасочване според ролята
+function getRedirectPath(user) {
+    if (!user) return '/login';
+
+    switch (user.role) {
+        case 'student':
+            return '/exams';
+        case 'administrator':
+        case 'teacher':
+            return '/upcoming-exams';
+        // default:
+        //     return '/login';
+    }
 }
 
 function App() {

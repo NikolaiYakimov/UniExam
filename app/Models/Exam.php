@@ -56,3 +56,4 @@ class Exam extends Model
         return $this->remainingSlots()>0;
     }
 }
+

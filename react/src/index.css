@@ -66,10 +66,34 @@
 /*    background-color: #f9f9f9;*/
 /*  }*/
 /*}*/
+/*:root {*/
+/*    font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;*/
+/*    line-height: 1.6;*/
+/*    font-weight: 800;*/
+/*    color: #2c3e50;*/
+/*    background-color: #f8f9fa;*/
+/*    font-synthesis: none;*/
+/*    text-rendering: optimizeLegibility;*/
+/*    -webkit-font-smoothing: antialiased;*/
+/*    -moz-osx-font-smoothing: grayscale;*/
+/*}*/
+
+/*body {*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*    min-height: 100vh;*/
+/*}*/
+
+/*#root {*/
+/*    width: 100%;*/
+/*    min-height: 100vh;*/
+/*}*/
+
+/* Добавете допълнителни стилове ако е необходимо */
 :root {
     font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
     line-height: 1.6;
-    font-weight: 800;
+    font-weight: 400;
     color: #2c3e50;
     background-color: #f8f9fa;
     font-synthesis: none;
@@ -78,15 +102,22 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    width: 100%;
 }
 
 #root {
     width: 100%;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Добавете допълнителни стилове ако е необходимо */

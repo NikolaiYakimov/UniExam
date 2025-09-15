@@ -58,11 +58,12 @@ class   ExamController extends Controller
         try {
             $student = Auth::user()->student;
             $exams = $this->examService->getAvailableExams($student);
-            Log::info($exams);
-            $examReg=$exams->values()->all();
+
+            $availableExams=$exams->values()->all();
             return response()->json([
                 'success' => true,
-                'data' => $examReg,
+                'data' => $availableExams,
+                'student' => $student,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -120,12 +121,12 @@ class   ExamController extends Controller
                     Mail::to($student->user->email)->queue(new ExamCreatedMail($exam));
 
             }
-            return back()->with('success','Изпита е добавен успешно');
-//            return response()->json([
-//                'success' => true,
-//                'message' => 'Изпита е добавен успешно',
-//                'exam' => $exam
-//            ]);
+//            return back()->with('success','Изпита е добавен успешно');
+            return response()->json([
+                'success' => true,
+                'message' => 'Изпита е добавен успешно',
+                'exam' => $exam
+            ]);
 
         }catch (\Exception $exception){
 //            return back()->with('error',$exception->getMessage());
@@ -149,28 +150,28 @@ class   ExamController extends Controller
 //            \Log::debug("Exam start: " . $examStart);
 //            \Log::debug("Hours difference: " . $now->diffInHours($examStart, false));
             if($examStart->isPast()){
-                throw new \Exception('Датата на изпита е вече минала и не може да се редактира');
-//                return response()->json([
-//                    'success' => false,
-//                    'message' => 'Датата на изпита е вече минала и не може да се редактира'
-//                ], 422);
+//                throw new \Exception('Датата на изпита е вече минала и не може да се редактира');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Датата на изпита е вече минала и не може да се редактира'
+                ], 422);
             }
 
             if($now->diffInHours($examStart,false)<=48){
-                throw new Exception('Изпита не може да бъде редактиран, тъй като започва след по-малко от 48 часа.');
-//                return response()->json([
-//                    'success' => false,
-//                    'message' => 'Изпита не може да бъде редактиран, тъй като започва след по-малко от 48 часа.'
-//                ], 422);
+//                throw new Exception('Изпита не може да бъде редактиран, тъй като започва след по-малко от 48 часа.');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Изпита не може да бъде редактиран, тъй като започва след по-малко от 48 часа.'
+                ], 422);
             }
             $validated=$request->validated();
             $this->examService->updateExam($exam,$validated);
-            return back()->with('success','Изпита беше редактиран успешно!');
-//            return response()->json([
-//                'success' => true,
-//                'message' => 'Изпита беше редактиран успешно!',
-//                'data' => $exam
-//            ]);
+//            return back()->with('success','Изпита беше редактиран успешно!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Изпита беше редактиран успешно!',
+                'data' => $exam
+            ]);
 
         }catch (Exception $exception){
             return back()->with('error',$exception->getMessage());
@@ -197,8 +198,18 @@ class   ExamController extends Controller
 
     public function getBookedSlots(GetBookedSlotsRequest $request){
         try {
+            Log::debug('+++++++++++++++++++++++++++++++++++');
+            Log::debug(now());
+            Log::debug('//////////////////////');
+            Log::debug($request);
             $excludeExamId = $request->input('exclude_exam_id', null);
+            Log::debug($excludeExamId);
+            Log::debug($request->input('exclude_exam_id'));
+            Log::debug($request->input('date'));
+            Log::debug($request->input('hall_id'));
             $slots=$this->examService->getBookedSlots($request->hall_id,$request->date,$excludeExamId);
+            Log::debug('---------------------------------------------');
+            Log::debug($slots);
 
             return response()->json([
                 'bookedSlots'=>$slots->map(function($exam){
@@ -228,26 +239,28 @@ class   ExamController extends Controller
         }
     }
 
-    public function teacherUpcomingExams():
-//    JsonResponse
-    View
+    public function teacherUpcomingExams(): JsonResponse
     {
 //        try {
             $teacher = Auth::user()->teacher;
-            $exams = $this->examService->getUpcomingExams($teacher);
-            $subjects = Subject::all();
+            $exams = $this->examService->getUpcomingExams($teacher)->load('subject', 'hall');
+            Log::debug($exams);
+//             $availableExams=$exams->values()->all();
+
+        $subjects = Subject::all();
             $halls = ExamHall::all();
-//        $bookedSlots = $this->examService->getBookedTimeSlots();
+        $bookedSlots = $this->examService->getBookedTimeSlots();
 
 //        return view('teacher_dashboard', compact('teacher', 'exams', 'subjects', 'halls', 'bookedSlots'));
-        return view('teacher_dashboard', compact('teacher', 'exams', 'subjects', 'halls'));
+//        return view('teacher_dashboard', compact('teacher', 'exams', 'subjects', 'halls'));
 
-//            return response()->json([
-//                "exams"=>$exams,
+            return response()->json([
+                "exams"=>$exams,
 //                "teacher"=>$teacher,
-//                "subjects"=>$subjects,
-//                "halls"=>$halls,
-//            ]);
+                "subjects"=>$subjects,
+                "halls"=>$halls,
+//                "bookedSlots"=>$bookedSlots,
+            ]);
 //        }catch (\Exception $e){
 //            return response()->json([
 //                'message' => 'Failed to load upcoming exams'
@@ -285,22 +298,22 @@ class   ExamController extends Controller
     }
 
     public function examDetails($examId):
-//    JsonResponse
-    View
+    JsonResponse
+//    View
     {
 //        try {
 
             $exam = $this->examService->getExamDetails($examId);
             $teacher = Auth::user()->teacher;
 
-            return view('teacher_exam_details', compact('exam', 'teacher'));
-//            return response()->json([
-//                'success' => true,
-//                'data' => [
-//                    'exam' => $exam,
-//                    'teacher' => $teacher
-//                ]
-//            ]);
+//            return view('teacher_exam_details', compact('exam', 'teacher'));
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'exam' => $exam,
+                    'teacher' => $teacher
+                ]
+            ]);
 
 //        }catch (\Exception $exception){
 ////            return response()->json([
@@ -319,11 +332,11 @@ class   ExamController extends Controller
             try {
                 $this->examService->updateGrades($examId, $request->grades);
 
-                return back()->with('success', 'Оценките бяха актуализирани успешно!');
-//                return response()->json([
-//                    'success' => true,
-//                    'message' => 'Оценките бяха актуализирани успешно!'
-//                ]);
+//                return back()->with('success', 'Оценките бяха актуализирани успешно!');
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Оценките бяха актуализирани успешно!'
+                ]);
             }catch (\Exception $exception){
 //                return response()->json([
 //                    'success' => false,

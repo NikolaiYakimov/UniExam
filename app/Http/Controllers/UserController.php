@@ -88,14 +88,14 @@ class UserController extends Controller
         $specialties = Specialty::all();
         $groups = Group::all();
 
-        return view('edit_user', compact('user', 'faculties', 'specialties', 'groups'));
-//        return response()->json([
-//            'success' => true,
-//            'data' => $user,
-//            'faculties' => $faculties,
-//            'specialties' => $specialties,
-//            'groups' => $groups
-//        ]);
+//        return view('edit_user', compact('user', 'faculties', 'specialties', 'groups'));
+        return response()->json([
+            'success' => true,
+            'data' => $user,
+            'faculties' => $faculties,
+            'specialties' => $specialties,
+            'groups' => $groups
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -140,7 +140,8 @@ class UserController extends Controller
      public function updateProfile(UpdateProfileRequest $request,UserService $service){
 
          $service->updateProfile($request->user(),$request->validated());
-         return back()->with('success',"Профилът е обновен успешно");
+//         return back()->with('success',"Профилът е обновен успешно");
+         return response()->json(['success' => 'Успешмпо актуализирахте профила си']);
 
      }
      public function updatePassword(UpdatePasswordRequest $request,UserService $service)
@@ -158,7 +159,8 @@ class UserController extends Controller
                  'error' => $e->getMessage(),
              ]);
          }
-         return back()->with('success','Паролата е сменена успешно');
+//         return back()->with('success','Паролата е сменена успешно');
+         return response()->json(['success'=>'Паролата е сменена успешно']);
 
      }
 
@@ -250,6 +252,21 @@ class UserController extends Controller
         }
 
         return redirect()->route('login')->with('status', 'Паролата ви е променена успешно!');
+    }
+    public function getUserWithRelations(Request $request)
+    {
+        $user = $request->user();
+
+        // Load relationships based on user role
+        if ($user->role === 'student') {
+            $user->load('student.faculty', 'student.specialty', 'student.group');
+        } elseif ($user->role === 'teacher') {
+            $user->load('teacher.faculty', 'teacher.specialty');
+        } elseif ($user->role === 'administrator') {
+            $user->load('administrator');
+        }
+
+        return response()->json($user);
     }
 
 }

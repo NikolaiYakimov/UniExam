@@ -7,6 +7,7 @@ use App\Models\Exam;
 use App\Models\ExamRegistration;
 use App\Services\ExamRegistrationService;
 use App\Services\PaymentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,43 +26,43 @@ class ExamRegistrationController
     }
 
 //    public function myExams(): \Illuminate\Http\JsonResponse
-        public function myExams(): View
+        public function myExams(): JsonResponse
 
         {
 
             $student = Auth::user()->student;
         $registeredExams = $this->registrationService->getStudentRegistrations($student);
 
-        return view('my_exams', [
-            'exams' => $registeredExams,
-            'student' => $student
-        ]);
+//        return view('my_exams', [
+//            'exams' => $registeredExams,
+//            'student' => $student
+//        ]);
 
 //        $student = Auth::user()->student;
 //        $registeredExams = $this->registrationService->getStudentRegistrations($student);
 //
-//        return response()->json([
-//            'exams' => $registeredExams,
-//            'student' => $student
-//        ]);
-    }
-
-    public function myPastExam(){
-       $student = Auth::user()->student;
-        $registeredExams = $this->registrationService->getPastStudentRegistrations($student);
-        return view('my_past_exams', [
+        return response()->json([
             'exams' => $registeredExams,
             'student' => $student
         ]);
+    }
 
-//
-//        return response()->json([
+    public function myPastExam():JsonResponse{
+       $student = Auth::user()->student;
+        $registeredExams = $this->registrationService->getPastStudentRegistrations($student);
+//        return view('my_past_exams', [
 //            'exams' => $registeredExams,
 //            'student' => $student
 //        ]);
+
+//
+        return response()->json([
+            'exams' => $registeredExams,
+            'student' => $student
+        ]);
     }
 
-    public function register(Request $request, Exam $exam): RedirectResponse
+    public function register(Request $request, Exam $exam): JsonResponse
 //    \Illuminate\Http\JsonResponse
     {
 //        $student = Auth::user()->student;
@@ -106,38 +107,38 @@ class ExamRegistrationController
 //
 //        return redirect()->route('exams')->with('success', $result['message']);
 
-//        $student = Auth::user()->student;
-//        $result = $this->registrationService->registerStudent($student, $exam);
-//
-//        if (!$result['success']) {
-//            return response()->json(['error' => $result['message']], 422);
-//        }
-//
-//        if (isset($result['redirect_to_payment']) && $result['redirect_to_payment']) {
-//            return response()->json([
-//                'redirect_url' => route('payment.handle', ['exam' => $exam->id])
-//            ]);
-//        }
-//
-//        return response()->json(['success' => $result['message']]);
         $student = Auth::user()->student;
         $result = $this->registrationService->registerStudent($student, $exam);
-        Mail::to( auth()->user()->email)->queue(new SuccessfullyRegistrated($exam, $student));
+
         if (!$result['success']) {
-            return redirect()->back()->withErrors(['error' => $result['message']]);
+            return response()->json(['error' => $result['message']], 422);
         }
 
         if (isset($result['redirect_to_payment']) && $result['redirect_to_payment']) {
-            return redirect()->route('payment.handle', ['exam' => $exam->id]);
+            return response()->json([
+                'redirect_url' => route('payment.handle', ['exam' => $exam->id])
+            ]);
         }
-        Mail::to( auth()->user()->email)->queue(new SuccessfullyRegistrated($exam, auth()->user()->student));
-
-
-        return redirect()->back()->with('success', $result['message']);
+//
+        return response()->json(['success' => $result['message']]);
+//        $student = Auth::user()->student;
+//        $result = $this->registrationService->registerStudent($student, $exam);
+//        Mail::to( auth()->user()->email)->queue(new SuccessfullyRegistrated($exam, $student));
+//        if (!$result['success']) {
+//            return redirect()->back()->withErrors(['error' => $result['message']]);
+//        }
+//
+//        if (isset($result['redirect_to_payment']) && $result['redirect_to_payment']) {
+//            return redirect()->route('payment.handle', ['exam' => $exam->id]);
+//        }
+//        Mail::to( auth()->user()->email)->queue(new SuccessfullyRegistrated($exam, auth()->user()->student));
+//
+//
+//        return redirect()->back()->with('success', $result['message']);
 
     }
 
-    public function unregisterExam(Exam $exam):RedirectResponse
+    public function unregisterExam(Exam $exam):JsonResponse
 //    \Illuminate\Http\JsonResponse
     {
 //        $student = Auth::user()->student;
@@ -170,29 +171,28 @@ class ExamRegistrationController
 //
 //        return back()->with("success", "Успешно се отписахте от изпита");
 //    }
-
-        $student = Auth::user()->student;
-        $result = $this->registrationService->unregisterStudent($student, $exam);
-
-        if (!$result['success']) {
-            return back()->with('error', $result['message']);
-        }
-
-        return back()->with('success', $result['message']);
+//
 //        $student = Auth::user()->student;
 //        $result = $this->registrationService->unregisterStudent($student, $exam);
 //
 //        if (!$result['success']) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => $result['message']
-//            ], 400);
+//            return back()->with('error', $result['message']);
 //        }
 //
-//        return response()->json([
-//            'success' => true,
-//            'message' => $result['message']
-//        ], 200);
+//        return back()->with('success', $result['message']);
+        $student = Auth::user()->student;
+        $result = $this->registrationService->unregisterStudent($student, $exam);
+
+        if (!$result['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message']
+            ], 400);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => $result['message']
+        ], 200);
     }
 
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -77,7 +78,7 @@ class AuthController extends Controller
 //        return $routes[$role] ?? '/login';
 //    }
 
-    public function apiLogin(Request $request): \Illuminate\Http\JsonResponse
+    public function apiLogin(Request $request)
     {
         $request->validate([
             'username' => 'required',
@@ -92,8 +93,21 @@ class AuthController extends Controller
             ], 401);
         }
 
+        switch ($user->role) {
+            case 'student':
+                $user->load(['student.faculty', 'student.specialty', 'student.group']);
+                break;
+            case 'teacher':
+                $user->load(['teacher.faculty', 'teacher.specialty']);
+                break;
+            case 'administrator':
+                $user->load('administrator');
+                break;
+        }
         $token = $user->createToken('api-token')->plainTextToken;
-
+        Log::info('-----------------------');
+        Log::info($token);
+        Log::info($user);
         return response()->json([
             'token' => $token,
             'user' => $user,
@@ -110,5 +124,33 @@ class AuthController extends Controller
         ];
 
         return $routes[$role] ?? '/login';
+    }
+    public function apiLogout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Успешно излязохте от системата.']);
+    }
+
+    public function getUserWithRelations(Request $request)
+    {
+        $user = $request->user();
+
+        // Load relationships based on role
+        switch ($user->role) {
+            case 'student':
+                $user->load(['student.faculty', 'student.specialty', 'student.group']);
+                break;
+            case 'teacher':
+                $user->load(['teacher.faculty', 'teacher.specialty', 'teacher.exams' => function($query) {
+//                    $query->where('status', 'active');
+                }]);
+                break;
+            case 'administrator':
+                $user->load('administrator');
+                break;
+        }
+
+        return response()->json($user);
     }
 }

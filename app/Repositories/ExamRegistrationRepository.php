@@ -22,12 +22,28 @@ class ExamRegistrationRepository
 
     public function getPastStudentRegistrations(Student $student): Collection
     {
+//        return $student->registrations()
+//            ->with(['exam.teacher.user', 'exam.subject', 'exam.hall','exam'])
+//            ->get()
+//            ->pluck('exam')
+//            ->where('start_time', '<=', now())
+//            ->sortByDesc('start_time')
+//            ->values();
+//        return $student->registrations()
+//            ->with(['exam.teacher.user', 'exam.subject', 'exam.hall'])
+//            ->get()
+//            ->filter(function ($registration) {
+//                return $registration->exam && $registration->exam->start_time <= now();
+//            })
+//            ->sortByDesc('exam.start_time')
+//            ->values();
         return $student->registrations()
-            ->with(['exam.teacher', 'exam.subject', 'exam.hall'])
+            ->with(['exam.teacher.user', 'exam.subject', 'exam.hall'])
+            ->whereHas('exam', function($query) {
+                $query->where('start_time', '<=', now());
+            })
             ->get()
-            ->pluck('exam')
-            ->where('start_time', '<=', now())
-            ->sortByDesc('start_time')
+            ->sortByDesc('exam.start_time')
             ->values();
     }
 

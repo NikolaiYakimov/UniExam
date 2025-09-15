@@ -73,6 +73,7 @@ class  PaymentService
     {
         $exam=Exam::findOrFail($session->metadata->exam_id);
         $student=Student::findOrFail($session->metadata->student_id);
+        $user=Auth::user();
 
         DB::transaction(function () use ($session,$exam) {
 //            $exam=Exam::findOrFail($session->metadata->exam_id);
@@ -99,7 +100,12 @@ class  PaymentService
                 'payment_date'=>now(),
             ]);
         });
-        Mail::to(auth()->user()->email)->queue(new SuccessfullyPaidAndRegistered($exam,$student));
+//        $emailFromStripe = $session->customer_details->email ?? null;
+//        $fallbackEmail   = optional($student->user)->email;
+//        $toEmail         = $emailFromStripe ?: $fallbackEmail;
+//        Log::debug(Auth::user());
+        Log::debug($student->user);
+        Mail::to($student->user->email)->queue(new SuccessfullyPaidAndRegistered($exam,$student));
     }
 
     public function processRefund(string $paymentIntentId,string $reason='requested_by_customer'): bool

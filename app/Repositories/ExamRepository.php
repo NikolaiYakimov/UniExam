@@ -189,7 +189,7 @@ class ExamRepository implements ExamRepositoryInterface
 
     public function getTeacherUpcomingExams($teacherId)
     {
-        return Exam::where('teacher_id', $teacherId)
+        return Exam::with(['subject', 'hall'])->where('teacher_id', $teacherId)
             ->where('start_time', '>', now())
             ->orderBy('start_time', 'desc')
             ->get();

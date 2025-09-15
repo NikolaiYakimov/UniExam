@@ -9,8 +9,10 @@ use App\Repositories\ExamRepository;
 use App\Repositories\ExamRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Whoops\Example\Exception;
 use Illuminate\Support\Collection;
+use function PHPUnit\Framework\isString;
 
 
 class ExamService{
@@ -59,10 +61,15 @@ class ExamService{
     }
 
     public function getBookedSlots(int $hallId,string $date,int $excludeExamId=null){
-
+        Log::debug('******************************');
         $dateObj=Carbon::parse($date);
+        Log::debug($dateObj);
         $start=$dateObj->copy()->startOfDay();
         $end=$dateObj->copy()->endOfDay();
+//        Log::debug($dateObj.isString());
+        Log::debug($start);
+        Log::debug($end);
+        Log::debug('////////');
 
         return $this->examRepository->getBookedSlots($hallId,$start,$end,$excludeExamId);
     }

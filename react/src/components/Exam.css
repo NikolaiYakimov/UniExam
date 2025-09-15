@@ -2,6 +2,22 @@
     --sb-w: 20rem;
     --header-h: 64px;
 }
+.page-layout {
+    display: flex;
+    min-height: calc(100vh - 4rem);
+}
+
+.bg-gradient-to-br {
+    background: linear-gradient(135deg, #eef2ff 0%, #e0f2fe 100%);
+}
+
+.backdrop-blur-md {
+    backdrop-filter: blur(12px);
+}
+
+.hover\:-translate-y-0\.5:hover {
+    transform: translateY(-0.125rem);
+}
 
 body {
     background: #f8f9fa;
@@ -707,3 +723,119 @@ body {
 .w-80 { width: 20rem; } /* 320px */
 .me-2 { margin-right: .5rem; } /* ако искаш да пазиш "me-2" от header-а */
 .ml-auto { margin-left: auto; } /* за еквивалент на ms-auto */
+:root {
+    --sb-w: 20rem;
+    --header-h: 64px;
+}
+
+body {
+    background: #f8f9fa;
+    font-family: 'Inter', 'Helvetica Neue', sans-serif;
+}
+
+.nav-link.active, .list-group-item.active {
+    background: rgba(79,70,229,.08) !important;
+    font-weight: 600;
+    color: #4f46e5 !important;
+}
+
+.header-nav {
+    display: flex;
+    gap: .5rem;
+    padding: .5rem 1rem;
+    background: white;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.header-nav .nav-link {
+    padding: .5rem 1rem;
+    border-radius: .375rem;
+    transition: .2s;
+    display: flex;
+    align-items: center;
+}
+
+#sidebar {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    width: var(--sb-w);
+    background: #fff;
+    padding: 1.5rem;
+    border-right: 1px solid #e5e7eb;
+    overflow-y: auto;
+}
+
+@media (max-width: 1538px) {
+    #sidebar {
+        display: none;
+    }
+
+    .header-nav {
+        display: none;
+    }
+}
+
+@media (min-width: 1538px) {
+    #sidebar {
+        display: block;
+    }
+
+    .header-nav {
+        display: flex;
+    }
+}
+
+.page-layout {
+    display: grid;
+    grid-template-columns: var(--sb-w) 1fr;
+    gap: 0;
+    min-height: calc(100dvh - var(--header-h));
+}
+
+.mobile-nav-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 280px;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    z-index: 50;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.mobile-nav-dropdown.show {
+    display: block;
+}
+
+.mobile-nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #4f46e5;
+    font-size: 1.25rem;
+    cursor: pointer;
+    margin-left: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+@media (max-width: 1538px) {
+    .mobile-nav-toggle {
+        display: flex;
+    }
+
+    .profile-section {
+        display: flex;
+        align-items: center;
+    }
+}

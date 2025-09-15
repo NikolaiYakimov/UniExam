@@ -31,10 +31,10 @@ class PaymentController extends Controller
             $student = auth()->user()->student;
             $payments = $this->paymentRepository->getPaymentRecords($student);
 
-            return view('student_payments', compact('payments'));
-//                    return response()->json([
-//            'payments' => $payments,
-//            'student' => $student]);
+//            return view('student_payments', compact('payments'));
+                    return response()->json([
+            'payments' => $payments,
+            'student' => $student]);
 //
         }catch (\Exception $e) {
             Log::error('Error fetching payments: ' . $e->getMessage());
@@ -48,10 +48,10 @@ class PaymentController extends Controller
     public function handlePayment(Exam $exam){
 
         try{
-            return $this->paymentService->createCheckoutSession($exam, auth()->user()->student);
-
-        }catch (\Exception $e){
-
+            Log::debug("Тук съм да плащам");
+            $student = Auth::user()->student;
+            return $this->paymentService->createCheckoutSession($exam, $student);
+        } catch (\Exception $e) {
             Log::error('Payment initiation failed: ' . $e->getMessage());
             return response()->json(['error' => 'Грешка при плащане: ' . $e->getMessage()], 500);
         }
@@ -63,14 +63,17 @@ class PaymentController extends Controller
                      $sessionId=$request->query('session_id');
 
                      if (!$sessionId) {
-                        return back()->with('error', 'Невалидна сесия за плащане.');
+                        return response()->json(['error'=> 'Невалидна сесия за плащане.'],422);
                      }
 
                      $this->paymentService->handleSuccessfulPayment($sessionId);
-                     return redirect()->route('exams')->with('success', 'Успешно плащане и записване за изпит!');
+//                     return response()->json(['status' => 'ok']);
+//                     return redirect()->route('exams')->with('success', 'Успешно плащане и записване за изпит!');
             }catch (\Exception $e){
-                Log::error('Payment success handling failed: ' . $e->getMessage());
-                return redirect()->route('payment.cancel')->with('error', $e->getMessage());
+//                Log::error('Payment success handling failed: ' . $e->getMessage());
+//                return redirect()->route('payment.cancel')->with('error', $e->getMessage());
+                \Log::error('Payment success handling failed: '.$e->getMessage());
+                return response()->json(['error' => "123"], 500);
             }
 
 
