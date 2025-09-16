@@ -16,6 +16,7 @@
     "@fortawesome/react-fontawesome": "^3.0.2",
     "@stripe/react-stripe-js": "^4.0.2",
     "@stripe/stripe-js": "^7.9.0",
+    "@tailwindcss/vite": "^4.1.13",
     "bootstrap": "^5.3.8",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

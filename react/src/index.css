@@ -121,3 +121,6 @@ body {
 }
 
 /* Добавете допълнителни стилове ако е необходимо */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

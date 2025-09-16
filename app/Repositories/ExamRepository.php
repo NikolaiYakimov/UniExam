@@ -153,7 +153,7 @@ class ExamRepository implements ExamRepositoryInterface
 
     public function  getConductedExams($teacherId)
     {
-        return Exam::where('teacher_id', $teacherId)
+        return Exam::with(['subject','hall'])->where('teacher_id', $teacherId)
             ->where('start_time', '<', Carbon::now()->toIso8601String())
             ->orderBy('start_time', 'desc')
             ->get();
@@ -161,7 +161,7 @@ class ExamRepository implements ExamRepositoryInterface
 
     public function getExamDetails($examId)
     {
-        return Exam::with(['registrations.student.user', 'subject'])->findOrFail($examId);
+        return Exam::with(['registrations.student.user', 'subject','hall'])->findOrFail($examId);
     }
 
     public function updateExamGrades($examId, $grades)

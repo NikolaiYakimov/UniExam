@@ -327,6 +327,9 @@ import MyPastExams from "./components/MyPastExams.jsx";
 import StudentPayments from "./components/StudentPayments.jsx";
 import StudentProfile from './components/StudentProfile';
 import TeacherDashboard from './components/TeacherDashboard.jsx';
+import TeacherExamDetails from "./components/TeacherExamDetails.jsx";
+import TeacherConductedExams from "./components/TeacherConductedExams.jsx";
+
 
 
 function AppContent() {
@@ -373,6 +376,14 @@ function AppContent() {
                 <Route
                     path="/upcoming-exams"
                     element={isAuthenticated &&  user?.role === 'teacher' ? <TeacherDashboard /> : <Navigate to="/login" />}
+                />
+                <Route
+                    path="/conducted-exams"
+                    element={isAuthenticated &&  user?.role === 'teacher' ? <TeacherConductedExams /> : <Navigate to="/login" />}
+                />
+                <Route
+                    path="/teacher/exam/:id"
+                    element={isAuthenticated &&  user?.role === 'teacher' ? <TeacherExamDetails /> : <Navigate to="/login" />}
                 />
                 <Route
                     path="/"

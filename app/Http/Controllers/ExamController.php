@@ -247,16 +247,16 @@ class   ExamController extends Controller
             Log::debug($exams);
 //             $availableExams=$exams->values()->all();
 
-        $subjects = Subject::all();
-            $halls = ExamHall::all();
-        $bookedSlots = $this->examService->getBookedTimeSlots();
+//        $subjects = Subject::all();
+//            $halls = ExamHall::all();
+//        $bookedSlots = $this->examService->getBookedTimeSlots();
 
 //        return view('teacher_dashboard', compact('teacher', 'exams', 'subjects', 'halls', 'bookedSlots'));
 //        return view('teacher_dashboard', compact('teacher', 'exams', 'subjects', 'halls'));
 
             return response()->json([
                 "exams"=>$exams,
-//                "teacher"=>$teacher,
+                "teacher"=>$teacher,
                 "subjects"=>$subjects,
                 "halls"=>$halls,
 //                "bookedSlots"=>$bookedSlots,
@@ -269,39 +269,39 @@ class   ExamController extends Controller
     }
 
     public function conductedExams():
-//    JsonResponse
-    View
+    JsonResponse
+//    View
     {
-//        try {
+        try {
             $teacher = Auth::user()->teacher;
             $exams = $this->examService->getConductedExams();
             $subjects = Subject::all();
             $halls = ExamHall::all();
 
-        return view('teacher_conducted_exams', compact('teacher', 'exams', 'subjects', 'halls'));
-//            return response()->json([
-//                'success' => true,
-//                'data' => [
-//                    'teacher' => $teacher,
-//                    'exams' => $exams,
-//                    'subjects' => $subjects,
-//                    'halls' => $halls
-//                ]
-//            ]);
-//        }catch (\Exception $exception){
-//            Log::error($exception->getMessage());
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'Failed to load conducted exams'
-//            ], 500);
-//        }
+//        return view('teacher_conducted_exams', compact('teacher', 'exams', 'subjects', 'halls'));
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'teacher' => $teacher,
+                    'exams' => $exams,
+                    'subjects' => $subjects,
+                    'halls' => $halls
+                ]
+            ]);
+        }catch (\Exception $exception){
+            Log::error($exception->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load conducted exams'
+            ], 500);
+        }
     }
 
     public function examDetails($examId):
     JsonResponse
 //    View
     {
-//        try {
+        try {
 
             $exam = $this->examService->getExamDetails($examId);
             $teacher = Auth::user()->teacher;
@@ -315,14 +315,15 @@ class   ExamController extends Controller
                 ]
             ]);
 
-//        }catch (\Exception $exception){
-////            return response()->json([
-////                'success' => false,
-////                'message' => 'Exam not found'
-////            ], 404);
-//
-//        }
+        }catch (\Exception $exception){
+            return response()->json([
+                'success' => false,
+                'message' => 'Exam not found'
+            ], 404);
+
+        }
     }
+
     public function updateGrades(Request $request, $examId)
     {
         $request->validate([
@@ -338,11 +339,11 @@ class   ExamController extends Controller
                     'message' => 'Оценките бяха актуализирани успешно!'
                 ]);
             }catch (\Exception $exception){
-//                return response()->json([
-//                    'success' => false,
-//                    'message' => $exception->getMessage()
-//                ], 500);
-                return back()->with('error',$exception->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => $exception->getMessage()
+                ], 500);
+//                return back()->with('error',$exception->getMessage());
             }
     }
 

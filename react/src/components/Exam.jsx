@@ -1841,3 +1841,27 @@ export default function Exams() {
         </div>
     );
 }
+{exams.map((exam) => {
+    const subjectName = exam.subject ? exam.subject.subject_name : 'Неизвестен предмет';
+    const teacherName = exam.teacher?.user ? `${exam.teacher.user.first_name} ${exam.teacher.user.last_name}` : 'Неизвестен преподавател';
+    const requiresPayment = exam.exam_type === 'ликвидация' || (exam.subject && exam.subject.semester < user.student.semester);
+    return (
+        <div key={exam.id} className="bg-white border rounded-xl p-4 sm:p-6 hover:shadow-md transition-all">
+            <h2 className="text-lg font-semibold text-gray-900">{subjectName}</h2>
+            <p className="text-sm text-gray-600">Преподавател: {teacherName}</p>
+            <p className="text-sm text-gray-600">Тип: {exam.exam_type}</p>
+            <p className="text-sm text-gray-600">Свободни места: {exam.remaining_slots > 0 ? exam.remaining_slots : 'Няма'}</p>
+            {requiresPayment ? (
+                <button onClick={() => setSelectedExam(exam)} disabled={exam.remaining_slots <= 0}
+                        className="w-full mt-3 px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300">
+                    Плати и се запиши
+                </button>
+            ) : (
+                <button onClick={() => handleRegister(exam)} disabled={exam.remaining_slots <= 0}
+                        className="w-full mt-3 px-4 py-2 rounded-lg text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-300">
+                    Запиши се
+                </button>
+            )}
+        </div>
+    );
+})}
