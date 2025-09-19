@@ -67,16 +67,16 @@ class AuthController extends Controller
 //    }
 //
 //// Помощен метод за API
-//    private function apiRedirectByRole(string $role)
-//    {
-//        $routes = [
-//            'administrator' => '/admin/dashboard',
-//            'teacher' => '/teacher/dashboard',
-//            'student' => '/student/exams',
-//        ];
-//
-//        return $routes[$role] ?? '/login';
-//    }
+    private function apiRedirectByRole(string $role)
+    {
+        $routes = [
+            'administrator' => '/admin/dashboard',
+            'teacher' => '/teacher/dashboard',
+            'student' => '/student/exams',
+        ];
+
+        return $routes[$role] ?? '/login';
+    }
 
     public function apiLogin(Request $request)
     {
@@ -93,6 +93,8 @@ class AuthController extends Controller
             ], 401);
         }
 
+        $user->tokens()->delete();
+
         switch ($user->role) {
             case 'student':
                 $user->load(['student.faculty', 'student.specialty', 'student.group']);
@@ -105,9 +107,9 @@ class AuthController extends Controller
                 break;
         }
         $token = $user->createToken('api-token')->plainTextToken;
-        Log::info('-----------------------');
-        Log::info($token);
-        Log::info($user);
+//        Log::info('-----------------------');
+//        Log::info($token);
+//        Log::info($user);
         return response()->json([
             'token' => $token,
             'user' => $user,
@@ -115,24 +117,30 @@ class AuthController extends Controller
         ]);
     }
 
-    private function apiRedirectByRole(string $role)
-    {
-        $routes = [
-            'administrator' => '/admin/dashboard',
-            'teacher' => '/teacher/dashboard',
-            'student' => '/student/exams',
-        ];
-
-        return $routes[$role] ?? '/login';
-    }
+//    private function apiRedirectByRole(string $role)
+//    {
+//        $routes = [
+//            'administrator' => '/admin/dashboard',
+//            'teacher' => '/teacher/dashboard',
+//            'student' => '/student/exams',
+//        ];
+//
+//        return $routes[$role] ?? '/login';
+//    }
     public function apiLogout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        try {
+            $request->user()->currentAccessToken()->delete();
+            Log::debug("Напуснах системата");
 
-        return response()->json(['message' => 'Успешно излязохте от системата.']);
+            return response()->json(['message' => 'Успешно излязохте от системата.']);
+
+        }catch (\Exception $exception){
+            return response()->json(['message' => 'Logout failed'], 500);
+        }
     }
 
-    public function getUserWithRelations(Request $request)
+    public function getUserWithRelations(Request $request): \Illuminate\Http\JsonResponse
     {
         $user = $request->user();
 

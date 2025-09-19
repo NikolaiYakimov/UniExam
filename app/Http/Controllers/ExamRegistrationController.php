@@ -195,5 +195,27 @@ class ExamRegistrationController
         ], 200);
     }
 
+    public function updateGrades(Request $request, $examId)
+    {
+        $request->validate([
+            'grades' => 'required|array',
+            'grades.*' => 'nullable|numeric|min:2|max:6'
+        ]);
+        try {
+            $this->registrationService->updateGrades($examId, $request->grades);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Оценките бяха актуализирани успешно!'
+            ]);
+        }catch (\Exception $exception){
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage()
+            ], 500);
+
+        }
+    }
+
 
 }

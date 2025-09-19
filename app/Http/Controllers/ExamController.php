@@ -72,42 +72,43 @@ class   ExamController extends Controller
             ], 500);
         }
     }
-    public function apiRegister($examId)
-    {
-        try {
-            $exam = Exam::findOrFail($examId);
-            $student = Auth::user()->student;
+//    public function apiRegister($examId)
+//    {
+//        try {
+//            $exam = Exam::findOrFail($examId);
+//            $student = Auth::user()->student;
+//
+//            // Проверка дали студентът може да се запише
+//            if ($exam->remainingSlots() <= 0) {
+//                return response()->json([
+//                    'success' => false,
+//                    'message' => 'Няма свободни места за този изпит'
+//                ], 400);
+//            }
+//
+//            // Проверка дали студентът вече е записан
+//            if ($exam->students()->where('student_id', $student->id)->exists()) {
+//                return response()->json([
+//                    'success' => false,
+//                    'message' => 'Вече сте записани за този изпит'
+//                ], 400);
+//            }
+//
+//            // Записване на студента за изпита
+//            $exam->students()->attach($student->id);
+//
+//            return response()->json([
+//                'success' => true,
+//                'message' => 'Успешно се записахте за изпита'
+//            ]);
+//        } catch (\Exception $e) {
+//            return response()->json([
+//                'success' => false,
+//                'message' => 'Грешка при записване за изпита'
+//            ], 500);
+//        }
+//    }
 
-            // Проверка дали студентът може да се запише
-            if ($exam->remainingSlots() <= 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Няма свободни места за този изпит'
-                ], 400);
-            }
-
-            // Проверка дали студентът вече е записан
-            if ($exam->students()->where('student_id', $student->id)->exists()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Вече сте записани за този изпит'
-                ], 400);
-            }
-
-            // Записване на студента за изпита
-            $exam->students()->attach($student->id);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Успешно се записахте за изпита'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Грешка при записване за изпита'
-            ], 500);
-        }
-    }
     public function storeExam(StoreExamRequest $request){
         try {
             $request->validated();
@@ -174,42 +175,42 @@ class   ExamController extends Controller
             ]);
 
         }catch (Exception $exception){
-            return back()->with('error',$exception->getMessage());
-//            return response()->json([
-//                'success' => false,
-//                'message' => $exception->getMessage()
-//            ], 500);
+//            return back()->with('error',$exception->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage()
+            ], 500);
         }
     }
 
     public function getExamEditData($examId): \Illuminate\Http\JsonResponse
     {
-        $exam=Exam::findOrFail($examId);
+        try {
+            $exam = Exam::findOrFail($examId);
+            return response()->json([
+                'subject_id' => $exam->subject_id,
+                'exam_type' => $exam->exam_type,
+                'max_students' => $exam->max_students,
+                'start_time' => $exam->start_time,
+                'end_time' => $exam->end_time,
+                'hall_id' => $exam->hall_id
+            ]);
+        }catch (\Exception $exception){
         return response()->json([
-            'subject_id'=>$exam->subject_id,
-            'exam_type'=>$exam->exam_type,
-            'max_students'=>$exam->max_students,
-            'start_time'=>$exam->start_time,
-            'end_time'=>$exam->end_time,
-            'hall_id'=>$exam->hall_id
-        ]);
+            'error'=>'Грешка при зареждане на запазените часове ',
+            'message'=>$exception->getMessage()
+        ],500);
+    }
     }
 
 
     public function getBookedSlots(GetBookedSlotsRequest $request){
         try {
-            Log::debug('+++++++++++++++++++++++++++++++++++');
-            Log::debug(now());
-            Log::debug('//////////////////////');
-            Log::debug($request);
+
             $excludeExamId = $request->input('exclude_exam_id', null);
-            Log::debug($excludeExamId);
-            Log::debug($request->input('exclude_exam_id'));
-            Log::debug($request->input('date'));
-            Log::debug($request->input('hall_id'));
+
             $slots=$this->examService->getBookedSlots($request->hall_id,$request->date,$excludeExamId);
-            Log::debug('---------------------------------------------');
-            Log::debug($slots);
+
 
             return response()->json([
                 'bookedSlots'=>$slots->map(function($exam){
@@ -226,12 +227,6 @@ class   ExamController extends Controller
                 'timestamp'=>now()->toIso8601String()
             ]);
         }catch (\Exception $exception){
-            \Log::error('Booked slots error', [
-                'method' => __METHOD__,
-                'params' => $request->all(),
-                'error' => $exception->getMessage(),
-                'trace' => $exception->getTraceAsString()
-            ]);
             return response()->json([
                 'error'=>'Грешка при зареждане на запазените часове ',
                 'message'=>$exception->getMessage()
@@ -241,14 +236,14 @@ class   ExamController extends Controller
 
     public function teacherUpcomingExams(): JsonResponse
     {
-//        try {
+        try {
             $teacher = Auth::user()->teacher;
             $exams = $this->examService->getUpcomingExams($teacher)->load('subject', 'hall');
-            Log::debug($exams);
+//            Log::debug($exams);
 //             $availableExams=$exams->values()->all();
 
-//        $subjects = Subject::all();
-//            $halls = ExamHall::all();
+            $subjects = $teacher->subjects;
+            $halls = ExamHall::all();
 //        $bookedSlots = $this->examService->getBookedTimeSlots();
 
 //        return view('teacher_dashboard', compact('teacher', 'exams', 'subjects', 'halls', 'bookedSlots'));
@@ -261,16 +256,16 @@ class   ExamController extends Controller
                 "halls"=>$halls,
 //                "bookedSlots"=>$bookedSlots,
             ]);
-//        }catch (\Exception $e){
-//            return response()->json([
-//                'message' => 'Failed to load upcoming exams'
-//            ], 500);
-//        }
+        }catch (\Exception $e){
+            return response()->json([
+                'error'=>'Грешка при зареждане на предстоящите изпити ',
+                'message' => 'Failed to load upcoming exams'
+            ], 500);
+        }
     }
 
     public function conductedExams():
     JsonResponse
-//    View
     {
         try {
             $teacher = Auth::user()->teacher;

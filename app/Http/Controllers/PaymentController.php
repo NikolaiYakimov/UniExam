@@ -69,11 +69,15 @@ class PaymentController extends Controller
                      $this->paymentService->handleSuccessfulPayment($sessionId);
 //                     return response()->json(['status' => 'ok']);
 //                     return redirect()->route('exams')->with('success', 'Успешно плащане и записване за изпит!');
+                $frontendUrl = config('app.frontend_url') . '/exams?payment=success';
+                return redirect($frontendUrl);
             }catch (\Exception $e){
 //                Log::error('Payment success handling failed: ' . $e->getMessage());
 //                return redirect()->route('payment.cancel')->with('error', $e->getMessage());
                 \Log::error('Payment success handling failed: '.$e->getMessage());
-                return response()->json(['error' => "123"], 500);
+                $frontendUrl = config('app.frontend_url') . '/exams?payment=error&message=' . urlencode($e->getMessage());
+//                return response()->json(['error' => "123"], 500);
+                return redirect($frontendUrl);
             }
 
 

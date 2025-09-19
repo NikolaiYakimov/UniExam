@@ -97,7 +97,6 @@ class UserRepository
 
     protected function updateRoleSpecificData(User $user, $data)
     {
-        // Remove existing role data
         if ($user->student) {
             $user->student->delete();
         }

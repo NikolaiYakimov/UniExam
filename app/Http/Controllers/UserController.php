@@ -33,11 +33,11 @@ class UserController extends Controller
     public function getUsers()
     {
         $users = $this->userService->getAllUsers();
-        return view('users', compact('users'));
-//        return response()->json([
-//            'success' => true,
-//            'data' => $users
-//        ]);
+//        return view('users', compact('users'));
+        return response()->json([
+            'success' => true,
+            'data' => $users
+        ]);
     }
 
     public function create()
@@ -45,21 +45,26 @@ class UserController extends Controller
         $faculties = Faculty::all();
         $specialties = Specialty::all();
         $groups = Group::all();
-        return view('create_user', compact('faculties', 'specialties', 'groups'));
-//        return response()->json([
-//            'success' => true,
-//            'faculties' => $faculties,
-//            'specialties' => $specialties,
-//            'groups' => $groups
-//        ]);
+//        return view('create_user', compact('faculties', 'specialties', 'groups'));
+        return response()->json([
+            'success' => true,
+            'faculties' => $faculties,
+            'specialties' => $specialties,
+            'groups' => $groups
+        ]);
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+//            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'second_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'username' => 'required|string|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
+            'phone' => 'nullable|string|max:20',
             'role' => 'required|in:student,teacher,administrator',
             'faculty_number' => 'required_if:role,student',
             'faculty_id' => 'nullable|exists:faculties,id',
@@ -69,15 +74,15 @@ class UserController extends Controller
             'title' => 'required_if:role,teacher'
         ]);
 
-        $user = $this->userService->createUser($request->all());
+//        $user = $this->userService->createUser($request->all());
 
         $user = $this->userService->createUser($data);
-//        return response()->json([
-//            'success' => true,
-//            'message' => 'Потребителят е създаден успешно.',
-//            'data' => $user
-//        ], 201);
-        return redirect()->route('admin.users.uni_users')->with('success', 'Потребителят е създаден успешно.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Потребителят е създаден успешно.',
+            'data' => $user
+        ], 201);
+//        return redirect()->route('admin.users.uni_users')->with('success', 'Потребителят е създаден успешно.');
     }
 
     public function edit($id)
@@ -101,9 +106,13 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'second_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'username' => 'required|string|unique:users,username,' . $id,
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8',
+            'phone' => 'nullable|string|max:20',
             'role' => 'required|in:student,teacher,administrator',
             'faculty_number' => 'required_if:role,student',
             'faculty_id' => 'nullable|exists:faculties,id',
@@ -111,31 +120,31 @@ class UserController extends Controller
             'semester' => 'nullable|integer|min:1|max:8',
             'group_id' => 'nullable|exists:groups,id',
             'title' => 'required_if:role,teacher'
+
         ]);
         $user = $this->userService->updateUser($id, $data);
-        $user = $this->userService->updateUser($id, $request->all());
-        return redirect()->route('uni_users')->with('success', 'Потребителят е обновен успешно.');
-//        return response()->json([
-//            'success' => true,
-//            'message' => 'Потребителят е актуализиран успешно.',
-//            'data' => $user
-//        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Потребителят е актуализиран успешно.',
+            'data' => $user
+        ]);
     }
 
     public function destroy($id)
     {
         $this->userService->deleteUser($id);
-        return redirect()->route('uni_users')->with('success', 'Потребителят е изтрит успешно.');
-//        return response()->json([
-//            'success' => true,
-//            'message' => 'Потребителят е изтрит успешно.'
-//        ]);
+//        return redirect()->route('uni_users')->with('success', 'Потребителят е изтрит успешно.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Потребителят е изтрит успешно.'
+        ]);
     }
 
-     public function editAccount(Request $request)
-     {
-         return view('student_profile',['user' => $request->user()]);
-     }
+//     public function editAccount(Request $request)
+//     {
+//         return view('student_profile',['user' => $request->user()]);
+//     }
 
      public function updateProfile(UpdateProfileRequest $request,UserService $service){
 

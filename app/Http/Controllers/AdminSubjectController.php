@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Specialty;
 use App\Services\SubjectService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AdminSubjectController extends Controller
 {
@@ -19,23 +20,27 @@ class AdminSubjectController extends Controller
     public function uniSubjects()
     {
         $subjects = $this->subjectService->getAllSubjects();
-        return view('subjects', compact('subjects'));
-//        return response()->json([
-//            'success' => true,
-//            'data' => $subjects
-//        ]);
+        $allSubjects=$subjects->values()->all();
+
+//        return view('subjects', compact('subjects'));
+        return response()->json([
+            'success' => true,
+            'data' => $allSubjects
+        ]);
     }
 
     public function create()
     {
-        $specialties = Specialty::all();
+        $specialties = Specialty::with(['teachers.user'])->get();
+        Log::debug('----------');
+        Log::debug($specialties);
 
 //        return view('admin.subjects.create');
-        return view('create_subject',compact('specialties'));
-//        return response()->json([
-//            'success' => true,
-//            'specialties' => $specialties
-//        ]);
+//        return view('create_subject',compact('specialties'));
+        return response()->json([
+            'success' => true,
+            'specialties' => $specialties,
+        ]);
     }
 
     public function store(Request $request)
@@ -46,7 +51,9 @@ class AdminSubjectController extends Controller
             'semester' => 'required|integer|min:1|max:8',
             'price' => 'required|numeric|min:0',
             'specialties' => 'nullable|array',
-            'specialties.*' => 'exists:specialties,id'
+            'specialties.*' => 'exists:specialties,id',
+            'teachers' => 'nullable|array', // Добавяме валидация за преподаватели
+            'teachers.*' => 'exists:teachers,id'
 
         ]);
 
@@ -55,24 +62,29 @@ class AdminSubjectController extends Controller
         if (!empty($data['specialties'])) {
             $subject->specialties()->sync($data['specialties']);
         }
+        // Свързваме преподавателите с предмета
+        if (!empty($data['teachers'])) {
+            $subject->teachers()->sync($data['teachers']);
+        }
 
-        return redirect()->route('admin.subjects.uni_subjects')
-            ->with('success', 'Дисциплината е създадена успешно.');
-//        return response()->json([
-//            'success' => true,
-//            'message' => 'Дисциплината е създадена успешно.',
-//            'data' => $subject
-//        ], 201);
+//        return redirect()->route('admin.subjects.uni_subjects')
+//            ->with('success', 'Дисциплината е създадена успешно.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Дисциплината е създадена успешно.',
+            'data' => $subject
+        ], 201);
     }
 
     public function edit($id)
     {
-        $subject = $this->subjectService->getSubjectById($id);
+        $subject = $this->subjectService->getSubjectWithTeacherById($id);
 
-        $specialties = Specialty::all();
+        $specialties = Specialty::with('teachers.user')->get(); // Зареждаме специалности с преподаватели
         $selectedSpecialties = $subject->specialties->pluck('id')->toArray();
+        $selectedSpecialties = $subject->specialties->pluck('id')->toArray();
+        $selectedTeachers = $subject->teachers->pluck('id')->toArray();
 
-        return view('edit_subject', compact('subject', 'specialties', 'selectedSpecialties'));
 
 
 //        return response()->json([
@@ -81,6 +93,13 @@ class AdminSubjectController extends Controller
 //            'specialties' => $specialties,
 //                'selectedSpecialties' => $selectedSpecialties
 //        ]);
+        return response()->json([
+            'success' => true,
+            'data' => $subject,
+            'specialties' => $specialties,
+            'selectedSpecialties' => $selectedSpecialties,
+            'selectedTeachers' => $selectedTeachers // Добавяме избраните преподаватели
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -91,7 +110,9 @@ class AdminSubjectController extends Controller
             'semester' => 'required|integer|min:1|max:8',
             'price' => 'required|numeric|min:0',
             'specialties' => 'nullable|array',
-            'specialties.*' => 'exists:specialties,id'
+            'specialties.*' => 'exists:specialties,id',
+            'teachers' => 'nullable|array',
+        'teachers.*' => 'exists:teachers,id'
         ]);
 
 //        $this->subjectService->updateSubject($id, $data);
@@ -102,26 +123,37 @@ class AdminSubjectController extends Controller
         } else {
             $subject->specialties()->detach();
         }
-//        return response()->json([
-//            'success' => true,
-//            'message' => 'Дисциплината е актуализирана успешно.',
-//            'data' => $subject
-//        ]);
-        return redirect()->route('admin.subjects.uni_subjects')
-            ->with('success', 'Дисциплината е актуализирана успешно.');
+
+        if (!empty($data['teachers'])) {
+            $subject->teachers()->sync($data['teachers']);
+        } else {
+            $subject->teachers()->detach();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Дисциплината е актуализирана успешно.',
+            'data' => $subject
+        ]);
+//        return redirect()->route('admin.subjects.uni_subjects')
+//            ->with('success', 'Дисциплината е актуализирана успешно.');
 
     }
 
     public function destroy($id)
     {
+    /*    $subject = $this->subjectService->getSubjectById($id);
+        $subject->teachers()->detach();
+        $subject->specialties()->detach();*/
         $this->subjectService->deleteSubject($id);
 
-        return redirect()->route('admin.subjects.uni_subjects')
-            ->with('success', 'Дисциплината е изтрита успешно.');
-//        return response()->json([
-//            'success' => true,
-//            'message' => 'Дисциплината е изтрита успешно.'
-//        ]);
+
+//        return redirect()->route('admin.subjects.uni_subjects')
+//            ->with('success', 'Дисциплината е изтрита успешно.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Дисциплината е изтрита успешно.'
+        ]);
     }
 }
 

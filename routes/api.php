@@ -23,11 +23,14 @@
 //});
 
 
+use App\Http\Controllers\AdminSubjectController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamRegistrationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -56,7 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/student-profile', [StudentController::class, 'getStudentProfile'])->name('student.profile');
     Route::get('/student-profile--profile', [UserController::class, 'edit'])->name('profile.edit');
-    Route::put('/student-profile-profile', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile-update', [UserController::class, 'updateProfile'])->name('profile.update');
     Route::put('/student-profile/password', [UserController::class, 'updatePassword'])->name('profile.password');
 
 
@@ -82,11 +85,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/exam/{exam}',[ExamController::class,'examDetails'])
         ->name('teacher.exam.details');
 
-    Route::post('/exam/{exam}/grades', [ExamController::class, 'updateGrades'])
+    Route::post('/exam/{exam}/grades', [ExamRegistrationController::class, 'updateGrades'])
         ->name('teacher.exam.grades.update');
 
    ///____
-    Route::get('/subjects', [SubjectController::class, 'getTeacherSubjects'])
+    Route::get('/teacher-subjects', [SubjectController::class, 'getTeacherSubjects'])
         ->name('teacher.subjects');
 
     Route::get('/subjects/{subject}/students', [SubjectController::class, 'showSubjectStudents'])
@@ -102,4 +105,19 @@ Route::middleware('auth:sanctum')->group(function () {
 //    Route::get('/payment/cancel', [PaymentController::class, 'paymentCancel'])
 //        ->name('payment.cancel');
     Route::get('/payments', [PaymentController::class, 'student_payments'])->name('payments.student_payments');
+
+    Route::get('/subjects', [AdminSubjectController::class, 'uniSubjects'])->name('admin.subjects.uni_subjects');
+    Route::get('/subjects/create', [AdminSubjectController::class, 'create'])->name('admin.subjects.create');
+    Route::post('/subjects', [AdminSubjectController::class, 'store'])->name('admin.subjects.store');
+    Route::get('/subjects/{subject}/edit', [AdminSubjectController::class, 'edit'])->name('admin.subjects.edit');
+    Route::put('/subjects/{subject}', [AdminSubjectController::class, 'update'])->name('admin.subjects.update');
+    Route::delete('/subjects/{subject}', [AdminSubjectController::class, 'destroy'])->name('admin.subjects.destroy');
+
+
+        Route::get('/users', [UserController::class, 'getUsers'])->name('admin.users.uni_users');
+    Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
+    Route::post('/users/store', [UserController::class, 'store'])->name('admin.users.store');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 });

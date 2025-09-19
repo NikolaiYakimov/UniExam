@@ -322,6 +322,7 @@ import Login from './components/Login';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import 'tailwindcss'
 import MyExams from "./components/MyExams.jsx";
 import MyPastExams from "./components/MyPastExams.jsx";
 import StudentPayments from "./components/StudentPayments.jsx";
@@ -329,6 +330,15 @@ import StudentProfile from './components/StudentProfile';
 import TeacherDashboard from './components/TeacherDashboard.jsx';
 import TeacherExamDetails from "./components/TeacherExamDetails.jsx";
 import TeacherConductedExams from "./components/TeacherConductedExams.jsx";
+import TeacherSubjects from "./components/TeacherSubjects.jsx";
+import TeacherSubjectStudents from './components/TeacherSubjectStudents.jsx'
+import TeacherProfile from "./components/TeacherProfile.jsx";
+import SubjectList from "./components/SubjectList.jsx";
+import CreateSubject from "./components/CreateSubject.jsx";
+import EditSubject from "./components/EditSubject.jsx";
+import UserManagement from "./components/UserManagement.jsx";
+import CreateUser from "./components/CreateUser.jsx";
+import EditUser from "./components/EditUser.jsx";
 
 
 
@@ -347,6 +357,7 @@ function AppContent() {
 
     return (
         <Router basename="/">
+
             <Routes>
                 <Route
                     path="/login"
@@ -386,6 +397,44 @@ function AppContent() {
                     element={isAuthenticated &&  user?.role === 'teacher' ? <TeacherExamDetails /> : <Navigate to="/login" />}
                 />
                 <Route
+                    path='/teacher-subjects'
+                    element={isAuthenticated && user?.role === 'teacher' ? <TeacherSubjects/>:  <Navigate to={'/login'} /> }
+                    />
+                <Route
+                    path='/subjects/:id/students'
+                    element={isAuthenticated && user?.role === 'teacher' ? <TeacherSubjectStudents/>:  <Navigate to={'/login'} /> }
+                />
+                <Route
+                    path='/teacher-profile'
+                    element={isAuthenticated && user?.role === 'teacher' ? <TeacherProfile/>:  <Navigate to={'/login'} /> }
+                />
+                <Route
+                    path='/subjects'
+                    element={isAuthenticated && user?.role === 'administrator' ? <SubjectList/>:  <Navigate to={'/login'} /> }
+                />
+                <Route
+                    path='/subjects/create'
+                    element={isAuthenticated && user?.role === 'administrator' ? <CreateSubject/>:  <Navigate to={'/login'} /> }
+                />
+                <Route
+                    path='/subjects/:id/edit'
+                    element={isAuthenticated && user?.role === 'administrator' ? <EditSubject/>:  <Navigate to={'/login'} /> }
+                />
+                <Route
+                    path='/users'
+                    element={isAuthenticated && user?.role === 'administrator' ? <UserManagement/>:  <Navigate to={'/login'} /> }
+                />
+                <Route
+                    path='/users/create'
+                    element={isAuthenticated && user?.role === 'administrator' ? <CreateUser/>:  <Navigate to={'/login'} /> }
+                />
+                <Route
+                    path='/users/:id/edit'
+                    element={isAuthenticated && user?.role === 'administrator' ? <EditUser/>:  <Navigate to={'/login'} /> }
+                />
+
+
+                <Route
                     path="/"
                     element={<Navigate to={isAuthenticated ? getRedirectPath(user) : "/login"} />}
                 />
@@ -406,6 +455,7 @@ function getRedirectPath(user) {
         case 'student':
             return '/exams';
         case 'administrator':
+            return '/subjects'
         case 'teacher':
             return '/upcoming-exams';
         // default:

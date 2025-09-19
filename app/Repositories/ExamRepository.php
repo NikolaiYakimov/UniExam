@@ -67,7 +67,10 @@ class ExamRepository implements ExamRepositoryInterface
             ->whereNotIn('id', $registeredExamIds)
             ->orderBy('start_time', 'desc')
 //            ->withCount('registrations')
-            ->get();
+            ->get()->map(function ($exam) {
+                $exam->remaining_slots=$exam->remainingSlots();
+                return $exam;
+            });
     }
 
     public function getRegisteredExams(Student $student): Collection
@@ -164,16 +167,16 @@ class ExamRepository implements ExamRepositoryInterface
         return Exam::with(['registrations.student.user', 'subject','hall'])->findOrFail($examId);
     }
 
-    public function updateExamGrades($examId, $grades)
-    {
-        foreach ($grades as $registrationId => $grade) {
-            $registration = ExamRegistration::find($registrationId);
-            if ($registration && $registration->exam_id == $examId) {
-                $registration->grade = $grade ?: null;
-                $registration->save();
-            }
-        }
-    }
+//    public function updateExamGrades($examId, $grades)
+//    {
+//        foreach ($grades as $registrationId => $grade) {
+//            $registration = ExamRegistration::find($registrationId);
+//            if ($registration && $registration->exam_id == $examId) {
+//                $registration->grade = $grade ?: null;
+//                $registration->save();
+//            }
+//        }
+//    }
 
     public function getBookedTimeSlots()
     {

@@ -12,12 +12,16 @@ class ExamRegistrationRepository
     public function getStudentRegistrations(Student $student): Collection
     {
         return $student->registrations()
-            ->with(['exam.teacher', 'exam.subject', 'exam.hall'])
+            ->with(['exam.teacher.user', 'exam.subject', 'exam.hall'])
             ->get()
             ->pluck('exam')
             ->where('start_time', '>=', now())
             ->sortByDesc('start_time')
-            ->values();
+            ->values()
+            ->map(function ($exam) {
+                $exam->remaining_slots=$exam->remainingSlots();
+                return $exam;
+            });
     }
 
     public function getPastStudentRegistrations(Student $student): Collection
@@ -70,5 +74,21 @@ class ExamRegistrationRepository
         return ExamRegistration::where('student_id', $studentId)
             ->where('exam_id', $examId)
             ->exists();
+    }
+
+    public function getExamDetails($examId)
+    {
+        return Exam::with(['registrations.student.user', 'subject','hall'])->findOrFail($examId);
+    }
+
+    public function updateExamGrades($examId, $grades)
+    {
+        foreach ($grades as $registrationId => $grade) {
+            $registration = ExamRegistration::find($registrationId);
+            if ($registration && $registration->exam_id == $examId) {
+                $registration->grade = $grade ?: null;
+                $registration->save();
+            }
+        }
     }
 }

@@ -28,14 +28,14 @@ class StudentController extends Controller
 //        return view('payment_form',compact('exam'));
 //    }
     //Get the exams which the student didn't register
-    protected $paymentService;
-
-    public function __construct(PaymentService $paymentService, ExamService $examService)
-    {
-        $this->paymentService = $paymentService;
-        $this->examService = $examService;
-
-    }
+//    protected $paymentService;
+//
+//    public function __construct(PaymentService $paymentService, ExamService $examService)
+//    {
+//        $this->paymentService = $paymentService;
+//        $this->examService = $examService;
+//
+//    }
 
     public function getStudentProfile(): JsonResponse
     {

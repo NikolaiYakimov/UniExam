@@ -388,17 +388,126 @@
 //         </AuthContext.Provider>
 //     );
 // }
+// import { useState, useContext, createContext, useEffect } from 'react';
+// import axios from 'axios';
+//
+// // Създаване на axios инстанция
+// export const api = axios.create({
+//     baseURL: 'http://localhost:8000/api',
+//     headers: {
+//         'Accept': 'application/json',
+//         'Content-Type': 'application/json',
+//     },
+//     withCredentials: true, // Важно за Laravel Sanctum
+// });
+//
+// const AuthContext = createContext();
+//
+// export function useAuth() {
+//     return useContext(AuthContext);
+// }
+//
+// export function AuthProvider({ children }) {
+//     const [user, setUser] = useState(null);
+//     const [token, setToken] = useState(localStorage.getItem('token'));
+//     const [isLoading, setIsLoading] = useState(true);
+//
+//     // Автоматично добавяне на токена към заявките
+//     useEffect(() => {
+//         if (token) {
+//             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+//             localStorage.setItem('token', token);
+//         } else {
+//             delete api.defaults.headers.common['Authorization'];
+//             localStorage.removeItem('token');
+//         }
+//     }, [token]);
+//
+//     // Зареждане на потребител при наличие на токен
+//     useEffect(() => {
+//         if (token) {
+//             getUser();
+//         } else {
+//             setIsLoading(false);
+//         }
+//     }, [token]);
+//
+//     const getUser = async () => {
+//         try {
+//             const response = await api.get('/user');
+//             setUser(response.data);
+//         } catch (error) {
+//             console.error('Failed to get user', error);
+//             //
+//             // // Автоматично логаут при 401 Unauthorized
+//             // if (error.response?.status === 401) {
+//             //     await logout();
+//             // }
+//         } finally {
+//             setIsLoading(false);
+//         }
+//     };
+//
+//     const login = async (credentials) => {
+//         try {
+//             setIsLoading(true);
+//             const response = await api.post('/login', credentials);
+//             const { token: newToken, user: userData } = response.data;
+//
+//             setToken(newToken);
+//             setUser(userData);
+//
+//             return response.data;
+//         } catch (error) {
+//             console.error('Login failed', error);
+//
+//             // Хвърляне на грешка за по-добра обработка в компонентите
+//             if (error.response?.data?.message) {
+//                 throw new Error(error.response.data.message);
+//             } else {
+//                 throw new Error('Възникна грешка при влизането');
+//             }
+//         } finally {
+//             setIsLoading(false);
+//         }
+//     };
+//
+//     const logout = async () => {
+//         try {
+//             await api.post('/logout');
+//         } catch (error) {
+//             console.error('Logout failed', error);
+//         } finally {
+//             setToken(null);
+//             setUser(null);
+//         }
+//     };
+//
+//     const value = {
+//         user,
+//         token,
+//         isLoading,
+//         login,
+//         logout,
+//         isAuthenticated: !!user,
+//     };
+//
+//     return (
+//         <AuthContext.Provider value={value}>
+//             {children}
+//         </AuthContext.Provider>
+//     );
+// }
 import { useState, useContext, createContext, useEffect } from 'react';
 import axios from 'axios';
 
-// Създаване на axios инстанция
+// Create axios instance
 export const api = axios.create({
     baseURL: 'http://localhost:8000/api',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     },
-    withCredentials: true, // Важно за Laravel Sanctum
 });
 
 const AuthContext = createContext();
@@ -412,7 +521,7 @@ export function AuthProvider({ children }) {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [isLoading, setIsLoading] = useState(true);
 
-    // Автоматично добавяне на токена към заявките
+    // Automatically add token to requests
     useEffect(() => {
         if (token) {
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -423,7 +532,7 @@ export function AuthProvider({ children }) {
         }
     }, [token]);
 
-    // Зареждане на потребител при наличие на токен
+    // Load user when token exists
     useEffect(() => {
         if (token) {
             getUser();
@@ -438,11 +547,10 @@ export function AuthProvider({ children }) {
             setUser(response.data);
         } catch (error) {
             console.error('Failed to get user', error);
-            //
-            // // Автоматично логаут при 401 Unauthorized
-            // if (error.response?.status === 401) {
-            //     await logout();
-            // }
+            // Auto logout on 401 Unauthorized
+            if (error.response?.status === 401) {
+                await logout();
+            }
         } finally {
             setIsLoading(false);
         }
@@ -460,13 +568,7 @@ export function AuthProvider({ children }) {
             return response.data;
         } catch (error) {
             console.error('Login failed', error);
-
-            // Хвърляне на грешка за по-добра обработка в компонентите
-            if (error.response?.data?.message) {
-                throw new Error(error.response.data.message);
-            } else {
-                throw new Error('Възникна грешка при влизането');
-            }
+            throw error.response?.data?.message || 'Възникна грешка при влизането';
         } finally {
             setIsLoading(false);
         }
@@ -474,12 +576,17 @@ export function AuthProvider({ children }) {
 
     const logout = async () => {
         try {
-            await api.post('/logout');
+            // Only try to logout if we have a token
+            if (token) {
+                await api.post('/logout');
+            }
         } catch (error) {
             console.error('Logout failed', error);
         } finally {
+            // Always clear local state regardless of API call success
             setToken(null);
             setUser(null);
+            localStorage.removeItem('token');
         }
     };
 

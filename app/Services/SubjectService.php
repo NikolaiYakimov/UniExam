@@ -50,7 +50,12 @@ protected $subjectRepository;
 
     public function getSubjectById($id)
     {
-        return $this->subjectRepository->getById($id);
+        return $this->subjectRepository->getSubjectById($id);
+    }
+
+    public function getSubjectWithTeacherById($id)
+    {
+        return $this->subjectRepository->getSubjectWithTeacher($id);
     }
 
     public function createSubject(array $data)

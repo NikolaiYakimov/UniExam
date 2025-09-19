@@ -6,6 +6,7 @@ use App\Models\Exam;
 use App\Models\Student;
 use App\Repositories\ExamRegistrationRepository;
 use App\Services\PaymentService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SuccessfullyRegistrated;
@@ -106,4 +107,19 @@ class ExamRegistrationService
 
         return ['success' => true, 'message' => 'Успешно се отписахте от изпита'];
     }
+
+    public function updateGrades($examId, $grades)
+    {
+        $teacher = Auth::user()->teacher;
+        $exam = $this->registrationRepository->getExamDetails($examId);
+
+        if ($exam->teacher_id !== $teacher->id) {
+            abort(403);
+        }
+
+        $this->registrationRepository->updateExamGrades($examId, $grades);
+    }
+
+
+
 }

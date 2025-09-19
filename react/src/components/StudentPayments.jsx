@@ -173,7 +173,7 @@
 // components/StudentPayments.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth.jsx';
-import Header from './HeaderStudent.jsx';
+import Header from './Header.jsx';
 import Sidebar from './Sidebar';
 
 const StudentPayments = () => {

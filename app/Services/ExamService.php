@@ -55,21 +55,17 @@ class ExamService{
             'end_time' => $endTime,
             'max_students' => $data['max_students'],
             'exam_type' => $data['exam_type'],
-//            'price' => $data['exam_type'] === 'ликвидация' ? $data['price'] : 0
+
             ]
         );
     }
 
     public function getBookedSlots(int $hallId,string $date,int $excludeExamId=null){
-        Log::debug('******************************');
+
         $dateObj=Carbon::parse($date);
         Log::debug($dateObj);
         $start=$dateObj->copy()->startOfDay();
         $end=$dateObj->copy()->endOfDay();
-//        Log::debug($dateObj.isString());
-        Log::debug($start);
-        Log::debug($end);
-        Log::debug('////////');
 
         return $this->examRepository->getBookedSlots($hallId,$start,$end,$excludeExamId);
     }
@@ -231,17 +227,17 @@ class ExamService{
         return $exam;
     }
 
-    public function updateGrades($examId, $grades)
-    {
-        $teacher = Auth::user()->teacher;
-        $exam = $this->examRepository->getExamDetails($examId);
-
-        if ($exam->teacher_id !== $teacher->id) {
-            abort(403);
-        }
-
-        $this->examRepository->updateExamGrades($examId, $grades);
-    }
+//    public function updateGrades($examId, $grades)
+//    {
+//        $teacher = Auth::user()->teacher;
+//        $exam = $this->examRepository->getExamDetails($examId);
+//
+//        if ($exam->teacher_id !== $teacher->id) {
+//            abort(403);
+//        }
+//
+//        $this->examRepository->updateExamGrades($examId, $grades);
+//    }
 
     public function getBookedTimeSlots()
     {

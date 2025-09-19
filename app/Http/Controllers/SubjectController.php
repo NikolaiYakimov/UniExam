@@ -21,58 +21,58 @@ class SubjectController
     }
 
     public function getTeacherSubjects():
-//    JsonResponse
-    View
+    JsonResponse
+//    View
     {
-//        try {
+        try {
             $teacher = Auth::user()->teacher;
             $subjects = $this->subjectService->getTeacherSubjects();
 
-            return view('teacher_subjects', compact('teacher', 'subjects'));
-//            return response()->json([
-//                'success' => true,
-//                'data' => [
-//                    'teacher' => $teacher,
-//                    'subjects' => $subjects
-//                ]
-//            ]);
+//            return view('teacher_subjects', compact('teacher', 'subjects'));
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'teacher' => $teacher,
+                    'subjects' => $subjects
+                ]
+            ]);
 
-//        }catch (\Exception $exception){
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'Failed to load subjects'
-//            ], 500);
-//        }
+        }catch (\Exception $exception){
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load subjects'
+            ], 500);
+        }
     }
 
     public function showSubjectStudents(Subject $subject):
-//    JsonResponse
-    View
+    JsonResponse
+//    View
     {
-//        try{
+        try{
         $teacher = Auth::user()->teacher;
         $students = $this->subjectService->getSubjectStudents($subject->id);
 
-        return view('teacher_subject_students', compact('teacher', 'subject', 'students'));
-//        return response()->json([
-//            'success' => true,
-//            'data' => [
-//                'teacher' => $teacher,
-//                'subject' => $subject,
-//                'students' => $students
-//            ]
-//        ]);
-//        }catch (\Exception $e) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'Failed to load students'
-//            ], 500);
-//        }
+//        return view('teacher_subject_students', compact('teacher', 'subject', 'students'));
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'teacher' => $teacher,
+                'subject' => $subject,
+                'students' => $students
+            ]
+        ]);
+        }catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load students'
+            ], 500);
+        }
     }
 
     public function toggleAttestation(Request $request, Subject $subject, Student $student):JsonResponse
     {
-//        try {
+        try {
 
         $hasAttestation = $subject->students()
             ->where('student_id', $student->id)
@@ -90,11 +90,11 @@ class SubjectController
             'success' => true,
             'has_attestation' => $newStatus
         ]);
-//        }catch (\Exception $e) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => $e->getMessage()
-//            ], 500);
-//        }
+        }catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -8,20 +8,27 @@ use App\Models\ExamHall;
 use App\Models\ExamRegistration;
 use App\Models\Subject;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 
 class TeacherController
 {
 
-    public function getTeacherProfile():  \Illuminate\Contracts\View\View
+    public function getTeacherProfile():  JsonResponse
     {
         $user = Auth::user();
         $teacher=$user->teacher->load('faculty','specialty');
+        Log::debug($teacher);
 
-        return view('teacher_profile',[
+//        return view('teacher_profile',[
+//            'user'=>$user,
+//            'teacher'=>$teacher,
+//        ]);
+        return response()->json([
             'user'=>$user,
             'teacher'=>$teacher,
         ]);

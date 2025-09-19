@@ -51,7 +51,8 @@ class  PaymentService
                 'student_id' => $student->id,
                 'exam_id' => $exam->id,
             ],
-            'return_url' => route('payment.success.embedded').'?session_id={CHECKOUT_SESSION_ID}',
+//            'return_url' => route('payment.success.embedded').'?session_id={CHECKOUT_SESSION_ID}',
+            'return_url' => route('payment.success.embedded') . '?session_id={CHECKOUT_SESSION_ID}',
         ]);
         return response()->json(['clientSecret' => $session->client_secret]);
     }
