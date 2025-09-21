@@ -367,15 +367,15 @@ const MyPastExams = () => {
                                             </div>
                                         </div>
 
-                                        {exam?.start_time && new Date(exam.start_time) > new Date() && (
-                                            <button
-                                                className="recorded-exam w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700"
-                                                data-exam-date={exam.start_time}
-                                                onClick={() => handleUnregister(exam?.id)}
-                                            >
-                                                <i className="fas fa-edit mr-2"></i> Отпиши се
-                                            </button>
-                                        )}
+                                        {/*{exam?.start_time && new Date(exam.start_time) > new Date() && (*/}
+                                        {/*    <button*/}
+                                        {/*        className="recorded-exam w-full px-4 py-2.5 rounded-xl text-white font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700"*/}
+                                        {/*        data-exam-date={exam.start_time}*/}
+                                        {/*        onClick={() => handleUnregister(exam?.id)}*/}
+                                        {/*    >*/}
+                                        {/*        <i className="fas fa-edit mr-2"></i> Отпиши се*/}
+                                        {/*    </button>*/}
+                                        {/*)}*/}
                                     </div>
                                 );
                             })}

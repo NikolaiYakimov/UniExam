@@ -317,7 +317,7 @@
 // App.jsx
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import Exams from './components/Exam';
-import Dashboard from './components/Dashboard';
+// import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';

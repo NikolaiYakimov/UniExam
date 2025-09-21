@@ -97,7 +97,7 @@ export default function TeacherProfile() {
             <Header />
 
             <div className="page-layout flex">
-                <Sidebar user={teacherData} />
+                <Sidebar user={user} />
 
                 <main className="flex-1 p-4 lg:p-6">
                     {/* Page Title Section */}

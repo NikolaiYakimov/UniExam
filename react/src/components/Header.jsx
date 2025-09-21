@@ -793,9 +793,9 @@ export default function Header() {
                     <a className={linkCls} href="/exam-halls">
                         <i className="fa fa-clipboard-check me-2 text-gray-500"></i>Управление на зали
                     </a>
-                    <a className={linkCls} href="/teacher-profile">
-                        <i className="fas fa-user me-2 text-gray-500"></i>Моят профил
-                    </a>
+                    {/*<a className={linkCls} href="/teacher-profile">*/}
+                    {/*    <i className="fas fa-user me-2 text-gray-500"></i>Моят профил*/}
+                    {/*</a>*/}
                 </>
             );
         }
