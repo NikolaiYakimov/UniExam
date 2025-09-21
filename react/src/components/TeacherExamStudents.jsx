@@ -1,0 +1,127 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { useAuth, api } from '../hooks/useAuth';
+import Header from './Header';
+import Sidebar from './Sidebar';
+
+export default function TeacherExamStudents() {
+    const { examId } = useParams();
+    const { user } = useAuth();
+    const [exam, setExam] = useState(null);
+    const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchExamStudents();
+    }, [examId]);
+
+    const fetchExamStudents = async () => {
+        try {
+            // const response = await api.get(`/exam/${examId}/students`);
+            const response = await api.get(`/exam/${examId}/registered-students`);
+            setExam(response.data.exam);
+            console.log(response.data)
+            setStudents(response.data.students);
+        } catch (error) {
+            console.error('Error fetching exam students:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
+                <Header />
+                <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
+                    <div className="animate-pulse text-indigo-600">Зареждане…</div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 font-[Inter] overflow-x-hidden">
+            <Header />
+            <div className="page-layout">
+                <Sidebar user={user} />
+
+                <main className="p-4 lg:p-6 relative z-0">
+                    <div className="bg-white/90 backdrop-blur-md shadow-sm py-6 mb-8 rounded-xl border border-gray-100">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 gap-4">
+                            <div>
+                                <h1 className="text-2xl font-bold text-gray-800">
+                                    Студенти записани за {exam?.subject_name}
+                                </h1>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    {/*{exam?.exam_type} - {new Date(exam?.start_time).toLocaleDateString('bg-BG')}*/}
+                                    Дата на провеждане: {new Date(exam?.start_time).toLocaleDateString('bg-BG')}
+                                </p>
+                            </div>
+                            <Link
+                                to="/upcoming-exams"
+                                className="inline-flex items-center gap-1 px-4 py-2.5 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition-colors"
+                            >
+                                <i className="fas fa-arrow-left me-2"></i>
+                                Назад
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-sm p-6">
+                        {students.length === 0 ? (
+                            <div className="text-center py-8">
+                                <i className="fas fa-users text-4xl text-gray-300 mb-4"></i>
+                                <h3 className="text-lg font-medium text-gray-700 mb-2">
+                                    Все още няма записани студенти
+                                </h3>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="w-full table-auto">
+                                    <thead>
+                                    <tr className="bg-gray-50">
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                                            Факултетен номер
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                                            Име
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                                            Имейл
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {students.map((student) => (
+                                        <tr key={student.id} className="border-b border-gray-100">
+                                            <td className="px-4 py-3 text-sm text-gray-700">
+                                                {student.faculty_number}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-700">
+                                                {student.first_name} {student.second_name} {student.last_name}
+                                            </td>
+                                            {/*<td className="px-4 py-3 text-sm">*/}
+                                            {/*    {student.grade ? (*/}
+                                            {/*        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">*/}
+                                            {/*                {student.grade}*/}
+                                            {/*            </span>*/}
+                                            {/*    ) : (*/}
+                                            {/*        <span className="text-gray-400">Няма</span>*/}
+                                            {/*    )}*/}
+                                            {/*</td>*/}
+                                            <td className="px-4 py-3 text-sm text-gray-700">
+                                                {student.email}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+                </main>
+            </div>
+        </div>
+    );
+}

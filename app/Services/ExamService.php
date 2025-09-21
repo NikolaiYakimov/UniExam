@@ -33,6 +33,10 @@ class ExamService{
         $hallOpeningTime=Carbon::parse($hall->opening_time)->setDateFrom($startTime);
         $hallClosingTime=Carbon::parse($hall->closing_time)->setDateFrom($startTime);
 
+        if($data['max_students']>$hall->capacity){
+            throw new \Exception("Грешка! Максималния брой на студентите не може да надвишава капацитета на залата ({$hall->capacity})");
+        }
+
         if($startTime->lt($hallOpeningTime)){
             throw new \Exception("Залата отваря в {$hall->opening_time}");
         }
@@ -84,11 +88,15 @@ class ExamService{
         $endTime=Carbon::parse($data['end_time']);
 
         $now=Carbon::now();
+
+        if ($data['max_students'] > $hall->capacity) {
+            throw new \Exception("Максималният брой студенти не може да надвишава капацитета на залата ({$hall->capacity}).");
+        }
         if($startTime->isPast()||$now->diffInHours($startTime,false)<=48){
             throw new \Exception('Изпитът не може да бъде насрочен в миналото или по-рано от 48 часа от текущия момент. Моля, изберете валидни дата и час.');
         }
 
-        $hasOverlap=$this->examRepository->hasOverlap($hall->id,$startTime,$endTime);
+        $hasOverlap=$this->examRepository->hasOverlap($hall->id,$startTime,$endTime,$exam->id);
 
 
         if($hasOverlap){

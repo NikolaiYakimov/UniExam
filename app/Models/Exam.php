@@ -44,11 +44,13 @@ class Exam extends Model
     public function remainingSlots(){
         $registered=$this->registrations()->count();
         //Allow 10 % overflow for the exam
-        $maxAllowed=$this->max_students+ceil($this->max_students*0.1);
-        if($registered >= $maxAllowed){
-            return 0;
-        }
-        return $maxAllowed-$registered;
+//        $maxAllowed=$this->max_students+ceil($this->max_students*0.1);
+//        $maxAllowed=$this->max_students-
+//        if($registered >= $maxAllowed){
+//            return 0;
+//        }
+//        return $maxAllowed-$registered;
+        return $this->max_students-$registered;
     }
 
     public function hasAvailableSlots(): bool

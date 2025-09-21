@@ -189,31 +189,38 @@ class UserController extends Controller
         // Check if the user exists
         $user = User::where('email', $request->email)->first();
         if (!$user) {
-            return back()->withErrors(['email' => 'Потребител с този email адрес не съществува.']);
+//            return back()->withErrors(['email' => 'Потребител с този email адрес не съществува.']);
+            return  response()->json(['message'=>'Потребител с този имейл не съществува'],404);
         }
 
-        // Generate a token and store in password_resets table
+        // Generate a token for password_resets table
         $token = Str::random(60);
         DB::table('password_resets')->updateOrInsert(
             ['email' => $request->email],
             ['token' => Hash::make($token), 'created_at' => now()]
         );
-
+        try {
+            Mail::to($request->email)->queue(new PasswordResetMail($token, $user));
+        }catch (\Exception $e){
+            Log::error("Failed to send password resend email: ".$e->getMessage());
+            return response()->json(["Грешка!Възникна грешка при изпращането на имейла!"],500);
+        }
         // Send email with the token
-        Mail::to($request->email)->queue(new PasswordResetMail($token, $user));
 
-        return back()->with('status', 'Изпратихме ви имейл с линк за възстановяване на паролата!');
+//        return back()->with('status', 'Изпратихме ви имейл с линк за възстановяване на паролата!')
+        return response()->json([        'message' => 'Изпратихме ви имейл с линк за възстановяване на паролата!'
+        ]);
     }
 
     /**
      * Display the password reset view for the given token.
      */
-    public function showResetForm(Request $request, $token = null)
-    {
-        return view('auth.reset-password')->with(
-            ['token' => $token, 'email' => $request->email]
-        );
-    }
+//    public function showResetForm(Request $request, $token = null)
+//    {
+//        return view('auth.reset-password')->with(
+//            ['token' => $token, 'email' => $request->email]
+//        );
+//    }
 
     /**
      * Reset the given user's password.
@@ -232,12 +239,14 @@ class UserController extends Controller
             ->first();
 
         if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
-            return back()->withErrors(['email' => 'Невалиден токен за възстановяване на парола.']);
+//            return back()->withErrors(['email' => 'Невалиден токен за възстановяване на парола.']);
+            return response()->json(['message'=>'Токенът който беше предоставен е невалиден!',500]);
         }
 
-        // Check if token is expired (e.g., 60 minutes)
+        // Check if token is expired
         if (now()->diffInMinutes($resetRecord->created_at) > 60) {
-            return back()->withErrors(['email' => 'Токенът за възстановяване на парола е изтекъл.']);
+//            return back()->withErrors(['email' => 'Токенът за възстановяване на парола е изтекъл.']);
+            return response()->json(['message'=>'Токенът ви е изтекъл.Опитайте отново!'],400);
         }
 
         // Update user's password
@@ -260,7 +269,8 @@ class UserController extends Controller
             ]);
         }
 
-        return redirect()->route('login')->with('status', 'Паролата ви е променена успешно!');
+//        return redirect()->route('login')->with('status', 'Паролата ви е променена успешно!');
+        return response()->json(['message'=>'Паролата ви е променена успешно!']);
     }
     public function getUserWithRelations(Request $request)
     {

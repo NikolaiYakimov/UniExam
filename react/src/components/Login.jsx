@@ -491,6 +491,7 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import './Login.css';
+import {Link} from "react-router-dom";
 
 export default function Login() {
     const [credentials, setCredentials] = useState({
@@ -610,7 +611,7 @@ export default function Login() {
                             </span>
                         </div>
                         <div className="mb-3 text-end">
-                            <a href="/forgot-password">Забравена парола?</a>
+                            <Link to="/forgot-password">Забравена парола?</Link>
                         </div>
                         {errors.password && (
                             <div className="invalid-feedback d-block">{errors.password[0]}</div>

@@ -21,7 +21,7 @@ class ExamHall extends Model
         'closing_time',
     ];
 
-    public function exam(): HasMany{
-        return $this->HasMany(Exam::class);
+    public function exams(): HasMany{
+        return $this->HasMany(Exam::class,'hall_id');
     }
 }

@@ -12,18 +12,19 @@ use Illuminate\Support\Collection;
 class ExamRepository implements ExamRepositoryInterface
 {
 
-    public function hasOverlap($hallId, $startTime, $endTime)
+    public function hasOverlap($hallId, $startTime, $endTime,$excludeExamId=null)
     {
-        return Exam::where('hall_id',$hallId)->
+//        return Exam::where('hall_id',$hallId)->
+        $overlap=Exam::where('hall_id',$hallId)->
             where(function ($query) use ($startTime, $endTime) {
                 $query->where('start_time', '<', $endTime)->
                     where('end_time', '>', $startTime);
-        })->exists();
-//        if ($excludeExamId) {
-//            $query->where('id', '!=', $excludeExamId);
-//        }
-//
-//        return $query->exists();
+        });
+        if ($excludeExamId) {
+            $overlap->where('id', '!=', $excludeExamId);
+        }
+
+        return $overlap->exists();
 
     }
     public function update(Exam $exam, array $data){
@@ -159,7 +160,10 @@ class ExamRepository implements ExamRepositoryInterface
         return Exam::with(['subject','hall'])->where('teacher_id', $teacherId)
             ->where('start_time', '<', Carbon::now()->toIso8601String())
             ->orderBy('start_time', 'desc')
-            ->get();
+            ->get()->map(function ($exam) {
+                $exam->remaining_slots=$exam->remainingSlots();
+                return $exam;
+            });
     }
 
     public function getExamDetails($examId)
@@ -195,6 +199,9 @@ class ExamRepository implements ExamRepositoryInterface
         return Exam::with(['subject', 'hall'])->where('teacher_id', $teacherId)
             ->where('start_time', '>', now())
             ->orderBy('start_time', 'desc')
-            ->get();
+            ->get()->map(function ($exam) {
+                $exam->remaining_slots=$exam->remainingSlots();
+                return $exam;
+            });
     }
 }

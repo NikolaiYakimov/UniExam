@@ -26,6 +26,7 @@
 use App\Http\Controllers\AdminSubjectController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ExamHallController;
 use App\Http\Controllers\ExamRegistrationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentController;
@@ -42,6 +43,9 @@ Route::get('/exams/payment/success', [PaymentController::class, 'paymentSuccess'
 
 Route::get('/payment/cancel', [PaymentController::class, 'paymentCancel'])
     ->name('payment.cancel');
+
+Route::post('/password/email', [UserController::class, 'sendResetLinkEmail']);
+Route::post('/password/reset', [UserController::class, 'reset']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -66,6 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/upcoming_exams', [ExamController::class, 'teacherUpcomingExams'])
 //        ->name('upcoming_exams');
         ->name('teacher_dashboard');
+    Route::get('/exam/{exam}/registered-students',[ExamController::class, 'examRegisteredStudents'])->name('student.exams');
 
     Route::get('/conducted-exams', [ExamController::class, 'conductedExams'])
         ->name('conducted_exams');
@@ -114,10 +119,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/subjects/{subject}', [AdminSubjectController::class, 'destroy'])->name('admin.subjects.destroy');
 
 
-        Route::get('/users', [UserController::class, 'getUsers'])->name('admin.users.uni_users');
+    Route::get('/users', [UserController::class, 'getUsers'])->name('admin.users.uni_users');
     Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('/users/store', [UserController::class, 'store'])->name('admin.users.store');
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
+    Route::get('/exam-halls', [ExamHallController::class, 'getExamHalls'])->name('admin.exam-halls.index');
+    Route::post('/exam-halls/store', [ExamHallController::class, 'store'])->name('admin.exam-halls.store');
+    Route::get('/exam-halls/{examHall}/edit', [ExamHallController::class, 'edit'])->name('admin.exam-halls.show');
+    Route::put('/exam-halls/{examHall}', [ExamHallController::class, 'update'])->name('admin.exam-halls.update');
+    Route::delete('/exam-halls/{examHall}', [ExamHallController::class, 'destroy'])->name('admin.exam-halls.destroy');
+
+
 });

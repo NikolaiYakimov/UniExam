@@ -34,7 +34,7 @@ class SuccessfullyRegistrated extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('no-reply@univesity.com','University Management System'),
+            from: new Address('nyakimov@tu-sofia.bg','University Management System'),
             subject: 'Successfully Registered for Exam',
         );
     }

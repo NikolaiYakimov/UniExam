@@ -339,6 +339,13 @@ import EditSubject from "./components/EditSubject.jsx";
 import UserManagement from "./components/UserManagement.jsx";
 import CreateUser from "./components/CreateUser.jsx";
 import EditUser from "./components/EditUser.jsx";
+import ExamHallList from "./components/ExamHall.jsx";
+import ExamHall from "./components/ExamHall.jsx";
+import CreateExamHall from "./components/CreateExamHall.jsx";
+import EditExamHall from "./components/EditExamHall.jsx";
+import ForgotPassword from "./components/ForgotPassword.jsx";
+import ResetPassword from "./components/ResetPassowrd.jsx";
+import TeacherExamStudents from "./components/TeacherExamStudents.jsx";
 
 
 
@@ -362,6 +369,14 @@ function AppContent() {
                 <Route
                     path="/login"
                     element={!isAuthenticated ? <Login /> : <Navigate to={getRedirectPath(user)} />}
+                />
+                <Route
+                    path="/forgot-password"
+                    element={!isAuthenticated ? <ForgotPassword /> : <Navigate to={getRedirectPath(user)} />}
+                />
+                <Route
+                    path="/reset-password"
+                    element={!isAuthenticated ? <ResetPassword /> : <Navigate to={getRedirectPath(user)} />}
                 />
                 <Route
                     path="/my-exams"
@@ -388,6 +403,12 @@ function AppContent() {
                     path="/upcoming-exams"
                     element={isAuthenticated &&  user?.role === 'teacher' ? <TeacherDashboard /> : <Navigate to="/login" />}
                 />
+                <Route
+                    path="/exam/:examId/students"
+                    element={isAuthenticated && user?.role === 'teacher' ? <TeacherExamStudents /> : <Navigate to="/login" />}
+                />
+
+
                 <Route
                     path="/conducted-exams"
                     element={isAuthenticated &&  user?.role === 'teacher' ? <TeacherConductedExams /> : <Navigate to="/login" />}
@@ -432,6 +453,22 @@ function AppContent() {
                     path='/users/:id/edit'
                     element={isAuthenticated && user?.role === 'administrator' ? <EditUser/>:  <Navigate to={'/login'} /> }
                 />
+
+                <Route
+                    path='/exam-halls'
+                    element={isAuthenticated && user?.role === 'administrator' ? <ExamHall/>:  <Navigate to={'/login'} /> }
+                />
+
+                <Route
+                    path='/exam-halls/create'
+                    element={isAuthenticated && user?.role === 'administrator' ? <CreateExamHall/>:  <Navigate to={'/login'} /> }
+                />
+
+                <Route
+                    path='/exam-halls/:id/edit'
+                    element={isAuthenticated && user?.role === 'administrator' ? <EditExamHall/>: <Navigate to={'/login'} />}
+                />
+
 
 
                 <Route

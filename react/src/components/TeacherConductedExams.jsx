@@ -155,43 +155,47 @@ const TeacherConductedExams = () => {
                                         <h2 className="text-lg font-semibold text-gray-900">
                                             {exam.subject?.subject_name || 'Няма име на предмет'}
                                             <span className="block text-sm font-normal text-gray-500 mt-1">
-            {exam.subject?.description || ''}
-          </span>
+                                                {exam.subject?.description || ''}
+                                             </span>
                                         </h2>
-                                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-          {exam.exam_type}
-        </span>
+                                            <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                {exam.exam_type}
+                                            </span>
+
                                     </div>
 
                                     <div className="space-y-3 mb-5 flex-grow">
                                         <div className="flex items-center gap-2 text-gray-600">
                                             <i className="fas fa-calendar-alt w-5 text-gray-400"></i>
                                             <span>
-            Дата: <span className="font-medium text-gray-800">
-              {new Date(exam.start_time).toLocaleDateString('bg-BG')}
-            </span>
-          </span>
+                                                 Дата:
+                                                <span className="font-medium text-gray-800">
+                                                    {new Date(exam.start_time).toLocaleDateString('bg-BG')}
+                                                </span>
+                                            </span>
                                         </div>
                                         <div className="flex items-center gap-2 text-gray-600">
                                             <i className="fas fa-clock w-5 text-gray-400"></i>
                                             <span>
-            Час: <span className="font-medium text-gray-800">
-              {new Date(exam.start_time).toLocaleTimeString('bg-BG', {hour: '2-digit', minute:'2-digit'})} -
-                                                {new Date(exam.end_time).toLocaleTimeString('bg-BG', {hour: '2-digit', minute:'2-digit'})}
-            </span>
-          </span>
+                                                Час:
+                                                <span className="font-medium text-gray-800">
+                                                    {new Date(exam.start_time).toLocaleTimeString('bg-BG', {hour: '2-digit', minute:'2-digit'})} -
+                                                    {new Date(exam.end_time).toLocaleTimeString('bg-BG', {hour: '2-digit', minute:'2-digit'})}
+                                                </span>
+                                            </span>
                                         </div>
+
                                         <div className="flex items-center gap-2 text-gray-600">
                                             <i className="fas fa-university w-5 text-gray-400"></i>
                                             <span>
-            Зала: <span className="font-medium text-gray-800">{exam.hall?.name || 'Няма зала'}</span>
-          </span>
+                                                Зала: <span className="font-medium text-gray-800">{exam.hall?.name || 'Няма зала'}</span>
+                                            </span>
                                         </div>
                                         <div className="flex items-center gap-2 text-gray-600">
                                             <i className="fas fa-users w-5 text-gray-400"></i>
                                             <span className={`font-medium ${exam.remaining_slots > 0 ? 'text-green-700' : 'text-red-700'}`}>
-            {exam.remaining_slots}/{exam.max_students + Math.ceil(exam.max_students * 0.1)} места
-          </span>
+                                                {exam.remaining_slots}/{exam.max_students} места
+                                            </span>
                                         </div>
                                     </div>
 

@@ -784,14 +784,14 @@ export default function Header() {
         if (user?.role === 'administrator') {
             return (
                 <>
-                    <a className={linkCls} href="/admin-subjects">
-                        <i className="fa fa-file-pen me-2 text-gray-500"></i>Изпити
+                    <a className={linkCls} href="/subjects">
+                        <i className="fa fa-file-pen me-2 text-gray-500"></i>Управление на Изпити
                     </a>
-                    <a className={linkCls} href="/admin-users">
-                        <i className="fa fa-wallet me-2 text-gray-500"></i>Създаване на потребители
+                    <a className={linkCls} href="/users">
+                        <i className="fa fa-wallet me-2 text-gray-500"></i>Урпавление на потребители
                     </a>
-                    <a className={linkCls} href="/teacher-subjects">
-                        <i className="fa fa-clipboard-check me-2 text-gray-500"></i>Управление на заверки
+                    <a className={linkCls} href="/exam-halls">
+                        <i className="fa fa-clipboard-check me-2 text-gray-500"></i>Управление на зали
                     </a>
                     <a className={linkCls} href="/teacher-profile">
                         <i className="fas fa-user me-2 text-gray-500"></i>Моят профил

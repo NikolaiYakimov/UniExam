@@ -264,6 +264,45 @@ class   ExamController extends Controller
         }
     }
 
+    public function examRegisteredStudents($examId):JsonResponse
+    {
+        try {
+
+            $exam = Exam::with(['subject','registrations.student.user'])->findOrFail($examId);
+
+            $students = $exam->registrations->map(function ($registration) {
+                if($registration->student) {
+                    return [
+                        'id' => $registration->student->id,
+                        'first_name' => $registration->student->user->first_name,
+                        'second_name' => $registration->student->user->second_name,
+                        'last_name' => $registration->student->user->last_name,
+                        'faculty_number' => $registration->student->faculty_number,
+                        'email' => $registration->student->user->email,
+                    ];
+                }
+                return null;
+            })->filter();
+            return response()->json([
+                'success' => true,
+                'exam' => [
+                    'id' => $examId,
+                    'subject_name' => $exam->subject->subject_name,
+                    'exam_type' => $exam->exam_type,
+                    'start_time' => $exam->start_time->toIso8601String(),
+                ],
+                'students' => $students
+            ]);
+        }catch (\Exception $exception){
+            Log::error($exception->getMessage());
+            return response()->json([
+                'success' => false,
+//                'message' => $exception->getMessage()
+            'message'=>"Има грешка брато"
+            ],404);
+        }
+    }
+
     public function conductedExams():
     JsonResponse
     {
