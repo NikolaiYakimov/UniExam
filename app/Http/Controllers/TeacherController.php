@@ -22,15 +22,20 @@ class TeacherController
     {
         $user = Auth::user();
         $teacher=$user->teacher->load('faculty','specialty');
-        Log::debug($teacher);
+        $subjects = $teacher->subjects()->withCount('students')->get();
 
-//        return view('teacher_profile',[
-//            'user'=>$user,
-//            'teacher'=>$teacher,
-//        ]);
+        $upcomingExams = Exam::where('teacher_id', $teacher->id)
+            ->where('start_time', '>', now())
+            ->with('subject', 'hall')
+            ->orderBy('start_time')
+            ->get();
+
+
         return response()->json([
             'user'=>$user,
             'teacher'=>$teacher,
+            'subjects_count' => $subjects->count(),
+            'exams_count' => $upcomingExams->count(),
         ]);
 
     }

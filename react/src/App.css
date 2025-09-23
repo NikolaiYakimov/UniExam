@@ -92,3 +92,31 @@
 /*!*@tailwind base;*!*/
 /*!*@tailwind components;*!*/
 /*!*@tailwind utilities;*!*/
+/* Нулира underline и синия цвят в навигацията (desktop) */
+.header-nav a,
+.header-nav a:visited,
+.header-nav a:hover,
+.header-nav a:focus,
+.header-nav a:active {
+    text-decoration: none !important;
+    /*color: inherit !important;*/
+    /*color: #5c6b80;*/
+}
+
+/* Нулира и за mobile dropdown */
+#mobileNavDropdown a,
+#mobileNavDropdown a:visited,
+#mobileNavDropdown a:hover,
+#mobileNavDropdown a:focus,
+#mobileNavDropdown a:active {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+a,
+a:visited,
+a:hover,
+a:focus,
+a:active {
+    text-decoration: none !important;
+    /*color: inherit !important;*/
+}

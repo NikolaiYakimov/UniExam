@@ -10,6 +10,7 @@ use App\Mail\PasswordResetMail;
 use App\Models\Faculty;
 use App\Models\Group;
 use App\Models\Specialty;
+use App\Models\Subject;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -77,6 +78,15 @@ class UserController extends Controller
 //        $user = $this->userService->createUser($request->all());
 
         $user = $this->userService->createUser($data);
+        if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
+            $subjects = Subject::where('semester', $data['semester'])
+                ->whereHas('specialties', function ($query) use ($data) {
+                    $query->where('specialties.id', $data['specialty_id']);
+                })
+                ->get();
+
+            $user->student->subjects()->attach($subjects, ['has_attestation' => true]);
+        }
         return response()->json([
             'success' => true,
             'message' => 'Потребителят е създаден успешно.',

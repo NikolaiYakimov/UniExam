@@ -215,3 +215,36 @@ body {
     overflow-y: auto;
     z-index: 900; /* Добавяме z-index */
 }
+/*!* Добави това в app.css *!*/
+/*.page-layout {*/
+/*    display: flex;*/
+/*    min-height: calc(100vh - var(--header-h));*/
+/*}*/
+
+/*.page-layout main {*/
+/*    flex: 1;*/
+/*    overflow-y: auto;*/
+/*    padding: 1rem 2rem;*/
+/*    margin-left: 0;*/
+/*}*/
+
+/*!* Гарантираме, че sidebar-ът е фиксиран *!*/
+/*#sidebar {*/
+/*    position: sticky;*/
+/*    top: var(--header-h);*/
+/*    height: calc(100vh - var(--header-h));*/
+/*    overflow-y: auto;*/
+/*}*/
+
+/*!* Поправка за мобилни устройства *!*/
+/*@media (max-width: 1538px) {*/
+/*    .page-layout {*/
+/*        display: block;*/
+/*    }*/
+
+/*    .page-layout main {*/
+/*        margin-left: 0;*/
+/*        padding: 1rem;*/
+/*    }*/
+/*}*/
+

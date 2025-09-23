@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Specialty;
+use App\Models\Student;
 use App\Services\SubjectService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -62,6 +63,12 @@ class AdminSubjectController extends Controller
         if (!empty($data['specialties'])) {
             $subject->specialties()->sync($data['specialties']);
         }
+
+        $students = Student::where('semester', $data['semester'])
+            ->whereIn('specialty_id', $data['specialties'])
+            ->get();
+        $subject->students()->attach($students, ['has_attestation' => true]);
+
         // Свързваме преподавателите с предмета
         if (!empty($data['teachers'])) {
             $subject->teachers()->sync($data['teachers']);
