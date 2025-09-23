@@ -34,7 +34,6 @@ class UserController extends Controller
     public function getUsers()
     {
         $users = $this->userService->getAllUsers();
-//        return view('users', compact('users'));
         return response()->json([
             'success' => true,
             'data' => $users
@@ -46,7 +45,7 @@ class UserController extends Controller
         $faculties = Faculty::all();
         $specialties = Specialty::all();
         $groups = Group::all();
-//        return view('create_user', compact('faculties', 'specialties', 'groups'));
+
         return response()->json([
             'success' => true,
             'faculties' => $faculties,
@@ -58,7 +57,6 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-//            'name' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
             'second_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -75,7 +73,6 @@ class UserController extends Controller
             'title' => 'required_if:role,teacher'
         ]);
 
-//        $user = $this->userService->createUser($request->all());
 
         $user = $this->userService->createUser($data);
         if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
@@ -92,7 +89,7 @@ class UserController extends Controller
             'message' => 'Потребителят е създаден успешно.',
             'data' => $user
         ], 201);
-//        return redirect()->route('admin.users.uni_users')->with('success', 'Потребителят е създаден успешно.');
+
     }
 
     public function edit($id)
@@ -103,7 +100,7 @@ class UserController extends Controller
         $specialties = Specialty::all();
         $groups = Group::all();
 
-//        return view('edit_user', compact('user', 'faculties', 'specialties', 'groups'));
+
         return response()->json([
             'success' => true,
             'data' => $user,
@@ -144,29 +141,24 @@ class UserController extends Controller
     public function destroy($id)
     {
         $this->userService->deleteUser($id);
-//        return redirect()->route('uni_users')->with('success', 'Потребителят е изтрит успешно.');
+
         return response()->json([
             'success' => true,
             'message' => 'Потребителят е изтрит успешно.'
         ]);
     }
 
-//     public function editAccount(Request $request)
-//     {
-//         return view('student_profile',['user' => $request->user()]);
-//     }
 
      public function updateProfile(UpdateProfileRequest $request,UserService $service){
 
          $service->updateProfile($request->user(),$request->validated());
-//         return back()->with('success',"Профилът е обновен успешно");
+
          return response()->json(['success' => 'Успешмпо актуализирахте профила си']);
 
      }
      public function updatePassword(UpdatePasswordRequest $request,UserService $service)
      {
-//         Log::info('Туккк съм');
-//         Log::debug("Айдеее");
+
          $service->updatePassword($request->user(),$request->validated());
          try{
              if(!empty($user->email)){
@@ -178,32 +170,26 @@ class UserController extends Controller
                  'error' => $e->getMessage(),
              ]);
          }
-//         return back()->with('success','Паролата е сменена успешно');
+
          return response()->json(['success'=>'Паролата е сменена успешно']);
 
      }
 
 
-    public function showForgotPasswordForm()
-    {
-        return view('forgot-password');
-    }
 
-    /**
-     * Send a reset link to the given user.
-     */
+
+
     public function sendResetLinkEmail(Request $request)
     {
         $request->validate(['email' => 'required|email']);
 
-        // Check if the user exists
         $user = User::where('email', $request->email)->first();
         if (!$user) {
-//            return back()->withErrors(['email' => 'Потребител с този email адрес не съществува.']);
+
             return  response()->json(['message'=>'Потребител с този имейл не съществува'],404);
         }
 
-        // Generate a token for password_resets table
+
         $token = Str::random(60);
         DB::table('password_resets')->updateOrInsert(
             ['email' => $request->email],
@@ -215,26 +201,12 @@ class UserController extends Controller
             Log::error("Failed to send password resend email: ".$e->getMessage());
             return response()->json(["Грешка!Възникна грешка при изпращането на имейла!"],500);
         }
-        // Send email with the token
 
-//        return back()->with('status', 'Изпратихме ви имейл с линк за възстановяване на паролата!')
         return response()->json([        'message' => 'Изпратихме ви имейл с линк за възстановяване на паролата!'
         ]);
     }
 
-    /**
-     * Display the password reset view for the given token.
-     */
-//    public function showResetForm(Request $request, $token = null)
-//    {
-//        return view('auth.reset-password')->with(
-//            ['token' => $token, 'email' => $request->email]
-//        );
-//    }
 
-    /**
-     * Reset the given user's password.
-     */
     public function reset(Request $request)
     {
         $request->validate([
@@ -243,31 +215,30 @@ class UserController extends Controller
             'password' => 'required|confirmed|min:8',
         ]);
 
-        // Find the password reset record
         $resetRecord = DB::table('password_resets')
             ->where('email', $request->email)
             ->first();
 
         if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
-//            return back()->withErrors(['email' => 'Невалиден токен за възстановяване на парола.']);
+
             return response()->json(['message'=>'Токенът който беше предоставен е невалиден!',500]);
         }
 
-        // Check if token is expired
+
         if (now()->diffInMinutes($resetRecord->created_at) > 60) {
-//            return back()->withErrors(['email' => 'Токенът за възстановяване на парола е изтекъл.']);
+
             return response()->json(['message'=>'Токенът ви е изтекъл.Опитайте отново!'],400);
         }
 
-        // Update user's password
+
         $user = User::where('email', $request->email)->first();
         $user->password = Hash::make($request->password);
         $user->save();
 
-        // Delete the used token
+
         DB::table('password_resets')->where('email', $request->email)->delete();
 
-        // Send notification email
+
         try {
             if (!empty($user->email)) {
                 Mail::to($user->email)->queue(new PasswordChangedMail($user, now()));
@@ -279,14 +250,13 @@ class UserController extends Controller
             ]);
         }
 
-//        return redirect()->route('login')->with('status', 'Паролата ви е променена успешно!');
+
         return response()->json(['message'=>'Паролата ви е променена успешно!']);
     }
     public function getUserWithRelations(Request $request)
     {
         $user = $request->user();
 
-        // Load relationships based on user role
         if ($user->role === 'student') {
             $user->load('student.faculty', 'student.specialty', 'student.group');
         } elseif ($user->role === 'teacher') {

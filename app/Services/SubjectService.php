@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use App\Models\Student;
 use App\Repositories\SubjectRepository;
 use Illuminate\Support\Facades\Auth;
 
@@ -71,6 +72,45 @@ protected $subjectRepository;
     public function deleteSubject($id)
     {
         return $this->subjectRepository->delete($id);
+    }
+
+    public function createSubjectWithRelations(array $data) {
+        $subject = $this->subjectRepository->create($data);
+
+        if (!empty($data['specialties'])) {
+            $subject->specialties()->sync($data['specialties']);
+
+            // Преместване на логиката за студенти тук
+            $students = Student::where('semester', $data['semester'])
+                ->whereIn('specialty_id', $data['specialties'])
+                ->get();
+            $subject->students()->attach($students, ['has_attestation' => true]);
+        }
+
+        if (!empty($data['teachers'])) {
+            $subject->teachers()->sync($data['teachers']);
+        }
+
+        return $subject;
+    }
+
+    public function updateSubjectWithRelations($id, array $data) {
+        $subject = $this->subjectRepository->update($id, $data);
+
+        // Логика за синхронизиране на отношения
+        if (!empty($data['specialties'])) {
+            $subject->specialties()->sync($data['specialties']);
+        } else {
+            $subject->specialties()->detach();
+        }
+
+        if (!empty($data['teachers'])) {
+            $subject->teachers()->sync($data['teachers']);
+        } else {
+            $subject->teachers()->detach();
+        }
+
+        return $subject;
     }
 
 }

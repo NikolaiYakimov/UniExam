@@ -7,6 +7,27 @@ use App\Models\Subject;
 
 class SubjectRepository
 {
+
+    public function getSubjectWithAllRelations($id) {
+        return Subject::with(['teachers', 'specialties', 'students'])->findOrFail($id);
+    }
+
+    public function getSubjectsBySemesterAndSpecialties($semester, array $specialtyIds) {
+        return Subject::whereHas('specialties', function($query) use ($specialtyIds) {
+            $query->whereIn('specialties.id', $specialtyIds);
+        })->where('semester', $semester)->get();
+    }
+
+    public function syncSpecialties($subjectId, array $specialtyIds) {
+        $subject = Subject::findOrFail($subjectId);
+        return $subject->specialties()->sync($specialtyIds);
+    }
+
+    public function syncTeachers($subjectId, array $teacherIds) {
+        $subject = Subject::findOrFail($subjectId);
+        return $subject->teachers()->sync($teacherIds);
+    }
+
     public function getTeacherSubjectsWithStudentsCount($teacherId)
     {
         return Subject::whereHas('teachers', function($query) use ($teacherId) {
@@ -48,10 +69,10 @@ class SubjectRepository
 
     }
 
-    public function getSubjectWithAllRelations()
-    {
-        return Subject::with(['teachers', 'specialties'])->findOrFail($id);
-    }
+//    public function getSubjectWithAllRelations()
+//    {
+//        return Subject::with(['teachers', 'specialties'])->findOrFail($id);
+//    }
 
 
     public function create(array $data)
@@ -75,4 +96,5 @@ class SubjectRepository
 
         return $subject->delete();
     }
+
 }

@@ -22,13 +22,11 @@ class SubjectController
 
     public function getTeacherSubjects():
     JsonResponse
-//    View
     {
         try {
             $teacher = Auth::user()->teacher;
             $subjects = $this->subjectService->getTeacherSubjects();
 
-//            return view('teacher_subjects', compact('teacher', 'subjects'));
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -47,13 +45,11 @@ class SubjectController
 
     public function showSubjectStudents(Subject $subject):
     JsonResponse
-//    View
     {
         try{
         $teacher = Auth::user()->teacher;
         $students = $this->subjectService->getSubjectStudents($subject->id);
 
-//        return view('teacher_subject_students', compact('teacher', 'subject', 'students'));
         return response()->json([
             'success' => true,
             'data' => [

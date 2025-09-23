@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Repositories\PaymentRepository;
 use Illuminate\Support\Facades\Log;
 use App\Models\Exam;
@@ -19,7 +20,8 @@ class PaymentController extends Controller
 {
     protected $paymentService;
     protected $paymentRepository;
-    public function __construct(PaymentService $paymentService,PaymentRepository $paymentRepository)
+
+    public function __construct(PaymentService $paymentService, PaymentRepository $paymentRepository)
     {
         $this->paymentService = $paymentService;
         $this->paymentRepository = $paymentRepository;
@@ -31,23 +33,22 @@ class PaymentController extends Controller
             $student = auth()->user()->student;
             $payments = $this->paymentRepository->getPaymentRecords($student);
 
-//            return view('student_payments', compact('payments'));
-                    return response()->json([
-            'payments' => $payments,
-            'student' => $student]);
-//
-        }catch (\Exception $e) {
+            return response()->json([
+                'payments' => $payments,
+                'student' => $student]);
+
+        } catch (\Exception $e) {
             Log::error('Error fetching payments: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Грешка при зареждане на плащанията.');
-//            response()->json([
-//                'message' => 'error',
-//                'description'  => 'Грешка при зареждане на плащанията']);
+            response()->json([
+                'message' => 'error',
+                'description' => 'Грешка при зареждане на плащанията']);
         }
-       }
+    }
 
-    public function handlePayment(Exam $exam){
+    public function handlePayment(Exam $exam)
+    {
 
-        try{
+        try {
             Log::debug("Тук съм да плащам");
             $student = Auth::user()->student;
             return $this->paymentService->createCheckoutSession($exam, $student);
@@ -58,76 +59,39 @@ class PaymentController extends Controller
 
     }
 
-        public function paymentSuccess(Request $request){
-            try {
-                     $sessionId=$request->query('session_id');
+    public function paymentSuccess(Request $request)
+    {
+        try {
+            $sessionId = $request->query('session_id');
 
-                     if (!$sessionId) {
-                        return response()->json(['error'=> 'Невалидна сесия за плащане.'],422);
-                     }
-
-                     $this->paymentService->handleSuccessfulPayment($sessionId);
-//                     return response()->json(['status' => 'ok']);
-//                     return redirect()->route('exams')->with('success', 'Успешно плащане и записване за изпит!');
-                $frontendUrl = config('app.frontend_url') . '/exams?payment=success';
-                return redirect($frontendUrl);
-            }catch (\Exception $e){
-//                Log::error('Payment success handling failed: ' . $e->getMessage());
-//                return redirect()->route('payment.cancel')->with('error', $e->getMessage());
-                \Log::error('Payment success handling failed: '.$e->getMessage());
-                $frontendUrl = config('app.frontend_url') . '/exams?payment=error&message=' . urlencode($e->getMessage());
-//                return response()->json(['error' => "123"], 500);
-                return redirect($frontendUrl);
+            if (!$sessionId) {
+                return response()->json(['error' => 'Невалидна сесия за плащане.'], 422);
             }
+            $this->paymentService->handleSuccessfulPayment($sessionId);
+
+            $frontendUrl = config('app.frontend_url') . '/exams?payment=success';
+            return redirect($frontendUrl);
+        } catch (\Exception $e) {
+
+            \Log::error('Payment success handling failed: ' . $e->getMessage());
+            $frontendUrl = config('app.frontend_url') . '/exams?payment=error&message=' . urlencode($e->getMessage());
+            return redirect($frontendUrl);
+        }
 
 
     }
-    public function paymentCancel(Request $request){
 
-        return redirect()->route('exams')->with('error',"Плащането беше отменено. Моля, опитайте отново");
+    public function paymentCancel(Request $request)
+    {
+
+        return redirect()->route('exams')->with('error', "Плащането беше отменено. Моля, опитайте отново");
     }
 
-//    private function createRegistrationAndPayment(Session $session)
-//    {
-//        try {
-//            $exam = Exam::findOrFail($session->metadata->exam_id);
-//            $studentId = $session->metadata->student_id;
-//
-//
-//            if ($exam->remainingSlots() <= 0) {
-//               throw new \Exception("Няма свободни места");
-//            }
-//
-//            if(Payment::where('stripe_payment_id',$session->payment_intent)->exists()){
-//                throw new \Exception("Дублирано плащане");
-//            }
-//            //Use DB::transaction to be sure if one of the creating action failed , all the changes to be rollback
-//            DB::transaction(function() use ($session,$exam,$studentId){
-//                $registration = ExamRegistration::create([
-//                    'student_id' => $session->metadata->student_id,
-//                    'exam_id' => $session->metadata->exam_id,
-//                ]);
-//
-//                Payment::create([
-//                    'student_id' => $session->metadata->student_id,
-//                    'exam_registration_id' => $registration->id,
-//                    'stripe_payment_id' => $session->payment_intent,
-//                    'amount' => $session->amount_total / 100,
-//                    'currency' => $session->currency,
-//                    'status' => 'paid',
-//                    'payment_date' => now(),
-//                ]);
-//            });
-//        }catch (\Exception $e){
-//            $this->processRefund($session->payment_intent,$e->getMessage());
-//            return redirect()->route('exams')->with('error', "Грешка: {$e->getMessage()}. Парите ще бъдат върнати.");
-//        }
-//    }
 
     public function processRefund(Request $request): \Illuminate\Http\JsonResponse
     {
-        $paymentIntent=$request->input('paymentIntent');
-        $reason=$request->input('reason','Refund request');
+        $paymentIntent = $request->input('paymentIntent');
+        $reason = $request->input('reason', 'Refund request');
 
         $success = $this->paymentService->processRefund($paymentIntent, $reason);
 
