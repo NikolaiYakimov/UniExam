@@ -167,7 +167,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
-Route::post('/login', [AuthController::class, 'apiLogin']);
+Route::post('/login', [AuthController::class, 'login']);
 Route::post('/password/email', [UserController::class, 'sendResetLinkEmail']);
 Route::post('/password/reset', [UserController::class, 'reset']);
 
@@ -241,7 +241,7 @@ Route::middleware(['auth:sanctum', 'role:administrator'])->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'apiLogout']);
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'getUserWithRelations']);
     Route::get('/user-with-relations', [UserController::class, 'getUserWithRelations']);
 //    Route::get('/student-profile--profile', [UserController::class, 'edit'])->name('profile.edit');

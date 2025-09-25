@@ -1941,6 +1941,37 @@ export default function TeacherDashboard() {
                                         </span>
                                     </h4>
 
+                                    {/*{loadingSlots ? (*/}
+                                    {/*    <div className="text-center py-4">*/}
+                                    {/*        <i className="fas fa-spinner fa-spin text-blue-500 mr-2"></i>*/}
+                                    {/*        <span className="text-gray-600">Зареждане на слотове...</span>*/}
+                                    {/*    </div>*/}
+                                    {/*) : (*/}
+                                    {/*    <div className="grid grid-cols-3 gap-2">*/}
+                                    {/*        {TIME_SLOTS.map(time => {*/}
+                                    {/*            const isBooked = isTimeSlotBooked(time);*/}
+                                    {/*            const isSelected = selectedSlots.includes(time);*/}
+                                    {/*            const isValid = isValidDate(selectedDate, time);*/}
+
+                                    {/*            return (*/}
+                                    {/*                <button*/}
+                                    {/*                    key={time}*/}
+                                    {/*                    type="button"*/}
+                                    {/*                    className={`py-3 rounded-lg text-white font-medium transition-colors*/}
+                                    {/*                        ${isSelected ? 'bg-blue-500 hover:bg-blue-600' :*/}
+                                    {/*                        isBooked ? 'bg-red-500 cursor-not-allowed' :*/}
+                                    {/*                            isValid ? 'bg-green-500 hover:bg-green-600' :*/}
+                                    {/*                                'bg-gray-300 cursor-not-allowed'}`}*/}
+                                    {/*                    disabled={isBooked || !isValid}*/}
+                                    {/*                    onClick={() => handleTimeSlotClick(time)}*/}
+                                    {/*                    title={!isValid ? "Моля, изберете валидни дата и час за изпита." : ""}*/}
+                                    {/*                >*/}
+                                    {/*                    {time}*/}
+                                    {/*                </button>*/}
+                                    {/*            );*/}
+                                    {/*        })}*/}
+                                    {/*    </div>*/}
+                                    {/*)}*/}
                                     {loadingSlots ? (
                                         <div className="text-center py-4">
                                             <i className="fas fa-spinner fa-spin text-blue-500 mr-2"></i>
@@ -1953,18 +1984,36 @@ export default function TeacherDashboard() {
                                                 const isSelected = selectedSlots.includes(time);
                                                 const isValid = isValidDate(selectedDate, time);
 
+                                                // Проверка дали датата е валидна (не е минала и не е в рамките на 48 часа)
+                                                const isFutureDate = isValidDate(selectedDate, time);
+
+                                                // Ако датата не е бъдеща (след 48 часа), всички слотове са сиви
+                                                if (!isFutureDate) {
+                                                    return (
+                                                        <button
+                                                            key={time}
+                                                            type="button"
+                                                            className="py-3 rounded-lg bg-gray-300 text-white font-medium cursor-not-allowed"
+                                                            disabled={true}
+                                                            title="Не може да се избират слотове за минали дати или в рамките на 48 часа преди изпита"
+                                                        >
+                                                            {time}
+                                                        </button>
+                                                    );
+                                                }
+
+                                                // Само за бъдещи дати показваме цветовете
                                                 return (
                                                     <button
                                                         key={time}
                                                         type="button"
                                                         className={`py-3 rounded-lg text-white font-medium transition-colors
-                                                            ${isSelected ? 'bg-blue-500 hover:bg-blue-600' :
+                        ${isSelected ? 'bg-blue-500 hover:bg-blue-600' :
                                                             isBooked ? 'bg-red-500 cursor-not-allowed' :
-                                                                isValid ? 'bg-green-500 hover:bg-green-600' :
-                                                                    'bg-gray-300 cursor-not-allowed'}`}
-                                                        disabled={isBooked || !isValid}
+                                                                'bg-green-500 hover:bg-green-600'}`}
+                                                        disabled={isBooked}
                                                         onClick={() => handleTimeSlotClick(time)}
-                                                        title={!isValid ? "Моля, изберете валидни дата и час за изпита." : ""}
+                                                        title={isBooked ? "Този слот е зает" : "Свободен слот"}
                                                     >
                                                         {time}
                                                     </button>

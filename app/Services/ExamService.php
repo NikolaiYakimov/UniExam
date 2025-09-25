@@ -175,22 +175,35 @@ class ExamService{
         $correctiveGrade = $grades->firstWhere('exam.exam_type', 'поправителен')?->grade;
 
         // Използваме repository за получаване на изпити по предмет и тип
-        $regularExamPassed = $this->examRepository
-            ->getExamsBySubjectAndType($subjectId, 'редовен')
-            ->isNotEmpty();
+//        $regularExamPassed = $this->examRepository
+//            ->getExamsBySubjectAndType($subjectId, 'редовен')
+//            ->isNotEmpty();
+        $studentRegularRegistration = $student->registrations()
+            ->whereHas('exam', function($q) use ($subjectId) {
+                $q->where('subject_id', $subjectId)
+                    ->where('exam_type', 'редовен');
+            })
+            ->exists();
 
-        $correctiveExamPassed = $this->examRepository
-            ->getExamsBySubjectAndType($subjectId, 'поправителен')
-            ->isNotEmpty();
+//        $correctiveExamPassed = $this->examRepository
+//            ->getExamsBySubjectAndType($subjectId, 'поправителен')
+//            ->isNotEmpty();
+
+        $studentCorrectiveRegistration = $student->registrations()
+            ->whereHas('exam', function($q) use ($subjectId) {
+                $q->where('subject_id', $subjectId)
+                    ->where('exam_type', 'поправителен');
+            })
+            ->exists();
 
         switch ($exam->exam_type) {
             case 'редовен':
                 return is_null($regularGrade) && $hasAttestation;
             case 'поправителен':
-                return ($regularGrade == 2 || (is_null($regularGrade) && $regularExamPassed)) && $hasAttestation;
+                return ($regularGrade == 2 || (is_null($regularGrade) && $studentRegularRegistration)) && $hasAttestation;
             case 'ликвидация':
                 return ($correctiveGrade == 2 ||
-                        (is_null($correctiveGrade) && $correctiveExamPassed)) && $hasAttestation;
+                        (is_null($correctiveGrade) && $studentCorrectiveRegistration)) && $hasAttestation;
             default:
                 return $hasAttestation;
         }

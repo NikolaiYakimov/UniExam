@@ -779,8 +779,8 @@ const TeacherConductedExams = () => {
                     <div className="bg-white/90 backdrop-blur-md shadow-sm py-6 mb-8 rounded-xl border border-gray-100">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 gap-4">
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-800">Управление на изпити</h1>
-                                <p className="text-sm text-gray-500 mt-1">Преглед на изминалите изпити</p>
+                                <h1 className="text-2xl font-bold text-gray-800">Управление на изминалите изпити</h1>
+                                <p className="text-sm text-gray-500 mt-1">Преглед на изминалите изпити и нанасяне на оценки</p>
                             </div>
                             <Link
                                 to="/teacher-dashboard"

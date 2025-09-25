@@ -97,19 +97,82 @@ class UserRepository
 
     protected function updateRoleSpecificData(User $user, $data)
     {
-        if ($user->student) {
+//        if ($user->student) {
+//            $user->student->delete();
+//        }
+//
+//        if ($user->teacher) {
+//            $user->teacher->delete();
+//        }
+//
+//        if ($user->administrator) {
+//            $user->administrator->delete();
+//        }
+//
+//
+//        $this->createRoleSpecificData($user, $data);
+        switch ($data['role']) {
+            case 'student':
+                if ($user->student) {
+                    // АКТУАЛИЗИРАНЕ на съществуващ студент
+                    $user->student->update([
+                        'faculty_number' => $data['faculty_number'] ?? null,
+                        'faculty_id' => $data['faculty_id'] ?? null,
+                        'specialty_id' => $data['specialty_id'] ?? null,
+                        'semester' => $data['semester'] ?? null,
+                        'group_id' => $data['group_id'] ?? null,
+                    ]);
+                } else {
+                    // Създаване на нов запис само ако няма съществуващ
+                    Student::create([
+                        'user_id' => $user->id,
+                        'faculty_number' => $data['faculty_number'] ?? null,
+                        'faculty_id' => $data['faculty_id'] ?? null,
+                        'specialty_id' => $data['specialty_id'] ?? null,
+                        'semester' => $data['semester'] ?? null,
+                        'group_id' => $data['group_id'] ?? null,
+                    ]);
+                }
+                break;
+
+            case 'teacher':
+                if ($user->teacher) {
+                    // АКТУАЛИЗИРАНЕ на съществуващ учител
+                    $user->teacher->update([
+                        'title' => $data['title'] ?? null,
+                        'specialty_id' => $data['specialty_id'] ?? null,
+                        'faculty_id' => $data['faculty_id'] ?? null,
+                    ]);
+                } else {
+                    Teacher::create([
+                        'user_id' => $user->id,
+                        'title' => $data['title'] ?? null,
+                        'specialty_id' => $data['specialty_id'] ?? null,
+                        'faculty_id' => $data['faculty_id'] ?? null,
+                    ]);
+                }
+                break;
+
+            case 'administrator':
+                if (!$user->administrator) {
+                    Administrator::create([
+                        'user_id' => $user->id,
+                    ]);
+                }
+                break;
+        }
+
+        // ИЗТРИВАНЕ на ненужни ролеви данни
+        if ($data['role'] !== 'student' && $user->student) {
             $user->student->delete();
         }
 
-        if ($user->teacher) {
+        if ($data['role'] !== 'teacher' && $user->teacher) {
             $user->teacher->delete();
         }
 
-        if ($user->administrator) {
+        if ($data['role'] !== 'administrator' && $user->administrator) {
             $user->administrator->delete();
         }
-
-
-        $this->createRoleSpecificData($user, $data);
     }
 }

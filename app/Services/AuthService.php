@@ -55,7 +55,8 @@ class AuthService
         return [
             'token' => $token,
             'user' => $user,
-            'redirect' => $this->apiRedirectByRole($user->role)
+            'redirect' => $this->apiRedirectByRole($user->role),
+            'expires_in'=>config('sanctum.expiration')*60
         ];
     }
 

@@ -73,7 +73,7 @@
 //     );
 // }
 import { useAuth } from '../hooks/useAuth';
-
+import logoImage from '../../public/images/tu-image.png'; // или правилния път
 export default function Sidebar({ user: userProp }) {
     const { logout } = useAuth();
     const user = userProp;
@@ -83,13 +83,23 @@ export default function Sidebar({ user: userProp }) {
             <div className="flex flex-col h-full">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6 pb-4 border-b border-gray-100 flex items-center">
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3 overflow-hidden">
-                        <img src="/images/tu-image.png" alt="Лого" className="w-full h-full object-cover" loading="lazy" />
+                        <img
+                            src={logoImage}
+                             alt="Лого" className="w-full h-full object-cover" loading="lazy" />
                     </div>
-                    {user.role === 'student' ? 'Студентски профил' : user.role === 'teacher' ? 'Преподавателски профил' : 'Администраторски профил'}
+                    {/*{user.role === 'student' ? 'Студентски профил' : user.role === 'teacher' ? 'Преподавателски профил' : 'Администраторски профил'}*/}
+                    <span className={
+                        user.role === 'student' ? 'text-xl' :
+                            user.role === 'teacher' ? 'text-lg' :
+                                'text-base'
+                    }>
+                        {user.role === 'student' ? 'Студентски профил' :
+                            user.role === 'teacher' ? 'Преподавателски профил' :
+                                'Администраторски профил'}
+                    </span>
                 </h2>
 
                 <div className="space-y-5 flex-1">
-                    {/* Профилна секция */}
                     <div className="flex items-center gap-4">
                         <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
                             <i className="fas fa-user text-xl text-blue-600"></i>
@@ -105,15 +115,10 @@ export default function Sidebar({ user: userProp }) {
                                     №: <span className="font-mono">{user.student?.faculty_number}</span>
                                 </p>
                             )}
-                            {user.role === 'teacher' && (
-                                <p className="text-sm text-gray-500 mt-1">
-                                    <i className="fas fa-clipboard-list text-gray-400"></i> {user.teacher?.exams_count} активни изпита
-                                </p>
-                            )}
+
                         </div>
                     </div>
 
-                    {/* Детайли */}
                     <div className="space-y-3.5 mt-4">
                         {user.role === 'student' && (
                             <div>
@@ -162,7 +167,6 @@ export default function Sidebar({ user: userProp }) {
                     </div>
                 </div>
 
-                {/* Бутон за изход */}
                 <div className="pt-4 border-t border-gray-100">
                     <button
                         onClick={logout}

@@ -54,6 +54,43 @@ class UserController extends Controller
         ]);
     }
 
+//    public function store(Request $request)
+//    {
+//        $data = $request->validate([
+//            'first_name' => 'required|string|max:255',
+//            'second_name' => 'nullable|string|max:255',
+//            'last_name' => 'required|string|max:255',
+//            'username' => 'required|string|unique:users,username',
+//            'email' => 'required|email|unique:users,email',
+//            'password' => 'required|string|min:8',
+//            'phone' => 'nullable|string|max:20',
+//            'role' => 'required|in:student,teacher,administrator',
+//            'faculty_number' => 'required_if:role,student',
+//            'faculty_id' => 'nullable|exists:faculties,id',
+//            'specialty_id' => 'nullable|exists:specialties,id',
+//            'semester' => 'nullable|integer|min:1|max:8',
+//            'group_id' => 'nullable|exists:groups,id',
+//            'title' => 'required_if:role,teacher'
+//        ]);
+//
+//
+//        $user = $this->userService->createUser($data);
+//        if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
+//            $subjects = Subject::where('semester', $data['semester'])
+//                ->whereHas('specialties', function ($query) use ($data) {
+//                    $query->where('specialties.id', $data['specialty_id']);
+//                })
+//                ->get();
+//
+//            $user->student->subjects()->attach($subjects, ['has_attestation' => true]);
+//        }
+//        return response()->json([
+//            'success' => true,
+//            'message' => 'Потребителят е създаден успешно.',
+//            'data' => $user
+//        ], 201);
+//
+//    }
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -73,25 +110,43 @@ class UserController extends Controller
             'title' => 'required_if:role,teacher'
         ]);
 
-
         $user = $this->userService->createUser($data);
-        if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
-            $subjects = Subject::where('semester', $data['semester'])
-                ->whereHas('specialties', function ($query) use ($data) {
-                    $query->where('specialties.id', $data['specialty_id']);
-                })
-                ->get();
 
-            $user->student->subjects()->attach($subjects, ['has_attestation' => true]);
+
+        if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
+            try {
+                $subjects = Subject::where('semester', $data['semester'])
+                    ->whereHas('specialties', function ($query) use ($data) {
+                        $query->where('specialties.id', $data['specialty_id']);
+                    })
+                    ->get();
+
+                if ($subjects->count() > 0) {
+                    $user->load('student');
+                    $user->student->subjects()->attach($subjects, ['has_attestation' => true]);
+
+                    \Log::info("Автоматично свързани {$subjects->count()} предмета за студент {$user->first_name} {$user->last_name}", [
+                        'student_id' => $user->student->id,
+                        'semester' => $data['semester'],
+                        'specialty_id' => $data['specialty_id']
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Грешка при свързване на предмети за студент: ' . $e->getMessage(), [
+                    'user_id' => $user->id,
+                    'semester' => $data['semester'] ?? null,
+                    'specialty_id' => $data['specialty_id'] ?? null
+                ]);
+            }
         }
+
         return response()->json([
             'success' => true,
             'message' => 'Потребителят е създаден успешно.',
-            'data' => $user
+            'data' => $user,
+            'subjects_attached' => $subjects->count() ?? 0
         ], 201);
-
     }
-
     public function edit($id)
     {
 
@@ -129,7 +184,59 @@ class UserController extends Controller
             'title' => 'required_if:role,teacher'
 
         ]);
+//        $user = $this->userService->updateUser($id, $data);
+//
+//        return response()->json([
+//            'success' => true,
+//            'message' => 'Потребителят е актуализиран успешно.',
+//            'data' => $user
+//        ]);
         $user = $this->userService->updateUser($id, $data);
+
+        // Актуализация на предметите при промяна на семестър или специалност
+        if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
+            try {
+                $student = $user->student;
+                if ($student) {
+                    // ПРЕМАХВАНЕ на предмети от стария семестър (ако е необходимо)
+                    // Тук може да решите дали да премахнете старите или не
+                    // $student->subjects()->detach();
+
+                    // ДОБАВЯНЕ на предмети от НОВИЯ семестър
+                    $newSubjects = Subject::where('semester', $data['semester'])
+                        ->whereHas('specialties', function ($query) use ($data) {
+                            $query->where('specialties.id', $data['specialty_id']);
+                        })
+                        ->get();
+
+                    if ($newSubjects->count() > 0) {
+                        // Добавяме само предмети, които все още не са добавени
+                        $existingSubjectIds = $student->subjects()->pluck('subjects.id')->toArray();
+
+                        $subjectsToAttach = $newSubjects->filter(function ($subject) use ($existingSubjectIds) {
+                            return !in_array($subject->id, $existingSubjectIds);
+                        });
+
+                        if ($subjectsToAttach->count() > 0) {
+                            $student->subjects()->attach($subjectsToAttach, ['has_attestation' => true]);
+
+                            \Log::info("Добавени предмети за студент при редактиране", [
+                                'student_id' => $student->id,
+                                'semester' => $data['semester'],
+                                'specialty_id' => $data['specialty_id'],
+                                'subjects_added' => $subjectsToAttach->count()
+                            ]);
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Грешка при актуализиране на предмети за студент: ' . $e->getMessage(), [
+                    'user_id' => $user->id,
+                    'semester' => $data['semester'] ?? null,
+                    'specialty_id' => $data['specialty_id'] ?? null
+                ]);
+            }
+        }
 
         return response()->json([
             'success' => true,

@@ -20,18 +20,8 @@ class AuthController extends Controller
     public function __construct(AuthService $authService){
         $this->authService = $authService;
     }
-//    public function showLoginForm():View{
-//        return view('user_login');
-//    }
-//
-//    public function login(LoginRequest $request){
-//        return $this->authService->login($request->validated());
-//    }
-//
-//    public function logout(Request $request):\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
-//    {
-//        return $this->authService->logout($request);
-//    }
+
+
 
 // ... други методи
 //
@@ -159,7 +149,7 @@ class AuthController extends Controller
 //
 //        return response()->json($user);
 //    }
-    public function apiLogin(Request $request)
+    public function login(Request $request)
     {
         $request->validate([
             'username' => 'required',
@@ -176,7 +166,7 @@ class AuthController extends Controller
         }
     }
 
-    public function apiLogout(Request $request)
+    public function logout(Request $request)
     {
         try {
             $result = $this->authService->apiLogout($request);

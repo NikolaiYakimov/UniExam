@@ -908,20 +908,10 @@ export default function Header() {
 
         if (user?.role === 'administrator') {
             return (
-                // <>
-                //     <NavLink className={getNavLinkClass} to="/subjects">
-                //         <i className="fa fa-file-pen me-2 text-gray-500"></i>Управление на Изпити
-                //     </NavLink>
-                //     <NavLink className={getNavLinkClass} to="/users">
-                //         <i className="fa fa-wallet me-2 text-gray-500"></i>Управление на потребители
-                //     </NavLink>
-                //     <NavLink className={getNavLinkClass} to="/exam-halls">
-                //         <i className="fa fa-clipboard-check me-2 text-gray-500"></i>Управление на зали
-                //     </NavLink>
-                // </>
+
                 <>
                     <NavLink className={getNavLinkClass} to="/subjects">
-                        <i className="fa fa-file-pen me-2 text-gray-500"></i>Управление на Изпити
+                        <i className="fa fa-file-pen me-2 text-gray-500"></i>Управление на дисциплини
                     </NavLink>
                     <NavLink className={getNavLinkClass} to="/users">
                         <i className="fa fa-wallet me-2 text-gray-500"></i>Управление на потребители
