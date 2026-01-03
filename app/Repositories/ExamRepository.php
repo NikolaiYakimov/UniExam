@@ -14,7 +14,6 @@ class ExamRepository implements ExamRepositoryInterface
 
     public function hasOverlap($hallId, $startTime, $endTime,$excludeExamId=null)
     {
-//        return Exam::where('hall_id',$hallId)->
         $overlap=Exam::where('hall_id',$hallId)->
             where(function ($query) use ($startTime, $endTime) {
                 $query->where('start_time', '<', $endTime)->
@@ -56,7 +55,6 @@ class ExamRepository implements ExamRepositoryInterface
     {
         $registeredExamIds = $student->registrations()->pluck('exam_id');
 
-//        return Exam::with(['teacher.user', 'subject','hall'])
         return Exam::with(['teacher.user', 'subject','hall'])
             ->whereHas('subject', function ($q) use ($student) {
                 $q->where('semester', '<=', $student->semester)
@@ -67,7 +65,6 @@ class ExamRepository implements ExamRepositoryInterface
             ->where('start_time', '>', now())
             ->whereNotIn('id', $registeredExamIds)
             ->orderBy('start_time', 'desc')
-//            ->withCount('registrations')
             ->get()->map(function ($exam) {
                 $exam->remaining_slots=$exam->remainingSlots();
                 return $exam;
@@ -122,38 +119,7 @@ class ExamRepository implements ExamRepositoryInterface
             });
     }
 
-//    public function createExamRegistration(Student $student, Exam $exam): bool
-//    {
-//        try {
-//            ExamRegistration::create([
-//                'student_id' => $student->id,
-//                'exam_id' => $exam->id,
-//            ]);
-//            return true;
-//        } catch (\Exception $e) {
-//            return false;
-//        }
-//    }
-//
-//    public function deleteExamRegistration(Student $student, Exam $exam): bool
-//    {
-//        $registration = ExamRegistration::where('student_id', $student->id)
-//            ->where('exam_id', $exam->id)
-//            ->first();
-//
-//        if ($registration) {
-//            return $registration->delete();
-//        }
-//
-//        return false;
-//    }
-//
-//    public function getExamRegistrations(Student $student): Collection
-//    {
-//        return $student->registrations()
-//            ->with(['exam.teacher', 'exam.subject', 'exam.hall'])
-//            ->get();
-//    }
+
 
     public function  getConductedExams($teacherId)
     {
@@ -171,16 +137,7 @@ class ExamRepository implements ExamRepositoryInterface
         return Exam::with(['registrations.student.user', 'subject','hall'])->findOrFail($examId);
     }
 
-//    public function updateExamGrades($examId, $grades)
-//    {
-//        foreach ($grades as $registrationId => $grade) {
-//            $registration = ExamRegistration::find($registrationId);
-//            if ($registration && $registration->exam_id == $examId) {
-//                $registration->grade = $grade ?: null;
-//                $registration->save();
-//            }
-//        }
-//    }
+
 
     public function getBookedTimeSlots()
     {

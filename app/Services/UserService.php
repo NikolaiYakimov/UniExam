@@ -58,7 +58,46 @@ class UserService
     {
         $user->forceFill([
             'password' => Hash::make($data['new_password']),
-//            'remember_token'=>Str::random(60),
         ])->save();
+    }
+
+    private function handleStudentSubjects($user, $data)
+    {
+        if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
+            try {
+                $student = $user->student;
+                if ($student) {
+                    $newSubjects = Subject::where('semester', $data['semester'])
+                        ->whereHas('specialties', function ($query) use ($data) {
+                            $query->where('specialties.id', $data['specialty_id']);
+                        })
+                        ->get();
+
+                    if ($newSubjects->count() > 0) {
+                        $existingSubjectIds = $student->subjects()
+                            ->where('semester', $data['semester'])
+                            ->pluck('subjects.id')
+                            ->toArray();
+
+                        $subjectsToAttach = $newSubjects->filter(function ($subject) use ($existingSubjectIds) {
+                            return !in_array($subject->id, $existingSubjectIds);
+                        });
+
+                        if ($subjectsToAttach->count() > 0) {
+                            $student->subjects()->attach($subjectsToAttach, ['has_attestation' => true]);
+
+                            return $subjectsToAttach->count();
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Грешка при управление на предмети за студент: ' . $e->getMessage(), [
+                    'user_id' => $user->id,
+                    'semester' => $data['semester'],
+                    'specialty_id' => $data['specialty_id']
+                ]);
+            }
+        }
+        return 0;
     }
 }

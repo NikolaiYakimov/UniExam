@@ -77,7 +77,6 @@ class  PaymentService
         $user=Auth::user();
 
         DB::transaction(function () use ($session,$exam) {
-//            $exam=Exam::findOrFail($session->metadata->exam_id);
             $student_id=$session->metadata->student_id;
             if($exam->remainingSlots()<=0){
                 throw new Exception("Няма свободни места");
@@ -101,10 +100,7 @@ class  PaymentService
                 'payment_date'=>now(),
             ]);
         });
-//        $emailFromStripe = $session->customer_details->email ?? null;
-//        $fallbackEmail   = optional($student->user)->email;
-//        $toEmail         = $emailFromStripe ?: $fallbackEmail;
-//        Log::debug(Auth::user());
+
         Log::debug($student->user);
         Mail::to($student->user->email)->queue(new SuccessfullyPaidAndRegistered($exam,$student));
     }
@@ -138,5 +134,4 @@ class  PaymentService
     }
 
 }
-//Добре сега искам да покажем и функционалноста за показване на изминалите изпити
-// и показването на оценка под формата пак на една точка както предишната точка:
+

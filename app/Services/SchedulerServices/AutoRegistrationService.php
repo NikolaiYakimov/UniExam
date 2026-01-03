@@ -25,7 +25,7 @@ class AutoRegistrationService
                 continue;
             }
             if(!$exam->hasAvailableSlots()){
-                Log::info("Exam {$exam->id} has no available slots, skipping auto-registration.");
+                Log::info(" No available slots, skipping auto-registration.");
                 continue;
             }
             $specialtyIds=$exam->subject->specialties->pluck('id')->toArray();

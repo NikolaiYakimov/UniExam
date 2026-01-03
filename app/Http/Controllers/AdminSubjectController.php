@@ -65,7 +65,6 @@ class AdminSubjectController extends Controller
         $subject = $this->subjectService->getSubjectWithTeacherById($id);
 
         $specialties = Specialty::with('teachers.user')->get();
-//        $selectedSpecialties = $subject->specialties->pluck('id')->toArray();
         $selectedSpecialties = $subject->specialties->pluck('id')->toArray();
         $selectedTeachers = $subject->teachers->pluck('id')->toArray();
 
@@ -92,20 +91,9 @@ class AdminSubjectController extends Controller
         'teachers.*' => 'exists:teachers,id'
         ]);
 
-//        $this->subjectService->updateSubject($id, $data);
         $subject = $this->subjectService->updateSubjectWithRelations($id, $data);
 
-//        if (!empty($data['specialties'])) {
-//            $subject->specialties()->sync($data['specialties']);
-//        } else {
-//            $subject->specialties()->detach();
-//        }
-//
-//        if (!empty($data['teachers'])) {
-//            $subject->teachers()->sync($data['teachers']);
-//        } else {
-//            $subject->teachers()->detach();
-//        }
+
 
         return response()->json([
             'success' => true,
@@ -118,9 +106,7 @@ class AdminSubjectController extends Controller
 
     public function destroy($id)
     {
-    /*    $subject = $this->subjectService->getSubjectById($id);
-        $subject->teachers()->detach();
-        $subject->specialties()->detach();*/
+
         $this->subjectService->deleteSubject($id);
 
 

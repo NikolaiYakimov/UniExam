@@ -51,7 +51,6 @@ class ExamHallController extends Controller
     public function edit(ExamHall $examHall)
     {
         try {
-//            $examHall=ExamHall::findOrFail($examId)
             return response()->json([
                 'success' => true,
                 'data' => $examHall

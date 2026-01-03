@@ -67,7 +67,6 @@ class ExamService{
     public function getBookedSlots(int $hallId,string $date,int $excludeExamId=null){
 
         $dateObj=Carbon::parse($date);
-        Log::debug($dateObj);
         $start=$dateObj->copy()->startOfDay();
         $end=$dateObj->copy()->endOfDay();
 
@@ -108,14 +107,8 @@ class ExamService{
             'end_time' => $endTime,
             'max_students' => $data['max_students'],
         ];
-//        $exam->update([
-//            'hall_id' => $data['hall_id'],
-//            'start_time' => $startTime,
-//            'end_time' => $endTime,
-//            'max_students' => $data['max_students'],
-//        ]);
+
         return $this->examRepository->update($exam, $updateData);
-//        return $exam;
 
     }
     public function getAvailableExams(Student $student): Collection

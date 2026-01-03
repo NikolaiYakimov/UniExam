@@ -2,7 +2,6 @@
 import { useState, useContext, createContext, useEffect } from 'react';
 import axios from 'axios';
 
-// Create axios instance
 export const api = axios.create({
     baseURL: 'http://localhost:8000/api',
     headers: {

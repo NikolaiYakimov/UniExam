@@ -10,17 +10,20 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ExamCreatedMail extends Mailable implements ShouldQueue
+class ExamUpdatedMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     public $exam;
+    public $changes;
+
     /**
      * Create a new message instance.
      */
-    public function __construct($exam)
+    public function __construct($exam, $changes = [])
     {
         $this->exam = $exam;
+        $this->changes = $changes;
     }
 
     /**
@@ -29,8 +32,8 @@ class ExamCreatedMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('nyakimov@tu-sofia.bg','University Management System'),
-            subject: 'New Exam is created and available for register',
+            from: new Address('nyakimov@tu-sofia.bg', 'University Management System'),
+            subject: 'Exam Has Been Updated',
         );
     }
 
@@ -40,8 +43,10 @@ class ExamCreatedMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'emails.exam-updated',
-            with: ['exam' => $this->exam]
+            view: 'emails.exam-update',
+            with: [
+                'exam' => $this->exam,
+            ]
         );
     }
 

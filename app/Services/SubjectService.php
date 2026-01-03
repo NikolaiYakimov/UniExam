@@ -24,7 +24,6 @@ protected $subjectRepository;
     {
         $teacher = Auth::user()->teacher;
 
-        // Check if the teacher lector for this subject
         if (!$teacher->subjects->contains('id', $subjectId)) {
             abort(403);
         }
@@ -36,7 +35,6 @@ protected $subjectRepository;
     {
         $teacher = Auth::user()->teacher;
 
-        // Check if the teacher lector for this subject
         if (!$teacher->subjects->contains('id', $subjectId)) {
             abort(403);
         }
@@ -80,7 +78,6 @@ protected $subjectRepository;
         if (!empty($data['specialties'])) {
             $subject->specialties()->sync($data['specialties']);
 
-            // Преместване на логиката за студенти тук
             $students = Student::where('semester', $data['semester'])
                 ->whereIn('specialty_id', $data['specialties'])
                 ->get();
@@ -97,7 +94,6 @@ protected $subjectRepository;
     public function updateSubjectWithRelations($id, array $data) {
         $subject = $this->subjectRepository->update($id, $data);
 
-        // Логика за синхронизиране на отношения
         if (!empty($data['specialties'])) {
             $subject->specialties()->sync($data['specialties']);
         } else {

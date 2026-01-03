@@ -197,7 +197,6 @@ function AppContent() {
     );
 }
 
-// Помощна функция за определяне на пътя за пренасочване според ролята
 function getRedirectPath(user) {
     if (!user) return '/login';
 
@@ -208,8 +207,7 @@ function getRedirectPath(user) {
             return '/subjects'
         case 'teacher':
             return '/upcoming-exams';
-        // default:
-        //     return '/login';
+
     }
 }
 

@@ -69,10 +69,7 @@ class SubjectRepository
 
     }
 
-//    public function getSubjectWithAllRelations()
-//    {
-//        return Subject::with(['teachers', 'specialties'])->findOrFail($id);
-//    }
+
 
 
     public function create(array $data)
@@ -87,7 +84,9 @@ class SubjectRepository
         return $subject;
     }
 
-    public function delete($id)
+    public function
+
+    delete($id)
     {
         $subject = Subject::findOrFail($id);
         $subject->teachers()->detach();

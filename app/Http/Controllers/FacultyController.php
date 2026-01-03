@@ -44,7 +44,7 @@ class FacultyController
                 'data' => $faculty,
                 'message' => 'Faculty created successfully'
             ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'message' => $e->getMessage(),
                 'errors' => $e->errors()

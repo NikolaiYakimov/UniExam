@@ -54,43 +54,7 @@ class UserController extends Controller
         ]);
     }
 
-//    public function store(Request $request)
-//    {
-//        $data = $request->validate([
-//            'first_name' => 'required|string|max:255',
-//            'second_name' => 'nullable|string|max:255',
-//            'last_name' => 'required|string|max:255',
-//            'username' => 'required|string|unique:users,username',
-//            'email' => 'required|email|unique:users,email',
-//            'password' => 'required|string|min:8',
-//            'phone' => 'nullable|string|max:20',
-//            'role' => 'required|in:student,teacher,administrator',
-//            'faculty_number' => 'required_if:role,student',
-//            'faculty_id' => 'nullable|exists:faculties,id',
-//            'specialty_id' => 'nullable|exists:specialties,id',
-//            'semester' => 'nullable|integer|min:1|max:8',
-//            'group_id' => 'nullable|exists:groups,id',
-//            'title' => 'required_if:role,teacher'
-//        ]);
-//
-//
-//        $user = $this->userService->createUser($data);
-//        if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
-//            $subjects = Subject::where('semester', $data['semester'])
-//                ->whereHas('specialties', function ($query) use ($data) {
-//                    $query->where('specialties.id', $data['specialty_id']);
-//                })
-//                ->get();
-//
-//            $user->student->subjects()->attach($subjects, ['has_attestation' => true]);
-//        }
-//        return response()->json([
-//            'success' => true,
-//            'message' => 'Потребителят е създаден успешно.',
-//            'data' => $user
-//        ], 201);
-//
-//    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -125,18 +89,9 @@ class UserController extends Controller
                     $user->load('student');
                     $user->student->subjects()->attach($subjects, ['has_attestation' => true]);
 
-                    \Log::info("Автоматично свързани {$subjects->count()} предмета за студент {$user->first_name} {$user->last_name}", [
-                        'student_id' => $user->student->id,
-                        'semester' => $data['semester'],
-                        'specialty_id' => $data['specialty_id']
-                    ]);
                 }
             } catch (\Exception $e) {
-                \Log::error('Грешка при свързване на предмети за студент: ' . $e->getMessage(), [
-                    'user_id' => $user->id,
-                    'semester' => $data['semester'] ?? null,
-                    'specialty_id' => $data['specialty_id'] ?? null
-                ]);
+                \Log::error('Грешка при свързване на предмети за студент: ' . $e->getMessage());
             }
         }
 
@@ -184,25 +139,14 @@ class UserController extends Controller
             'title' => 'required_if:role,teacher'
 
         ]);
-//        $user = $this->userService->updateUser($id, $data);
-//
-//        return response()->json([
-//            'success' => true,
-//            'message' => 'Потребителят е актуализиран успешно.',
-//            'data' => $user
-//        ]);
+
         $user = $this->userService->updateUser($id, $data);
 
-        // Актуализация на предметите при промяна на семестър или специалност
         if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
             try {
                 $student = $user->student;
                 if ($student) {
-                    // ПРЕМАХВАНЕ на предмети от стария семестър (ако е необходимо)
-                    // Тук може да решите дали да премахнете старите или не
-                    // $student->subjects()->detach();
 
-                    // ДОБАВЯНЕ на предмети от НОВИЯ семестър
                     $newSubjects = Subject::where('semester', $data['semester'])
                         ->whereHas('specialties', function ($query) use ($data) {
                             $query->where('specialties.id', $data['specialty_id']);
@@ -210,7 +154,6 @@ class UserController extends Controller
                         ->get();
 
                     if ($newSubjects->count() > 0) {
-                        // Добавяме само предмети, които все още не са добавени
                         $existingSubjectIds = $student->subjects()->pluck('subjects.id')->toArray();
 
                         $subjectsToAttach = $newSubjects->filter(function ($subject) use ($existingSubjectIds) {
@@ -220,21 +163,11 @@ class UserController extends Controller
                         if ($subjectsToAttach->count() > 0) {
                             $student->subjects()->attach($subjectsToAttach, ['has_attestation' => true]);
 
-                            \Log::info("Добавени предмети за студент при редактиране", [
-                                'student_id' => $student->id,
-                                'semester' => $data['semester'],
-                                'specialty_id' => $data['specialty_id'],
-                                'subjects_added' => $subjectsToAttach->count()
-                            ]);
                         }
                     }
                 }
             } catch (\Exception $e) {
-                \Log::error('Грешка при актуализиране на предмети за студент: ' . $e->getMessage(), [
-                    'user_id' => $user->id,
-                    'semester' => $data['semester'] ?? null,
-                    'specialty_id' => $data['specialty_id'] ?? null
-                ]);
+                \Log::error('Грешка при актуализиране на предмети за студент: ' . $e->getMessage());
             }
         }
 
@@ -272,18 +205,12 @@ class UserController extends Controller
                  Mail::to($user->email)->queue(new PasswordChangedMail($user,now()));
              }
          }catch (\Throwable $e){
-             \Log::warning('failed to send PasswordChangedMail',[
-                 "user" => $request->user(),
-                 'error' => $e->getMessage(),
-             ]);
+             \Log::warning('failed to send PasswordChangedMail');
          }
 
          return response()->json(['success'=>'Паролата е сменена успешно']);
 
      }
-
-
-
 
 
     public function sendResetLinkEmail(Request $request)
@@ -305,7 +232,6 @@ class UserController extends Controller
         try {
             Mail::to($request->email)->queue(new PasswordResetMail($token, $user));
         }catch (\Exception $e){
-            Log::error("Failed to send password resend email: ".$e->getMessage());
             return response()->json(["Грешка!Възникна грешка при изпращането на имейла!"],500);
         }
 
@@ -351,10 +277,7 @@ class UserController extends Controller
                 Mail::to($user->email)->queue(new PasswordChangedMail($user, now()));
             }
         } catch (\Throwable $e) {
-            Log::warning('Failed to send PasswordChangedMail', [
-                "user" => $user,
-                'error' => $e->getMessage(),
-            ]);
+            Log::warning('Грешка при изпращане');
         }
 
 

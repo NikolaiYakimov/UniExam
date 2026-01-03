@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GetBookedSlotsRequest;
 use App\Http\Requests\StoreExamRequest;
 use App\Mail\ExamCreatedMail;
+use App\Mail\ExamUpdatedMail;
 use App\Models\Student;
 use App\Services\ExamService;
 use App\Models\Exam;
@@ -57,42 +58,7 @@ class   ExamController extends Controller
             ], 500);
         }
     }
-//    public function apiRegister($examId)
-//    {
-//        try {
-//            $exam = Exam::findOrFail($examId);
-//            $student = Auth::user()->student;
-//
-//            // Проверка дали студентът може да се запише
-//            if ($exam->remainingSlots() <= 0) {
-//                return response()->json([
-//                    'success' => false,
-//                    'message' => 'Няма свободни места за този изпит'
-//                ], 400);
-//            }
-//
-//            // Проверка дали студентът вече е записан
-//            if ($exam->students()->where('student_id', $student->id)->exists()) {
-//                return response()->json([
-//                    'success' => false,
-//                    'message' => 'Вече сте записани за този изпит'
-//                ], 400);
-//            }
-//
-//            // Записване на студента за изпита
-//            $exam->students()->attach($student->id);
-//
-//            return response()->json([
-//                'success' => true,
-//                'message' => 'Успешно се записахте за изпита'
-//            ]);
-//        } catch (\Exception $e) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'Грешка при записване за изпита'
-//            ], 500);
-//        }
-//    }
+
 
     public function storeExam(StoreExamRequest $request)
     {
@@ -144,6 +110,19 @@ class   ExamController extends Controller
             }
             $validated = $request->validated();
             $this->examService->updateExam($exam, $validated);
+            $registeredStudents = $exam->registrations()
+                ->with('student.user')
+                ->get()
+                ->pluck('student.user')
+                ->filter();
+
+            foreach ($registeredStudents as $user) {
+                if ($user->email) {
+                    Mail::to($user->email)->queue(new ExamUpdatedMail($exam));
+                }
+            }
+
+
             return response()->json([
                 'success' => true,
                 'message' => 'Изпита беше редактиран успешно!',
@@ -219,7 +198,7 @@ class   ExamController extends Controller
 
             $subjects = $teacher->subjects;
             $halls = ExamHall::all();
-//        $bookedSlots = $this->examService->getBookedTimeSlots();
+
 
 
             return response()->json([
@@ -227,7 +206,7 @@ class   ExamController extends Controller
                 "teacher" => $teacher,
                 "subjects" => $subjects,
                 "halls" => $halls,
-//                "bookedSlots"=>$bookedSlots,
+
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -325,28 +304,5 @@ class   ExamController extends Controller
 
         }
     }
-
-//    public function updateGrades(Request $request, $examId)
-//    {
-//        $request->validate([
-//            'grades' => 'required|array',
-//            'grades.*' => 'nullable|numeric|min:2|max:6'
-//        ]);
-//        try {
-//            $this->examService->updateGrades($examId, $request->grades);
-//
-////                return back()->with('success', 'Оценките бяха актуализирани успешно!');
-//            return response()->json([
-//                'success' => true,
-//                'message' => 'Оценките бяха актуализирани успешно!'
-//            ]);
-//        } catch (\Exception $exception) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => $exception->getMessage()
-//            ], 500);
-////                return back()->with('error',$exception->getMessage());
-//        }
-//    }
 
 }
