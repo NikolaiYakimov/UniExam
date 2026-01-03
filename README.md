@@ -1,66 +1,133 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# UniExam - Система за управление на изпити
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+UniExam е уеб базирана платформа за управление на университетски изпити, която улеснява процеса на записване, провеждане и оценяване. Приложението свързва студенти, преподаватели и администратори в единна система.
 
-## About Laravel
+Проектът е разработен като курсова задача и демонстрира full-stack архитектура с **Laravel** (Backend) и **React** (Frontend).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🛠 Технологичен стек
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Сървърна част (Backend):**
+* **Framework:** Laravel 12
+* **Database:** MySQL
+* **Authentication:** Laravel Sanctum
+* **Payments:** Stripe API
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Клиентска част (Frontend):**
+* **Library:** React 19
+* **Build Tool:** Vite
+* **Styling:** Bootstrap 5 & TailwindCSS
+* **Routing:** React Router DOM
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🚀 1. Как се пуска приложението (Installation)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Следвайте стъпките по-долу, за да инсталирате и стартирате проекта локално.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Предварителни изисквания
+* PHP >= 8.2
+* Composer
+* Node.js & npm
+* MySQL сървър
 
-## Laravel Sponsors
+### Стъпка 1: Настройка на Backend (Laravel)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1.  Отворете терминал в главната директория на проекта:
+    ```bash
+    cd UniExam-new_react_token_try
+    ```
 
-### Premium Partners
+2.  Инсталирайте PHP зависимостите:
+    ```bash
+    composer install
+    ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+3.  Създайте `.env` файл от примера:
+    ```bash
+    cp .env.example .env
+    ```
 
-## Contributing
+4.  Генерирайте ключ за приложението:
+    ```bash
+    php artisan key:generate
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5.  Конфигурирайте базата данни и Stripe във файла `.env`:
+    ```env
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=uniexam_db
+    DB_USERNAME=root
+    DB_PASSWORD=
 
-## Code of Conduct
+    STRIPE_KEY=your_stripe_public_key
+    STRIPE_SECRET=your_stripe_secret_key
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+6.  Изпълнете миграциите и заредете тестови данни (Seeders):
+    ```bash
+    php artisan migrate --seed
+    ```
+    *Това ще създаде необходимите таблици и ще добави начални потребители (Администратор, Преподаватели, Студенти).*
 
-## Security Vulnerabilities
+7.  Стартирайте сървъра:
+    ```bash
+    php artisan serve
+    ```
+    Backend-ът ще бъде достъпен на: `http://localhost:8000`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Стъпка 2: Настройка на Frontend (React)
 
-## License
+1.  Отворете нов терминал и влезте в директорията `react`:
+    ```bash
+    cd react
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2.  Инсталирайте JavaScript зависимостите:
+    ```bash
+    npm install
+    ```
+
+3.  Стартирайте развойния сървър:
+    ```bash
+    npm run dev
+    ```
+    Frontend-ът ще бъде достъпен на адреса, изписан в терминала (бикновено `http://localhost:5173`).
+
+---
+
+## 📦 2. Функционалности и начин на използване
+
+Приложението има три основни роли, всяка с различни права и достъп.
+
+### 🎓 Студент (Student)
+Студентите използват системата, за да управляват своите изпити.
+* **Вход в системата:** Логин с потребителско име и парола.
+* **Предстоящи изпити:** Преглед на всички налични изпити, филтрирани по техните предмети.
+* **Записване за изпит:** Възможност за записване за конкретна изпитна сесия.
+* **Плащания:** Интеграция със **Stripe** за заплащане на такси за изпити (ако е приложимо).
+* **Моите изпити:** Преглед на историята на положените изпити и получените оценки.
+* **Профил:** Редакция на лични данни и смяна на парола.
+
+### 👨‍🏫 Преподавател (Teacher)
+Преподавателите управляват учебния процес и оценяването.
+* **Табло (Dashboard):** Бърз преглед на предстоящите изпити, които преподавателят води.
+* **Управление на изпити:** Създаване и редакция на изпитни сесии (дата, час, зала, макс. студенти).
+* **Студенти:** Преглед на записаните студенти за даден изпит.
+* **Оценяване:** Въвеждане на оценки след провеждане на изпит (`/exam/{exam}/grades`).
+* **Атестации:** Управление на заверките на студентите по предмети.
+
+### 🛠 Администратор (Administrator)
+Администраторът има пълен контрол върху номенклатурите в системата.
+* **Управление на потребители:** Създаване, редакция и изтриване на студенти и преподаватели.
+* **Учебна структура:** Управление на Факултети, Специалности и Предмети.
+* **Изпитни зали:** Добавяне и управление на зали за провеждане на изпити.
+* **Сигурност:** Възможност за ресет на пароли на потребители.
+
+### 🔑 Тестови акаунти (ако са генерирани от Seeders)
+Ако сте изпълнили `php artisan migrate --seed`, можете да използвате следните данни за вход (примерни):
+* **Админ:** admin / password
+* **Преподавател:** teacher / password
+* **Студент:** student / password
+*(Забележка: Проверете конкретните seeders файлове за точните credentials)*
