@@ -58,7 +58,7 @@ export function AuthProvider({ children }) {
 
     const login = async (credentials) => {
         try {
-            setIsLoading(true);
+            // setIsLoading(true);
             const response = await api.post('/login', credentials);
             const { token: newToken, user: userData } = response.data;
 
@@ -71,7 +71,7 @@ export function AuthProvider({ children }) {
             // throw error.response?.data?.message || 'Възникна грешка при влизането';
             throw error;
         } finally {
-            setIsLoading(false);
+            // setIsLoading(false);
         }
     };
 

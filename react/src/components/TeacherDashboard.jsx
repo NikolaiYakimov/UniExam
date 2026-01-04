@@ -1,12 +1,11 @@
-
-import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth, api } from '../hooks/useAuth';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, {useState, useEffect, useCallback} from 'react';
+import {useAuth, api} from '../hooks/useAuth';
+import {Link, useNavigate, useLocation} from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Alert from './Alert';
 
-const TIME_SLOTS = ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'];
+const TIME_SLOTS = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
 
 function formatDateTime(dt) {
     const y = dt.getFullYear();
@@ -20,7 +19,7 @@ function formatDateTime(dt) {
 function isPastDate(dateStr) {
     const today = new Date();
     const d = new Date(`${dateStr}T00:00:00`);
-    return d.setHours(0,0,0,0) < new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    return d.setHours(0, 0, 0, 0) < new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
 }
 
 function isWithin48Hours(date) {
@@ -40,14 +39,14 @@ function calculateExamDurationMinutes(slots) {
 }
 
 export default function TeacherDashboard() {
-    const { user } = useAuth();
+    const {user} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const [exams, setExams] = useState([]);
     const [subjects, setSubjects] = useState([]);
     const [halls, setHalls] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [alert, setAlert] = useState({ type: '', message: '' });
+    const [alert, setAlert] = useState({type: '', message: ''});
     const [showModal, setShowModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [currentExamId, setCurrentExamId] = useState(null);
@@ -67,7 +66,7 @@ export default function TeacherDashboard() {
     useEffect(() => {
         // Проверка за съобщение от навигация
         if (location.state?.message) {
-            setAlert({ type: 'success', message: location.state.message });
+            setAlert({type: 'success', message: location.state.message});
             window.history.replaceState({}, document.title);
         }
     }, [location.state]);
@@ -81,7 +80,7 @@ export default function TeacherDashboard() {
             setSubjects(res.data.subjects || []);
             setHalls(res.data.halls || []);
         } catch (e) {
-            setAlert({ type: 'error', message: 'Грешка при зареждане на данните' });
+            setAlert({type: 'error', message: 'Грешка при зареждане на данните'});
             console.error(e);
         } finally {
             setLoading(false);
@@ -98,7 +97,7 @@ export default function TeacherDashboard() {
             setLoadingSlots(true);
             let url = `/booked-slots?date=${date}&hall_id=${hallId}`;
             if (excludeExamId) url += `&exclude_exam_id=${excludeExamId}`;
-            const { data } = await api.get(url);
+            const {data} = await api.get(url);
             setBookedSlots(data.bookedSlots || []);
         } catch (e) {
             console.error('Грешка при зареждане на заетите слотове:', e);
@@ -152,7 +151,7 @@ export default function TeacherDashboard() {
 
     useEffect(() => {
         if (selectedSlots.length === 0) {
-            setFormData(fd => ({ ...fd, start_time: '', end_time: '' }));
+            setFormData(fd => ({...fd, start_time: '', end_time: ''}));
             return;
         }
         const first = selectedSlots[0];
@@ -167,8 +166,8 @@ export default function TeacherDashboard() {
     }, [selectedSlots, selectedDate]);
 
     function handleInputChange(e) {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setFormData(prev => ({...prev, [name]: value}));
         if (name === 'hall_id') {
             fetchBookedSlots(value, selectedDate, isEditing ? currentExamId : null);
         }
@@ -185,20 +184,20 @@ export default function TeacherDashboard() {
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            const payload = { ...formData };
+            const payload = {...formData};
             if (!isEditing) {
                 await api.post('/examStore', payload);
-                setAlert({ type: 'success', message: 'Изпитът е създаден успешно!' });
+                setAlert({type: 'success', message: 'Изпитът е създаден успешно!'});
             } else {
                 await api.put(`/edit-exams/${currentExamId}`, payload);
-                setAlert({ type: 'success', message: 'Изпитът е редактиран успешно!' });
+                setAlert({type: 'success', message: 'Изпитът е редактиран успешно!'});
             }
             setShowModal(false);
             await fetchDashboardData();
         } catch (err) {
             console.error('Save error', err);
             const errorMessage = err.response?.data?.message || 'Възникна грешка при запис.';
-            setAlert({ type: 'error', message: errorMessage });
+            setAlert({type: 'error', message: errorMessage});
         }
     }
 
@@ -224,7 +223,7 @@ export default function TeacherDashboard() {
     function openCreateModal() {
         resetForm();
         if (halls.length > 0) {
-            setFormData(prev => ({ ...prev, hall_id: halls[0].id }));
+            setFormData(prev => ({...prev, hall_id: halls[0].id}));
             fetchBookedSlots(halls[0].id, new Date().toISOString().split('T')[0]);
         }
         setShowModal(true);
@@ -244,7 +243,7 @@ export default function TeacherDashboard() {
 
         const start = new Date(exam.start_time);
         const end = new Date(exam.end_time);
-        const dateStr = `${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}-${String(start.getDate()).padStart(2,'0')}`;
+        const dateStr = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
         setSelectedDate(dateStr);
 
         const startHH = String(start.getHours()).padStart(2, '0') + ':00';
@@ -261,7 +260,7 @@ export default function TeacherDashboard() {
     if (!user || user.role !== 'teacher') {
         return (
             <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
-                <Header />
+                <Header/>
                 <div className="container mx-auto p-6">
                     <div className="bg-red-50 text-red-700 border border-red-200 rounded-xl p-4">
                         Нямате необходимите права за достъп до тази страница.
@@ -274,9 +273,9 @@ export default function TeacherDashboard() {
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
-                <Header />
+                <Header/>
                 <div className="flex pt-0">
-                    <Sidebar user={user} />
+                    <Sidebar user={user}/>
                     <div className="flex-1 p-4 lg:p-8 ml-0 lg:ml-0 flex justify-center items-center">
                         <div className="flex justify-center items-center py-8">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
@@ -290,19 +289,23 @@ export default function TeacherDashboard() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
             <div className={showModal ? "blur-sm transition-all duration-300" : ""}>
-                <Header />
+                <Header/>
                 <div className="flex pt-0">
-                    <Sidebar user={user} />
+                    <Sidebar user={user}/>
                     <div className="flex-1 p-4 lg:p-8 ml-0 lg:ml-0">
                         {alert.message && (
-                            <Alert type={alert.type} message={alert.message} onClose={() => setAlert({ type: '', message: '' })} />
+                            <Alert type={alert.type} message={alert.message}
+                                   onClose={() => setAlert({type: '', message: ''})}/>
                         )}
 
-                        <div className="bg-white/90 backdrop-blur-md shadow-sm py-6 mb-8 rounded-xl border border-gray-100">
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 gap-4">
+                        <div
+                            className="bg-white/90 backdrop-blur-md shadow-sm py-6 mb-8 rounded-xl border border-gray-100">
+                            <div
+                                className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 gap-4">
                                 <div>
                                     <h1 className="text-2xl font-bold text-gray-800">Управление на изпити</h1>
-                                    <p className="text-sm text-gray-500 mt-1">Преглед на предстоящи изпити и възможност за добавяне</p>
+                                    <p className="text-sm text-gray-500 mt-1">Преглед на предстоящи изпити и възможност
+                                        за добавяне</p>
                                 </div>
                                 <Link
                                     to="/conducted-exams"
@@ -340,7 +343,8 @@ export default function TeacherDashboard() {
                                                         </span>
                                                     </h2>
                                                     <div className="flex item-center gap-2">
-                                                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                        <span
+                                                            className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                                             {exam.exam_type}
                                                         </span>
                                                         <Link
@@ -363,17 +367,25 @@ export default function TeacherDashboard() {
                                                     <div className="flex items-center gap-2 text-gray-600">
                                                         <i className="fas fa-clock w-5 text-gray-400"></i>
                                                         <span>Час: <span className="font-medium text-gray-800">
-                                                            {new Date(exam.start_time).toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' })} -
-                                                            {new Date(exam.end_time).toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' })}
+                                                            {new Date(exam.start_time).toLocaleTimeString('bg-BG', {
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })} -
+                                                            {new Date(exam.end_time).toLocaleTimeString('bg-BG', {
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })}
                                                         </span></span>
                                                     </div>
                                                     <div className="flex items-center gap-2 text-gray-600">
                                                         <i className="fas fa-university w-5 text-gray-400"></i>
-                                                        <span>Зала: <span className="font-medium text-gray-800">{exam.hall?.name}</span></span>
+                                                        <span>Зала: <span
+                                                            className="font-medium text-gray-800">{exam.hall?.name}</span></span>
                                                     </div>
                                                     <div className="flex items-center gap-2 text-gray-600">
                                                         <i className="fas fa-users w-5 text-gray-400"></i>
-                                                        <span className={`font-medium ${exam.remaining_slots > 0 ? 'text-green-700' : 'text-red-700'}`}>
+                                                        <span
+                                                            className={`font-medium ${exam.remaining_slots > 0 ? 'text-green-700' : 'text-red-700'}`}>
                                                             {exam.remaining_slots}/{exam.max_students} места
                                                         </span>
                                                     </div>
@@ -393,16 +405,29 @@ export default function TeacherDashboard() {
                                             </div>
                                         );
                                     })}
+                                    {/*<div className="flex items-center justify-center mt-6">*/}
+                                    <div className="flex items-center justify-center min-h-[250px]">
+                                        <button onClick={openCreateModal}
+                                                className="w-16 h-16 rounded-circle bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">
+                                            <svg className="w-7 h-7" fill="none" stroke="currentColor"
+                                                 viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+
                                 </div>
 
-                                <div className="flex items-center justify-center mt-6">
-                                    <button onClick={openCreateModal}
-                                            className="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">
-                                        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                        </svg>
-                                    </button>
-                                </div>
+                                {/*<div className="flex items-center justify-center mt-6">*/}
+                                {/*    <button onClick={openCreateModal}*/}
+                                {/*            className="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center transition-all duration-300 hover:rotate-90">*/}
+                                {/*        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">*/}
+                                {/*            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"*/}
+                                {/*                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>*/}
+                                {/*        </svg>*/}
+                                {/*    </button>*/}
+                                {/*</div>*/}
                             </div>
                         )}
                     </div>
@@ -456,7 +481,8 @@ export default function TeacherDashboard() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Макс. студенти</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Макс.
+                                        студенти</label>
                                     <input
                                         type="number"
                                         name="max_students"
@@ -470,7 +496,7 @@ export default function TeacherDashboard() {
                                                 : 'border-gray-200'
                                         }`}
                                     />
-                                    {isOverCapacity&&(
+                                    {isOverCapacity && (
                                         <p className="text-red-500 text-sm mt-1">
                                             Надвишава капацитета на залата ({selectedHall.capacity} места)
                                         </p>
@@ -508,7 +534,8 @@ export default function TeacherDashboard() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Изберете свободни часове</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Изберете свободни
+                                    часове</label>
                                 <div className="mt-2">
                                     <h4 className="text-center font-medium mb-2">
                                         Стая <span>
@@ -606,9 +633,9 @@ export default function TeacherDashboard() {
                                     Отказ
                                 </button>
                                 <button type="submit"
-                                        disabled={selectedSlots.length === 0||isOverCapacity}
+                                        disabled={selectedSlots.length === 0 || isOverCapacity}
                                         className={`px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors
-                                            ${selectedSlots.length === 0 ||isOverCapacity ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                            ${selectedSlots.length === 0 || isOverCapacity ? 'opacity-50 cursor-not-allowed' : ''}`}>
                                     {isEditing ? 'Редактирай' : 'Създай'}
                                 </button>
                             </div>

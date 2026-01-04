@@ -10,13 +10,15 @@ export default function Login() {
         password: ''
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [isSubmitting,setIsSubmitting]=useState(false);
     const [errors, setErrors] = useState({});
-    const { login, isLoading } = useAuth();
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("React handle submit started");
         setErrors({});
+        setIsSubmitting(true);
+
 
         try {
             await login(credentials);
@@ -43,6 +45,8 @@ export default function Login() {
             else {
                 setErrors({ general: ['Грешка при връзка със сървъра'] });
             }
+        }finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -133,9 +137,9 @@ export default function Login() {
                     <button
                         type="submit"
                         className="btn btn-primary btn-login btn-lg w-100 mb-3"
-                        disabled={isLoading}
+                        disabled={isSubmitting}
                     >
-                        {isLoading ? (
+                        {isSubmitting ? (
                             <>
                                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                 Вход...
