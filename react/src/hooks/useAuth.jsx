@@ -68,7 +68,8 @@ export function AuthProvider({ children }) {
             return response.data;
         } catch (error) {
             console.error('Login failed', error);
-            throw error.response?.data?.message || 'Възникна грешка при влизането';
+            // throw error.response?.data?.message || 'Възникна грешка при влизането';
+            throw error;
         } finally {
             setIsLoading(false);
         }

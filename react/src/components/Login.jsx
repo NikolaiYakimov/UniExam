@@ -15,6 +15,7 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("React handle submit started");
         setErrors({});
 
         try {
@@ -57,7 +58,7 @@ export default function Login() {
 
                 {/* Display general errors */}
                 {errors.general && (
-                    <div className="alert alert-danger alert-dismissible fade show">
+                    <div className="alert alert-danger alert-dismissible ">
                         {errors.general.map((error, index) => (
                             <div key={index}>{error}</div>
                         ))}
@@ -71,7 +72,7 @@ export default function Login() {
 
                 {/* Display field-specific errors */}
                 {errors.message && (
-                    <div className="alert alert-danger alert-dismissible fade show">
+                    <div className="alert alert-danger alert-dismissible ">
                         <div>{errors.message}</div>
                         <button
                             type="button"
