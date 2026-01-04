@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { api } from '../hooks/useAuth';
 import Alert from './Alert';
 import { Link, useLocation } from 'react-router-dom';
-import Header from './Header';
+import Header from './partials/Header.jsx';
 import Sidebar from './Sidebar';
 
 const SpecialtyList = () => {

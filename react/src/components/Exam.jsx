@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth, api } from '../hooks/useAuth';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
+import Header from './partials/Header.jsx';
 import Sidebar from '../components/Sidebar';
 import Alert from '../components/Alert';
 import PaymentModal from "./PaymentModal.jsx";

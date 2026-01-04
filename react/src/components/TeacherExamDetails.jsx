@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, api } from '../hooks/useAuth';
-import Header from './Header';
+import Header from './partials/Header.jsx';
 import Sidebar from './Sidebar';
 import Alert from './Alert';
 

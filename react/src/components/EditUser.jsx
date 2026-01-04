@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import UserForm from './UserForm';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../hooks/useAuth';
-import Header from './Header';
+import Header from './partials/Header.jsx';
 import Sidebar from './Sidebar';
 
 const EditUser = () => {

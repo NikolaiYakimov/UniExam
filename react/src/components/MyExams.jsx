@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth, api } from '../hooks/useAuth';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import Header from './Header';
+import Header from './partials/Header.jsx';
 import Sidebar from './Sidebar';
 import Alert from './Alert';
 

@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { api } from '../hooks/useAuth';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import Alert from './Alert';
-import Header from './Header';
+import Header from './partials/Header.jsx';
 import Sidebar from './Sidebar';
 
 const EditSpecialty = () => {
