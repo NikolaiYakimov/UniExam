@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use App\Mail\ExamCreatedMail;
 use App\Models\Exam;
 use App\Models\ExamHall;
 use App\Models\Student;
@@ -10,6 +11,7 @@ use App\Repositories\ExamRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Whoops\Example\Exception;
 use Illuminate\Support\Collection;
 use function PHPUnit\Framework\isString;
@@ -62,6 +64,31 @@ class ExamService{
 
             ]
         );
+
+//               $exam= $this->examRepository->store([
+//                'teacher_id' => Auth::user()->teacher->id,
+//                'subject_id' => $data['subject_id'],
+//                'hall_id' => $data['hall_id'],
+//                'start_time' => $startTime,
+//                'end_time' => $endTime,
+//                'max_students' => $data['max_students'],
+//                'exam_type' => $data['exam_type'],
+//            ]
+//        );
+////        $this->sendExamCreationEmail($exam);
+////        return $exam;
+    }
+
+    protected function sendExamCreationEmail(Exam $exam)
+    {
+        $students = Student::with('user')->whereHas('user', function ($q) {
+            $q->whereNotNull('email');
+        })->get();
+
+        foreach ($students as $student) {
+            Mail::to($student->user->email)->queue(new ExamCreatedMail($exam));
+        }
+
     }
 
     public function getBookedSlots(int $hallId,string $date,int $excludeExamId=null){

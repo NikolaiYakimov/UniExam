@@ -37,7 +37,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ], $e->getCode() ?: 401);
+            ],  401);
         }
     }
 
