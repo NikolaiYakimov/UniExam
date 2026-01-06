@@ -37,7 +37,7 @@ class  PaymentService
             'payment_method_types' => ['card'],
             'line_items' => [[
                 'price_data' => [
-                    'currency' => 'bgn',
+                    'currency' => 'eur',
                     'product_data' => [
                         'name' => 'Ликвида  ионен изпит по ' . $exam->subject->subject_name,
                     ],

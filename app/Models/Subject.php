@@ -20,7 +20,7 @@ class Subject extends Model
     protected $fillable=['subject_name','description','semester','price'];
 
     protected $attributes = [
-        'price'=>40.00,
+        'price'=>20.00,
     ];
 
     public function exams(): HasMany
