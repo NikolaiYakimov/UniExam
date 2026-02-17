@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\UpdateProfileDto;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Arr;
@@ -48,10 +49,14 @@ class UserService
     {
         return $this->userRepository->deleteUser($id);
     }
-    public function updateProfile(User $user,array $data):void
+    public function updateProfile(User $user,UpdateProfileDto $data):void
     {
-        $attrs=Arr::only($data,['email','phone']);
-        $user->fill($attrs)->save();
+//        $attrs=Arr::only($data,['email','phone']);
+//        $user->fill($attrs)->save();
+
+        $user->email= $data->email?? $user->email;
+        $user->phone= $data->phone?? $user->phone;
+        $user->save();
     }
 
     public function updatePassword(User $user,array $data):void
