@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\UpdateProfileDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateProfileRequest;
@@ -191,7 +192,9 @@ class UserController extends Controller
 
      public function updateProfile(UpdateProfileRequest $request,UserService $service){
 
-         $service->updateProfile($request->user(),$request->validated());
+        $dto=UpdateProfileDto::fromRequest($request);
+        $service->updateProfile($request->user(),$dto);
+
 
          return response()->json(['success' => 'Успешмпо актуализирахте профила си']);
 
@@ -235,7 +238,7 @@ class UserController extends Controller
             return response()->json(["Грешка!Възникна грешка при изпращането на имейла!"],500);
         }
 
-        return response()->json([        'message' => 'Изпратихме ви имейл с линк за възстановяване на паролата!'
+        return response()->json(['message' => 'Изпратихме ви имейл с линк за възстановяване на паролата!'
         ]);
     }
 
