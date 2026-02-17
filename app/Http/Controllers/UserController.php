@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\UserResource;
 
 
 class UserController extends Controller
@@ -107,17 +108,19 @@ class UserController extends Controller
     {
 
         $user = $this->userService->getUserWithRoleData($id);
-        $faculties = Faculty::all();
-        $specialties = Specialty::all();
-        $groups = Group::all();
+//        $faculties = Faculty::all();
+//        $specialties = Specialty::all();
+//        $groups = Group::all();
+        $formOptions=$this->userService->getFormOptions();
 
 
         return response()->json([
             'success' => true,
-            'data' => $user,
-            'faculties' => $faculties,
-            'specialties' => $specialties,
-            'groups' => $groups
+//            'data' => $user,
+            'data'=>new UserResource($user),
+            'faculties' => $formOptions['faculties'],
+            'specialties' => $formOptions['specialties'],
+            'groups' => $formOptions['groups']
         ]);
     }
 

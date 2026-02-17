@@ -1,14 +1,19 @@
 <?php
 
 namespace App\Http\Resources;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class TeacherResource
+class TeacherResource extends JsonResource
 {
-
-    /**
-     * @param \Illuminate\Http\Resources\MissingValue|mixed $whenLoaded
-     */
-    public function __construct(mixed $whenLoaded)
+    public function toArray(Request $request): array
     {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+
+            'faculty_id' => $this->faculty_id,
+            'specialty_id' => $this->specialty_id, // Ако учителите са вързани към специалност
+        ];
     }
 }

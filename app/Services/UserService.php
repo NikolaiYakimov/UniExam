@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\DTOs\UpdateProfileDto;
+use App\Models\Faculty;
+use App\Models\Group;
+use App\Models\Specialty;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Arr;
@@ -22,7 +25,7 @@ class UserService
         return $this->userRepository->getAllWithRoles();
     }
 
-    public function getUserWithRoleData($id)
+    public function getUserWithRoleData($id):User
     {
         return $this->userRepository->getUserWithRoleData($id);
     }
@@ -104,5 +107,9 @@ class UserService
             }
         }
         return 0;
+    }
+
+    public  function getFormOptions():array{
+        return ['faculty'=>Faculty::all(),'specialties'=>Specialty::all(),'groups'=>Group::all()];
     }
 }
