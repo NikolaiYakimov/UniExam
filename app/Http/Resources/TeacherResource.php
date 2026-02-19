@@ -13,7 +13,7 @@ class TeacherResource extends JsonResource
             'title' => $this->title,
 
             'faculty_id' => $this->faculty_id,
-            'specialty_id' => $this->specialty_id, // Ако учителите са вързани към специалност
+            'specialty_id' => $this->specialty_id,
         ];
     }
 }

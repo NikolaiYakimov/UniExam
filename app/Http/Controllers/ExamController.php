@@ -193,13 +193,11 @@ class   ExamController extends Controller
     {
         try {
             $teacher = Auth::user()->teacher;
-            $exams = $this->examService->getUpcomingExams($teacher)->load('subject', 'hall');
-
+            $exams = $this->examService->getUpcomingExams($teacher)
+                ->load('subject', 'hall');
 
             $subjects = $teacher->subjects;
             $halls = ExamHall::all();
-
-
 
             return response()->json([
                 "exams" => $exams,
@@ -211,7 +209,7 @@ class   ExamController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Грешка при зареждане на предстоящите изпити ',
-                'message' => 'Failed to load upcoming exams'
+                'message' => $e->getMessage()
             ], 500);
         }
     }

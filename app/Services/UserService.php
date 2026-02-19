@@ -110,6 +110,6 @@ class UserService
     }
 
     public  function getFormOptions():array{
-        return ['faculty'=>Faculty::all(),'specialties'=>Specialty::all(),'groups'=>Group::all()];
+        return ['faculties'=>Faculty::all(),'specialties'=>Specialty::all(),'groups'=>Group::all()];
     }
 }

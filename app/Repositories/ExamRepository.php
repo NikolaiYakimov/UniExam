@@ -153,12 +153,22 @@ class ExamRepository implements ExamRepositoryInterface
 
     public function getTeacherUpcomingExams($teacherId)
     {
-        return Exam::with(['subject', 'hall'])->where('teacher_id', $teacherId)
-            ->where('start_time', '>', now())
-            ->orderBy('start_time', 'desc')
-            ->get()->map(function ($exam) {
-                $exam->remaining_slots=$exam->remainingSlots();
-                return $exam;
-            });
+//        return Exam::with(['subject', 'hall'])->where('teacher_id', $teacherId)
+//            ->where('start_time', '>', now())
+//            ->orderBy('start_time', 'desc')
+//            ->get()
+//            ->map(function ($exam) {
+//                $exam->remaining_slots=$exam->remainingSlots();
+//                return $exam;
+//            });
+        $exams=Exam::with(['subject', 'hall'])->where('teacher_id', $teacherId)
+        ->where('start_time', '>', now())
+        ->orderBy('start_time', 'desc')
+        ->get();
+        $exams->each(function ($exam) {
+            $exam->remaining_slots=$exam->remainingSlots();
+
+        });
+        return $exams;
     }
 }

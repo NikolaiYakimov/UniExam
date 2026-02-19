@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FacultyRequest;
 use App\Services\FacultyService;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
@@ -31,12 +32,13 @@ class FacultyController
         }
     }
 
-    public function store(Request $request)
+    public function store(FacultyRequest $request)
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:faculties'
-            ]);
+//            $validated = $request->validate([
+//                'name' => 'required|string|max:15|unique:faculties'
+//            ]);
+            $validated = $request->validated();
 
             $faculty = $this->facultyService->createFaculty($validated);
 
@@ -71,13 +73,13 @@ class FacultyController
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(FacultyRequest $request, $id)
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:faculties,name,' . $id
-            ]);
-
+//            $validated = $request->validate([
+//                'name' => 'required|string|max:255|unique:faculties,name,' . $id
+//            ]);
+            $validated = $request->validated();
             $faculty = $this->facultyService->updateFaculty($id, $validated);
 
             return response()->json([

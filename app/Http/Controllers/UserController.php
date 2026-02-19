@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\DTOs\UpdateProfileDto;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ForgotPasswordRequest;
+use App\Http\Requests\ResetNewPasswordRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Requests\UserRequest;
 use App\Mail\PasswordChangedMail;
 use App\Mail\PasswordResetMail;
 use App\Models\Faculty;
@@ -14,6 +17,7 @@ use App\Models\Specialty;
 use App\Models\Subject;
 use App\Models\User;
 use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -57,25 +61,10 @@ class UserController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $data = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'second_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'username' => 'required|string|unique:users,username',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
-            'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:student,teacher,administrator',
-            'faculty_number' => 'required_if:role,student',
-            'faculty_id' => 'nullable|exists:faculties,id',
-            'specialty_id' => 'nullable|exists:specialties,id',
-            'semester' => 'nullable|integer|min:1|max:8',
-            'group_id' => 'nullable|exists:groups,id',
-            'title' => 'required_if:role,teacher'
-        ]);
 
+        $data=$request->validated();
         $user = $this->userService->createUser($data);
 
 
@@ -124,28 +113,11 @@ class UserController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, User $user)
     {
-        $data = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'second_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'username' => 'required|string|unique:users,username,' . $id,
-            'email' => 'required|email|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8',
-            'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:student,teacher,administrator',
-            'faculty_number' => 'required_if:role,student',
-            'faculty_id' => 'nullable|exists:faculties,id',
-            'specialty_id' => 'nullable|exists:specialties,id',
-            'semester' => 'nullable|integer|min:1|max:8',
-            'group_id' => 'nullable|exists:groups,id',
-            'title' => 'required_if:role,teacher'
 
-        ]);
-
-        $user = $this->userService->updateUser($id, $data);
-
+        $data=$request->validated();
+        $user = $this->userService->updateUser($user->id, $data);
         if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
             try {
                 $student = $user->student;
@@ -219,11 +191,12 @@ class UserController extends Controller
      }
 
 
-    public function sendResetLinkEmail(Request $request)
+    public function sendResetLinkEmail(ForgotPasswordRequest $request):JsonResponse
     {
-        $request->validate(['email' => 'required|email']);
+        $request->validated();
 
         $user = User::where('email', $request->email)->first();
+
         if (!$user) {
 
             return  response()->json(['message'=>'Потребител с този имейл не съществува'],404);
@@ -246,14 +219,14 @@ class UserController extends Controller
     }
 
 
-    public function reset(Request $request)
+    public function reset(ResetNewPasswordRequest $request)
     {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed|min:8',
-        ]);
-
+//        $request->validate([
+//            'token' => 'required',
+//            'email' => 'required|email',
+//            'password' => 'required|confirmed|min:8',
+//        ]);
+        $request->validated();
         $resetRecord = DB::table('password_resets')
             ->where('email', $request->email)
             ->first();

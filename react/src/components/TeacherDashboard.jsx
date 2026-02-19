@@ -76,9 +76,9 @@ export default function TeacherDashboard() {
         try {
             setLoading(true);
             const res = await api.get('/upcoming_exams');
-            setExams(res.data.exams || []);
-            setSubjects(res.data.subjects || []);
-            setHalls(res.data.halls || []);
+            setExams(res.data?.exams || []);
+            setSubjects(res.data?.subjects || []);
+            setHalls(res.data?.halls || []);
         } catch (e) {
             setAlert({type: 'error', message: 'Грешка при зареждане на данните'});
             console.error(e);
@@ -142,11 +142,14 @@ export default function TeacherDashboard() {
                 const lastIdx = all.indexOf(last);
                 if (idx === lastIdx + 1) {
                     setSelectedSlots([...selectedSlots, time]);
+
                 } else {
                     setSelectedSlots([time]);
                 }
             }
         }
+        console.log(selectedSlots.length);
+        console.log(selectedSlots);
     }
 
     useEffect(() => {
