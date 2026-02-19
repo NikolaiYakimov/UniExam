@@ -52,7 +52,6 @@ class ExamService{
         if($hasOverlap){
             throw new \Exception("Залата е заета през избрания интервал");
         }
-
         return $this->examRepository->store([
             'teacher_id' => Auth::user()->teacher->id,
             'subject_id' => $data['subject_id'],
@@ -96,8 +95,10 @@ class ExamService{
         $dateObj=Carbon::parse($date);
         $start=$dateObj->copy()->startOfDay();
         $end=$dateObj->copy()->endOfDay();
-
-        return $this->examRepository->getBookedSlots($hallId,$start,$end,$excludeExamId);
+        $bookedSlots=$this->examRepository->getBookedSlots($hallId,$start,$end,$excludeExamId);
+        \Illuminate\Log\log($bookedSlots);
+//        return $this->examRepository->getBookedSlots($hallId,$start,$end,$excludeExamId);
+        return $bookedSlots;
     }
 
     function updateExam(Exam $exam,array $data):Exam

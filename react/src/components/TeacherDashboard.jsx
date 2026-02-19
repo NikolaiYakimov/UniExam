@@ -89,6 +89,7 @@ export default function TeacherDashboard() {
 
     useEffect(() => {
         if (user && user.role === 'teacher') fetchDashboardData();
+        console.log(bookedSlots)
     }, [user, fetchDashboardData]);
 
     const fetchBookedSlots = useCallback(async (hallId, date, excludeExamId = null) => {
@@ -99,6 +100,7 @@ export default function TeacherDashboard() {
             if (excludeExamId) url += `&exclude_exam_id=${excludeExamId}`;
             const {data} = await api.get(url);
             setBookedSlots(data.bookedSlots || []);
+            console.log(bookedSlots);
         } catch (e) {
             console.error('Грешка при зареждане на заетите слотове:', e);
             setBookedSlots([]);
@@ -133,7 +135,8 @@ export default function TeacherDashboard() {
 
         if (already) {
             const i = selectedSlots.indexOf(time);
-            setSelectedSlots(selectedSlots.slice(0, i));
+            // setSelectedSlots(selectedSlots.slice(0, i));
+            setSelectedSlots(prev=>prev.slice(0,i));
         } else {
             if (selectedSlots.length === 0) {
                 setSelectedSlots([time]);
@@ -141,8 +144,8 @@ export default function TeacherDashboard() {
                 const last = selectedSlots[selectedSlots.length - 1];
                 const lastIdx = all.indexOf(last);
                 if (idx === lastIdx + 1) {
-                    setSelectedSlots([...selectedSlots, time]);
-
+                    // setSelectedSlots([...selectedSlots, time]);
+                    setSelectedSlots(prev => [...prev, time]);
                 } else {
                     setSelectedSlots([time]);
                 }
@@ -166,6 +169,8 @@ export default function TeacherDashboard() {
             start_time: formatDateTime(start),
             end_time: formatDateTime(end)
         }));
+        console.log("Текущи избрани слотове:", selectedSlots);
+        console.log("Брой слотове:", selectedSlots.length);
     }, [selectedSlots, selectedDate]);
 
     function handleInputChange(e) {
