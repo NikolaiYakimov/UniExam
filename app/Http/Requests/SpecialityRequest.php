@@ -33,4 +33,13 @@ class SpecialityRequest extends FormRequest
             'faculty_id'=>['required','exists:faculty,id'],
         ];
     }
+    public function messages(): array{
+        return [
+            'name.required'=>'Името на специалността е задължително.',
+            'name.max'=>"Името не може да бъде по-дълго от 255 символа",
+            'name.unique'=>'Тази специалност вече съществува в избрания факултет.',
+            'faculty_id.required' => 'Моля, изберете факултет.',
+            'faculty_id.exists'   => 'Избраният факултет е невалиден.',
+            ];
+    }
 }

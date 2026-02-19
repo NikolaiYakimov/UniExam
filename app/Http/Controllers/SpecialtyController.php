@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\SpecialityRequest;
+use App\Models\Specialty;
 use App\Services\SpecialtyService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -30,13 +32,10 @@ class SpecialtyController
         }
     }
 
-    public function store(Request $request)
+    public function store(SpecialityRequest $request)
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'faculty_id' => 'required|exists:faculties,id'
-            ]);
+            $validated = $request->validated();
 
             $specialty = $this->specialtyService->createSpecialty($validated);
 
@@ -44,12 +43,7 @@ class SpecialtyController
                 'data' => $specialty,
                 'message' => 'Specialty created successfully'
             ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
+        }catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error creating specialty: ' . $e->getMessage()
             ], 500);
@@ -71,13 +65,10 @@ class SpecialtyController
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(SpecialityRequest $request, $id)
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'faculty_id' => 'required|exists:faculties,id'
-            ]);
+            $validated = $request->validated();
 
             $specialty = $this->specialtyService->updateSpecialty($id, $validated);
 
@@ -85,12 +76,7 @@ class SpecialtyController
                 'data' => $specialty,
                 'message' => 'Specialty updated successfully'
             ]);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
+        }catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error updating specialty: ' . $e->getMessage()
             ], 500);
