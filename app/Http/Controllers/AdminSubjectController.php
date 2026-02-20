@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Http\Requests\SubjectRequest;
 use App\Models\Specialty;
-use App\Models\Student;
 use App\Services\SubjectService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+
 
 class AdminSubjectController extends Controller
 {
@@ -29,6 +27,7 @@ class AdminSubjectController extends Controller
         ]);
     }
 
+    //TODO This need to be in the speciality controller , and need to change the name
     public function create()
     {
         $specialties = Specialty::with(['teachers.user'])->get();
@@ -39,17 +38,8 @@ class AdminSubjectController extends Controller
         ]);
     }
 
-    public function store(Request $request) {
-        $data = $request->validate([
-            'subject_name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'semester' => 'required|integer|min:1|max:8',
-            'price' => 'required|numeric|min:0',
-            'specialties' => 'nullable|array',
-            'specialties.*' => 'exists:specialties,id',
-            'teachers' => 'nullable|array',
-            'teachers.*' => 'exists:teachers,id'
-        ]);
+    public function store(SubjectRequest $request) {
+        $data = $request->validated();
 
         $subject = $this->subjectService->createSubjectWithRelations($data);
 
@@ -78,22 +68,10 @@ class AdminSubjectController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(SubjectRequest $request, $id)
     {
-        $data = $request->validate([
-            'subject_name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'semester' => 'required|integer|min:1|max:8',
-            'price' => 'required|numeric|min:0',
-            'specialties' => 'nullable|array',
-            'specialties.*' => 'exists:specialties,id',
-            'teachers' => 'nullable|array',
-        'teachers.*' => 'exists:teachers,id'
-        ]);
-
+        $data = $request->validated();
         $subject = $this->subjectService->updateSubjectWithRelations($id, $data);
-
-
 
         return response()->json([
             'success' => true,
@@ -106,10 +84,7 @@ class AdminSubjectController extends Controller
 
     public function destroy($id)
     {
-
         $this->subjectService->deleteSubject($id);
-
-
 
         return response()->json([
             'success' => true,

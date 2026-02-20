@@ -28,7 +28,6 @@ use Illuminate\View\View;
 class   ExamController extends Controller
 {
 
-
     protected $examService;
 
     public function __construct(ExamService $examService)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuthRequest;
 use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use App\Services\AuthService;
@@ -24,27 +25,23 @@ class AuthController extends Controller
 
 
 
-    public function login(Request $request)
+    public function login(AuthRequest $request)
     {
-        $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-        ]);
-
         try {
-            $result = $this->authService->apiLogin($request->only('username', 'password'));
+            $credentials=$request->validated();
+            $result = $this->authService->apiLogin($credentials);
             return response()->json($result);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ],  401);
+            ]);
         }
     }
 
     public function logout(Request $request)
     {
         try {
-            $result = $this->authService->apiLogout($request);
+            $result = $this->authService->apiLogout($request->user());
             return response()->json($result);
         } catch (\Exception $e) {
             return response()->json([
@@ -56,7 +53,7 @@ class AuthController extends Controller
     public function getUserWithRelations(Request $request)
     {
         try {
-            $user = $this->authService->getUserWithRelations($request);
+            $user = $this->authService->getUserWithRelations($request->user());
             return response()->json($user);
         } catch (\Exception $e) {
             return response()->json([

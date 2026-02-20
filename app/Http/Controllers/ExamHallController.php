@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ExamHallRequest;
 use App\Models\ExamHall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -25,15 +26,10 @@ class ExamHallController extends Controller
         }
     }
 
-    public function store(Request $request){
+    public function store(ExamHallRequest $request){
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:30|unique:exam_halls',
-                'capacity' => 'required|integer|min: 20',
-                'opening_time' => 'required|date_format:H:i',
-                'closing_time' => 'required|date_format:H:i|after:opening_time',
-            ]);
-            $examHall = ExamHall::create($validated);
+            $data = $request->validated();
+            $examHall = ExamHall::create($data);
 
             return response()->json([
                 'message' => 'Exam hall created successfully',
@@ -48,6 +44,7 @@ class ExamHallController extends Controller
         }
     }
 
+    //TODO да погледна това
     public function edit(ExamHall $examHall)
     {
         try {
@@ -64,16 +61,11 @@ class ExamHallController extends Controller
         }
     }
 
-    public function update(Request $request,ExamHall $examHall){
+    public function update(ExamHallRequest $request,ExamHall $examHall){
         try {
-            $validated = $request->validate([
-                'name' => ['required', 'string', 'max:30', Rule::unique('exam_halls')->ignore($examHall->id)],
-                'capacity' => 'required|integer|min: 20',
-                'opening_time' => 'required|date_format:H:i',
-                'closing_time' => 'required|date_format:H:i|after:opening_time',
-            ]);
-
-            $examHall->update($validated);
+            $data = $request->validated();
+            //TODO Да го преместя в service
+            $examHall->update($data);
             return response()->json([
                 'message' => 'Изпитната зала беше променена',
                 'data' => $examHall

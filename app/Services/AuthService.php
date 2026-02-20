@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\Repositories\AuthRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
@@ -22,24 +24,26 @@ class AuthService
 
         if (!$user || !$this->authRepository->verifyPassword($user, $credentials['password'])) {
             throw new \Exception('Грешно потребителско име или парола.', 401);
+//            throw ValidationException::withMessages([
+//                'username'=>["Грешно потребителско име или парола. "]
+//            ]);
         }
 
         $this->authRepository->deleteUserTokens($user);
         $this->authRepository->loadUserRelations($user);
 
         $token = $this->authRepository->createAuthToken($user);
-
+        $expiration=config('sanctum.expiration');
         return [
             'token' => $token,
             'user' => $user,
             'redirect' => $this->apiRedirectByRole($user->role),
-            'expires_in'=>config('sanctum.expiration')*60
-        ];
+            'expires_in' => $expiration ? $expiration * 60 : null        ];
     }
 
-    public function apiLogout(Request $request): array
+    public function apiLogout(User $user): array
     {
-        $success = $this->authRepository->deleteCurrentToken($request->user());
+        $success = $this->authRepository->deleteCurrentToken($user);
 
         if ($success) {
             Log::debug("Напуснах системата");
@@ -49,9 +53,8 @@ class AuthService
         throw new \Exception('Logout failed', 500);
     }
 
-    public function getUserWithRelations(Request $request)
+    public function getUserWithRelations(User $user): User
     {
-        $user = $request->user();
         $this->authRepository->loadUserRelations($user);
         return $user;
     }
