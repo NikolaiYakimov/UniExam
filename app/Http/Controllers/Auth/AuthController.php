@@ -1,18 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
-use App\Http\Requests\AuthRequest;
-use App\Http\Requests\LoginRequest;
-use App\Models\User;
-use App\Services\AuthService;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AuthRequest;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
 
 class AuthController extends Controller
 {
@@ -21,8 +14,6 @@ class AuthController extends Controller
     public function __construct(AuthService $authService){
         $this->authService = $authService;
     }
-
-
 
 
     public function login(AuthRequest $request)
@@ -34,7 +25,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ]);
+            ],401);
         }
     }
 

@@ -65,6 +65,7 @@ const TeacherExamDetails = () => {
         try {
             const response = await api.post(`/exam/${id}/grades`, { grades });
 
+
             if (response.data.success) {
                 setAlert({ type: 'success', message: 'Оценките бяха актуализирани успешно!' });
             } else {
@@ -72,6 +73,7 @@ const TeacherExamDetails = () => {
             }
         } catch (error) {
             console.error('Грешка при запазване на оценките:', error);
+
             setAlert({ type: 'error', message: 'Грешка при запазване на оценките' });
         } finally {
             setSaving(false);

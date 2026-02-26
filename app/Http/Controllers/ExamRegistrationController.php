@@ -89,15 +89,20 @@ class ExamRegistrationController
 
     public function updateGrades(UpdateGradeRequest $request, $examId)
     {
+        \Illuminate\Log\log("Има грешка тук!!");
         $request->validated();
+        \Illuminate\Log\log("Има грешка тук!!");
         try {
             $this->registrationService->updateGrades($examId, $request->grades);
+            \Illuminate\Log\log("Има грешка тук!!");
 
             return response()->json([
                 'success' => true,
                 'message' => 'Оценките бяха актуализирани успешно!'
             ]);
         }catch (\Exception $exception){
+            \Illuminate\Log\log("Има грешка тук!!");
+
             return response()->json([
                 'success' => false,
                 'message' => $exception->getMessage()

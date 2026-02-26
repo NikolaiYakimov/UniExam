@@ -3,13 +3,16 @@
 namespace App\Services;
 
 use App\DTOs\UpdateProfileDto;
+use App\Mail\PasswordChangedMail;
 use App\Models\Faculty;
 use App\Models\Group;
 use App\Models\Specialty;
+use App\Models\Subject;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserService
 {
@@ -34,7 +37,10 @@ class UserService
     {
         $data['password'] = Hash::make($data['password']);
 
-        return $this->userRepository->createUserWithRole($data);
+//        return $this->userRepository->createUserWithRole($data);
+        $user=$this->userRepository->createUserWithRole($data);
+        $this->handleStudentSubjects($user,$data);
+        return $user;
     }
 
     public function updateUser($id, $data)
@@ -45,7 +51,10 @@ class UserService
             unset($data['password']);
         }
 
-        return $this->userRepository->updateUserWithRole($id, $data);
+//        return $this->userRepository->updateUserWithRole($id, $data);
+        $user= $this->userRepository->updateUserWithRole($id, $data);
+        $this->handleStudentSubjects($user,$data);
+        return $user;
     }
 
     public function deleteUser($id)
@@ -65,11 +74,15 @@ class UserService
     public function updatePassword(User $user,array $data):void
     {
         $user->forceFill([
-            'password' => Hash::make($data['new_password']),
+            'password' => Hash::make($data['password']),
         ])->save();
+
+        if(!empty($user->email)){
+            Mail::to($user->email)->queue(new PasswordChangedMail($user,now()));
+        }
     }
 
-    private function handleStudentSubjects($user, $data)
+    private function handleStudentSubjects($user, $data): void
     {
         if ($data['role'] === 'student' && !empty($data['specialty_id']) && !empty($data['semester'])) {
             try {
@@ -93,8 +106,7 @@ class UserService
 
                         if ($subjectsToAttach->count() > 0) {
                             $student->subjects()->attach($subjectsToAttach, ['has_attestation' => true]);
-
-                            return $subjectsToAttach->count();
+//                             $subjectsToAttach->count();
                         }
                     }
                 }
@@ -106,10 +118,19 @@ class UserService
                 ]);
             }
         }
-        return 0;
     }
 
     public  function getFormOptions():array{
         return ['faculties'=>Faculty::all(),'specialties'=>Specialty::all(),'groups'=>Group::all()];
     }
+//    public function loadUserWithRelations(User $user):User
+//    {
+//        $relations= match ($user->role){
+//            'student' => ['student.faculty', 'student.specialty', 'student.group'],
+//            'teacher' => ['teacher.faculty', 'teacher.specialty'],
+//            'administrator' => ['administrator'],
+//            default => [],
+//        };
+//        return $user->load($relations);
+//    }
 }

@@ -152,24 +152,27 @@
 
 
 use App\Http\Controllers\AdminSubjectController;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamHallController;
 use App\Http\Controllers\ExamRegistrationController;
 use App\Http\Controllers\FacultyController;
+use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/password/email', [UserController::class, 'sendResetLinkEmail']);
-Route::post('/password/reset', [UserController::class, 'reset']);
+Route::post('/password/email', [PasswordResetLinkController::class, 'store']);
+Route::post('/password/reset', [NewPasswordController::class, 'store']);
 
 Route::get('/exams/payment/success', [PaymentController::class, 'paymentSuccess'])
     ->name('payment.success.embedded');
@@ -245,6 +248,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'getUserWithRelations']);
     Route::get('/user-with-relations', [UserController::class, 'getUserWithRelations']);
 //    Route::get('/student-profile--profile', [UserController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile-update', [UserController::class, 'updateProfile'])->name('profile.update');
-    Route::put('/student-profile/password', [UserController::class, 'updatePassword'])->name('profile.password');
+//    Route::put('/profile-update', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile-update', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::put('/user/password', [PasswordController::class, 'update'])->name('profile.password');
 });

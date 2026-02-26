@@ -158,4 +158,9 @@ class UserRepository
             $user->administrator->delete();
         }
     }
+
+    public function findByEmail($email)
+    {
+        return User::where('email', $email)->first();
+    }
 }

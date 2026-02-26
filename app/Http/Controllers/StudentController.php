@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\Student;
 use App\Services\ExamService;
 use App\Services\PaymentService;
+use App\Services\StudentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -24,17 +25,10 @@ use Stripe\Stripe;
 class StudentController extends Controller
 {
 
-    public function getStudentProfile(): JsonResponse
+    public function getStudentProfile(Request $request,StudentService $studentService): JsonResponse
     {
-        $user = Auth::user();
-        $student=$user->student->load('faculty','specialty','group');
-
-
-        return response()->json([
-            'user'=>$user,
-            'student'=>$student
-        ]);
-
+        $data=$studentService->getStudentData($request->user());
+        return response()->json($data);
     }
 
 }

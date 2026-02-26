@@ -79,7 +79,7 @@ const TeacherProfile = () => {
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.put('/profile/password', passwordData);
+            await api.put('/user/password', passwordData);
             setAlert({ type: 'success', message: 'Паролата е сменена успешно.' });
             setPasswordData({
                 current_password: '',

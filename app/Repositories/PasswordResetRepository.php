@@ -40,4 +40,9 @@ class PasswordResetRepository
     {
         return DB::table('password_resets')->where('email', $email)->delete();
     }
+
+    public function updatePassword($user,$password){
+        $user->password = Hash::make($password);
+        $user->save();
+    }
 }

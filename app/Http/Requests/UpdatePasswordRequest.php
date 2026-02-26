@@ -56,7 +56,7 @@ class UpdatePasswordRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check();
+        return true;
     }
 
     /**
@@ -68,7 +68,7 @@ class UpdatePasswordRequest extends FormRequest
     {
         return [
             'current_password' => ['required', 'current_password'],
-            'new_password' => [
+            'password' => [
                 'required',
                 'string',
                 'min:8',
@@ -85,10 +85,10 @@ class UpdatePasswordRequest extends FormRequest
         return [
             'current_password.current_password' => 'Текущата парола е грешна!',
             'current_password.required' => 'Текущата парола е задължителна!',
-            'new_password.confirmed' => 'Паролата за потвърждение не съвпада с новата парола!',
-            'new_password.min' => 'Новата парола трябва да е поне 8 символа!',
-            'new_password.letters' => 'Новата парола трябва да съдържа поне една буква!',
-            'new_password.numbers' => 'Новата парола трябва да съдържа поне една цифра!',
+            'password.confirmed' => 'Паролата за потвърждение не съвпада с новата парола!',
+            'password.min' => 'Новата парола трябва да е поне 8 символа!',
+            'password.letters' => 'Новата парола трябва да съдържа поне една буква!',
+            'password.numbers' => 'Новата парола трябва да съдържа поне една цифра!',
         ];
     }
 }

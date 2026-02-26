@@ -18,16 +18,16 @@ const StudentProfile = () => {
     });
     const [passwordForm, setPasswordForm] = useState({
         current_password: '',
-        new_password: '',
-        new_password_confirmation: ''
+        password: '',
+        password_confirmation: ''
     });
     const [originalData, setOriginalData] = useState({});
     const [errors, setErrors] = useState({
         email: '',
         phone: '',
         current_password: '',
-        new_password: '',
-        new_password_confirmation: ''
+        password: '',
+        password_confirmation: ''
     });
 
     useEffect(() => {
@@ -84,8 +84,8 @@ const StudentProfile = () => {
                 email: '',
                 phone: '',
                 current_password: '',
-                new_password: '',
-                new_password_confirmation: ''
+                password: '',
+                password_confirmation: ''
             });
         }
         setIsEditing(!isEditing);
@@ -111,16 +111,16 @@ const StudentProfile = () => {
             newErrors.current_password = 'Настоящата парола е задължителна';
         }
 
-        if (!passwordForm.new_password) {
-            newErrors.new_password = 'Новата парола е задължителна';
-        } else if (passwordForm.new_password.length < 8) {
-            newErrors.new_password = 'Паролата трябва да бъде поне 8 символа';
+        if (!passwordForm.password) {
+            newErrors.password = 'Новата парола е задължителна';
+        } else if (passwordForm.password.length < 8) {
+            newErrors.password = 'Паролата трябва да бъде поне 8 символа';
         }
 
-        if (!passwordForm.new_password_confirmation) {
-            newErrors.new_password_confirmation = 'Потвърждението на паролата е задължително';
-        } else if (passwordForm.new_password !== passwordForm.new_password_confirmation) {
-            newErrors.new_password_confirmation = 'Паролите не съвпадат';
+        if (!passwordForm.password_confirmation) {
+            newErrors.password_confirmation = 'Потвърждението на паролата е задължително';
+        } else if (passwordForm.password !== passwordForm.password_confirmation) {
+            newErrors.password_confirmation = 'Паролите не съвпадат';
         }
 
         setErrors(prev => ({ ...prev, ...newErrors }));
@@ -175,22 +175,22 @@ const StudentProfile = () => {
         if (!validatePasswordForm()) return;
 
         try {
-            const response = await api.put('/student-profile/password', passwordForm);
+            const response = await api.put('/user/password', passwordForm);
             setAlert({
                 type: 'success',
                 message: response.data.message || 'Паролата е сменена успешно'
             });
             setPasswordForm({
                 current_password: '',
-                new_password: '',
-                new_password_confirmation: ''
+                password: '',
+                password_confirmation: ''
             });
 
             setErrors(prev => ({
                 ...prev,
                 current_password: '',
-                new_password: '',
-                new_password_confirmation: ''
+                password: '',
+                password_confirmation: ''
             }));
         } catch (error) {
             console.error('Password change error:', error.response?.data);
@@ -200,7 +200,7 @@ const StudentProfile = () => {
                 const newErrors = {};
 
                 Object.keys(validationErrors).forEach(field => {
-                    const fieldName = field.replace('new_password_confirmation', 'new_password_confirmation');
+                    const fieldName = field.replace('password_confirmation', 'password_confirmation');
                     newErrors[fieldName] = validationErrors[field][0];
                 });
 
@@ -448,32 +448,32 @@ const StudentProfile = () => {
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Нова парола</label>
                                             <input
                                                 type="password"
-                                                name="new_password"
-                                                value={passwordForm.new_password}
+                                                name="password"
+                                                value={passwordForm.password}
                                                 onChange={handlePasswordChange}
                                                 className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                                                    errors.new_password ? 'border-red-500' : ''
+                                                    errors.password ? 'border-red-500' : ''
                                                 }`}
                                                 required
                                                 minLength="8"
                                             />
-                                            {errors.new_password && <p className="text-red-600 text-sm mt-1">{errors.new_password}</p>}
+                                            {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password}</p>}
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Потвърди новата парола</label>
                                             <input
                                                 type="password"
-                                                name="new_password_confirmation"
-                                                value={passwordForm.new_password_confirmation}
+                                                name="password_confirmation"
+                                                value={passwordForm.password_confirmation}
                                                 onChange={handlePasswordChange}
                                                 className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                                                    errors.new_password_confirmation ? 'border-red-500' : ''
+                                                    errors.password_confirmation ? 'border-red-500' : ''
                                                 }`}
                                                 required
                                                 minLength="8"
                                             />
-                                            {errors.new_password_confirmation && <p className="text-red-600 text-sm mt-1">{errors.new_password_confirmation}</p>}
+                                            {errors.password_confirmation && <p className="text-red-600 text-sm mt-1">{errors.password_confirmation}</p>}
                                         </div>
 
                                         <button

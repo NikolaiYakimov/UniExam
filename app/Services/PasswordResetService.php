@@ -6,12 +6,14 @@ use App\Mail\PasswordChangedMail;
 use App\Mail\PasswordResetMail;
 use App\Repositories\PasswordResetRepository;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class PasswordResetService
 {
-    protected $passwordResetRepository;
-    protected $userRepository;
+    private $passwordResetRepository;
+    private $userRepository;
+
 
     public function __construct(
         PasswordResetRepository $passwordResetRepository,
@@ -26,39 +28,45 @@ class PasswordResetService
         $user = $this->userRepository->findByEmail($email);
 
         if (!$user) {
-            return ['success' => false, 'message' => 'Потребител с този имейл не съществува'];
+            return false;
         }
 
         $token = $this->passwordResetRepository->createResetToken($email);
 
         try {
             Mail::to($email)->queue(new PasswordResetMail($token, $user));
-            return ['success' => true, 'message' => 'Изпратихме ви имейл с линк за възстановяване на паролата!'];
+//            return ['success' => true, 'message' => 'Изпратихме ви имейл с линк за възстановяване на паролата!'];\
+            return true;
         } catch (\Exception $e) {
             Log::error("Failed to send password reset email: " . $e->getMessage());
-            return ['success' => false, 'message' => 'Грешка! Възникна грешка при изпращането на имейла!'];
+//            return ['success' => false, 'message' => 'Грешка! Възникна грешка при изпращането на имейла!'];
+            return false;
         }
     }
 
-    public function resetPassword($token, $email, $password)
+    public function resetPassword($token, $email, $password):string
     {
+        \Illuminate\Log\log("Tyk sym v service-са");
         $resetRecord = $this->passwordResetRepository->getResetRecord($email);
 
         if (!$resetRecord || !$this->passwordResetRepository->validateToken($resetRecord, $token)) {
-            return ['success' => false, 'message' => 'Токенът който беше предоставен е невалиден!'];
+//            return ['success' => false, 'message' => 'Токенът който беше предоставен е невалиден!'];
+            return 'invalid_token';
         }
 
         if ($this->passwordResetRepository->isTokenExpired($resetRecord)) {
-            return ['success' => false, 'message' => 'Токенът ви е изтекъл. Опитайте отново!'];
+//            return ['success' => false, 'message' => 'Токенът ви е изтекъл. Опитайте отново!'];
+            return 'expired_token';
         }
 
         $user = $this->userRepository->findByEmail($email);
-        $this->userRepository->updatePassword($user, $password);
+        $this->passwordResetRepository->updatePassword($user, $password);
         $this->passwordResetRepository->deleteResetRecord($email);
 
         $this->sendPasswordChangedEmail($user);
 
-        return ['success' => true, 'message' => 'Паролата ви е променена успешно!'];
+//        return ['success' => true, 'message' => 'Паролата ви е променена успешно!'];
+        return 'success';
     }
 
     protected function sendPasswordChangedEmail($user)

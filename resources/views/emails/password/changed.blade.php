@@ -10,7 +10,7 @@
 {{--Thanks,<br>--}}
 {{--{{ config('app.name') }}--}}
 {{--</x-mail::message>--}}
-@extends('email-base')
+@extends('emails.email-base')
 
 @section('title', 'Промяна - ' . config('app.name'))
 
