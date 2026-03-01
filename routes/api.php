@@ -246,7 +246,7 @@ Route::middleware(['auth:sanctum', 'role:administrator'])->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'getUserWithRelations']);
-    Route::get('/user-with-relations', [UserController::class, 'getUserWithRelations']);
+//    Route::get('/user-with-relations', [UserController::class, 'getUserWithRelations']);
 //    Route::get('/student-profile--profile', [UserController::class, 'edit'])->name('profile.edit');
 //    Route::put('/profile-update', [UserController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile-update', [ProfileController::class, 'update'])->name('profile.update');

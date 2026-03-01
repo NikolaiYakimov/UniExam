@@ -10,6 +10,38 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @method static create(array $array)
+ * @property int $id
+ * @property int $user_id
+ * @property string $faculty_number
+ * @property int $semester
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int|null $specialty_id
+ * @property int|null $group_id
+ * @property int|null $faculty_id
+ * @property-read \App\Models\Faculty|null $faculty
+ * @property-read \App\Models\Group|null $group
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ExamRegistration> $registrations
+ * @property-read int|null $registrations_count
+ * @property-read \App\Models\Specialty|null $specialty
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Subject> $subjects
+ * @property-read int|null $subjects_count
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student whereFacultyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student whereFacultyNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student whereGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student whereSemester($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student whereSpecialtyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Student whereUserId($value)
+ * @mixin \Eloquent
  */
 class Student extends Model
 {

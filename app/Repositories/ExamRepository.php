@@ -81,9 +81,9 @@ class ExamRepository implements ExamRepositoryInterface
             ->values();
     }
 
-    public function getExamById(int $id): ?Exam
+    public function getExamById(int $examId): Exam
     {
-        return Exam::with(['teacher', 'subject', 'hall'])->find($id);
+        return Exam::findOrFail($examId);
     }
 
     public function getExamsBySubjectAndType(int $subjectId, string $examType): Collection
@@ -137,7 +137,10 @@ class ExamRepository implements ExamRepositoryInterface
         return Exam::with(['registrations.student.user', 'subject','hall'])->findOrFail($examId);
     }
 
-
+    public function getExamByIdForEdit(int $examId):Exam
+    {
+        return Exam::with(['subject', 'hall'])->findOrFail($examId);
+    }
 
     public function getBookedTimeSlots()
     {

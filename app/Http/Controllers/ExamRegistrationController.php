@@ -9,6 +9,7 @@ use App\Services\ExamRegistrationService;
 use App\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 
 class ExamRegistrationController
@@ -87,21 +88,17 @@ class ExamRegistrationController
         ], 200);
     }
 
-    public function updateGrades(UpdateGradeRequest $request, $examId)
+    public function updateGrades(UpdateGradeRequest $request, $examId):JsonResponse
     {
-        \Illuminate\Log\log("Има грешка тук!!");
         $request->validated();
-        \Illuminate\Log\log("Има грешка тук!!");
         try {
             $this->registrationService->updateGrades($examId, $request->grades);
-            \Illuminate\Log\log("Има грешка тук!!");
 
             return response()->json([
                 'success' => true,
                 'message' => 'Оценките бяха актуализирани успешно!'
             ]);
         }catch (\Exception $exception){
-            \Illuminate\Log\log("Има грешка тук!!");
 
             return response()->json([
                 'success' => false,

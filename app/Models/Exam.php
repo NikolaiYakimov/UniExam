@@ -9,6 +9,35 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @method static create(array $array)
+ * @property int $id
+ * @property int $teacher_id
+ * @property int $subject_id
+ * @property int $hall_id
+ * @property \Illuminate\Support\Carbon $start_time
+ * @property \Illuminate\Support\Carbon $end_time
+ * @property int $max_students
+ * @property string $exam_type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\ExamHall $hall
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ExamRegistration> $registrations
+ * @property-read int|null $registrations_count
+ * @property-read \App\Models\Subject $subject
+ * @property-read \App\Models\Teacher $teacher
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam whereEndTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam whereExamType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam whereHallId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam whereMaxStudents($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam whereStartTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam whereSubjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam whereTeacherId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Exam whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Exam extends Model
 {

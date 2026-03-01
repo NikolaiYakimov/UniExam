@@ -9,60 +9,74 @@ use App\Models\Teacher;
 use App\Repositories\ExamRepository;
 use App\Repositories\ExamRepositoryInterface;
 use Carbon\Carbon;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Types\Relations\Car;
 use Whoops\Example\Exception;
 use Illuminate\Support\Collection;
 use function PHPUnit\Framework\isString;
 
 
 class ExamService{
-    protected $examRepository;
 
-    public function __construct(ExamRepositoryInterface $examRepository){
-        $this->examRepository = $examRepository;
 
+    public function __construct(private readonly ExamRepositoryInterface $examRepository){
     }
 
-    public function createExam(array $data):Exam{
+    public function createExam(array $data, Teacher $teacher
+    ):Exam{
 
         $hall=ExamHall::findOrFail($data['hall_id']);
-
         $startTime=Carbon::parse($data['start_time']);
         $endTime=Carbon::parse($data['end_time']);
 
-        $hallOpeningTime=Carbon::parse($hall->opening_time)->setDateFrom($startTime);
-        $hallClosingTime=Carbon::parse($hall->closing_time)->setDateFrom($startTime);
-
-        if($data['max_students']>$hall->capacity){
-            throw new \Exception("Грешка! Максималния брой на студентите не може да надвишава капацитета на залата ({$hall->capacity})");
-        }
-
-        if($startTime->lt($hallOpeningTime)){
-            throw new \Exception("Залата отваря в {$hall->opening_time}");
-        }
-        if($endTime->gt($hallClosingTime)){
-            throw new \Exception("Залата затваря в {$hall->closing_time}");
-
-        }
-
+//        $hallOpeningTime=Carbon::parse($hall->opening_time)->setDateFrom($startTime);
+//        $hallClosingTime=Carbon::parse($hall->closing_time)->setDateFrom($startTime);
+//
+//        if($data['max_students']>$hall->capacity){
+//            throw new \Exception("Грешка! Максималния брой на студентите не може да надвишава капацитета на залата ({$hall->capacity})");
+//        }
+//
+//        if($startTime->lt($hallOpeningTime)){
+//            throw new \Exception("Залата отваря в {$hall->opening_time}");
+//        }
+//        if($endTime->gt($hallClosingTime)){
+//            throw new \Exception("Залата затваря в {$hall->closing_time}");
+//
+//        }
+        $this->validateExamTime($hall, $startTime, $endTime, $data['max_students']);
         $hasOverlap=$this->examRepository->hasOverlap($hall->id,$startTime,$endTime);
 
         if($hasOverlap){
             throw new \Exception("Залата е заета през избрания интервал");
         }
-        return $this->examRepository->store([
-            'teacher_id' => Auth::user()->teacher->id,
+
+        $exam=$this->examRepository->store([
+            'teacher_id' =>$teacher->id,
             'subject_id' => $data['subject_id'],
             'hall_id' => $data['hall_id'],
             'start_time' => $startTime,
             'end_time' => $endTime,
             'max_students' => $data['max_students'],
             'exam_type' => $data['exam_type'],
-
             ]
+
         );
+        $this->notifyAllStudentsForNewExam($exam);
+        return $exam;
+////        return $this->examRepository->store([
+////            'teacher_id' =>$teacher->id,
+////            'subject_id' => $data['subject_id'],
+////            'hall_id' => $data['hall_id'],
+////            'start_time' => $startTime,
+////            'end_time' => $endTime,
+////            'max_students' => $data['max_students'],
+////            'exam_type' => $data['exam_type'],
+//
+//            ]
+
 
 //               $exam= $this->examRepository->store([
 //                'teacher_id' => Auth::user()->teacher->id,
@@ -78,7 +92,7 @@ class ExamService{
 ////        return $exam;
     }
 
-    protected function sendExamCreationEmail(Exam $exam)
+    protected function notifyAllStudentsForNewExam(Exam $exam)
     {
         $students = Student::with('user')->whereHas('user', function ($q) {
             $q->whereNotNull('email');
@@ -101,8 +115,9 @@ class ExamService{
         return $bookedSlots;
     }
 
-    function updateExam(Exam $exam,array $data):Exam
+    function updateExam(int $examId,array $data):Exam
     {
+        $exam=$this->examRepository->getExamById($examId);
         if($exam->subject_id!=$data['subject_id']){
             throw new \Exception("Предмета не може да бъде променян");
         }
@@ -257,9 +272,8 @@ class ExamService{
         return $this->examRepository->getConductedExams($teacher->id);
     }
 
-    public function getExamDetails($examId)
+    public function getExamDetails(int $examId,Teacher $teacher): Collection
     {
-        $teacher = Auth::user()->teacher;
         $exam = $this->examRepository->getExamDetails($examId);
 
         if ($exam->teacher_id !== $teacher->id) {
@@ -286,5 +300,42 @@ class ExamService{
         return $this->examRepository->getBookedTimeSlots();
     }
 
+    public function getTeacherDashboardData(Teacher $teacher): array{
+        $exams=$this->examRepository->getTeacherUpcomingExams($teacher->id)->load('subject', 'hall');
+
+        return [
+            "exams" => $exams,
+            "teacher" => $teacher,
+            "subjects" => $teacher->subjects,
+            "halls" => ExamHall::all(),
+        ];
+    }
+
+    private function validateExamTime(ExamHall $examHall,Carbon $startTime,CarBon $endTime,int $maxStudents):void{
+        $hallOpeningTime = Carbon::parse($examHall->opening_time)->setDateFrom($startTime);
+        $hallClosingTime = Carbon::parse($examHall->closing_time)->setDateFrom($startTime);
+
+        if ($maxStudents > $examHall->capacity) {
+            throw new Exception("Грешка! Максималния брой на студентите не може да надвишава капацитета на залата ({$hall->capacity})");
+        }
+        if ($startTime->lt($hallOpeningTime)) {
+            throw new Exception("Залата отваря в {$examHall->opening_time}");
+        }
+        if ($endTime->gt($hallClosingTime)) {
+            throw new Exception("Залата затваря в {$examHall->closing_time}");
+        }
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function getExamForEdit(int $examId, int $teacher_id):Exam{
+
+        $exam=$this->examRepository->getExamByIdForEdit($examId);
+        if($exam->teacher_id !== $teacher_id){
+            throw new AuthorizationException("Нямате право да редактирате този изпит");
+        }
+        return $exam;
+    }
 
 }

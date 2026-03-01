@@ -16,7 +16,7 @@ interface ExamRepositoryInterface
 
     public function getRegisteredExams(Student $student): Collection;
 
-    public function getExamById(int $id): ?Exam;
+    public function getExamById(int $examId): ?Exam;
 
     public function getExamsBySubjectAndType(int $subjectId, string $examType): Collection;
 
@@ -31,7 +31,7 @@ interface ExamRepositoryInterface
 //    public function deleteExamRegistration(Student $student, Exam $exam): bool;
 //
 //    public function getExamRegistrations(Student $student): Collection;
-//    public function getTeacherUpcomingExams($teacherId);
+    public function getTeacherUpcomingExams($teacherId);
 //    public function getConductedExams($teacherId);
 //    public function getExamDetails($examId);
 //    public function updateExamGrades($examId, $grades);

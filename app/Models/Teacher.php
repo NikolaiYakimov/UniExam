@@ -11,6 +11,31 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
  * @method static create(string[] $array)
+ * @property int $id
+ * @property int $user_id
+ * @property string $title
+ * @property int|null $faculty_id
+ * @property int|null $specialty_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Exam> $exams
+ * @property-read int|null $exams_count
+ * @property-read \App\Models\Faculty|null $faculty
+ * @property-read \App\Models\Specialty|null $specialty
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Subject> $subjects
+ * @property-read int|null $subjects_count
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Teacher newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Teacher newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Teacher query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Teacher whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Teacher whereFacultyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Teacher whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Teacher whereSpecialtyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Teacher whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Teacher whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Teacher whereUserId($value)
+ * @mixin \Eloquent
  */
 class Teacher extends Model
 {

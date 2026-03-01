@@ -11,7 +11,7 @@ class UpdateGradeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,19 +22,19 @@ class UpdateGradeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'grade' => ['required', 'array'],
-            'grade.*' => ['nullable', 'numeric', 'min:2', 'max:6'],
+            'grades' => ['required', 'array'],
+            'grades.*' => ['nullable', 'numeric', 'min:2', 'max:6'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'grade.required' => 'Това поле е задължително.',
-            'grade.array' => 'Оценките трябва да бъдат подадени като списък.',
-            'grade.*.numeric' => "Една или повече от избраните оценки не са числа",
-            'grade.*.min' => "Минималната оценка е 2! Не може да въведете по-ниска!",
-            'grade.*.max' => "Максималната оценка е 6! Не може да въведете по-висока!"
+            'grades.required' => 'Това поле е задължително.',
+            'grades.array' => 'Оценките трябва да бъдат подадени като списък.',
+            'grades.*.numeric' => "Една или повече от избраните оценки не са числа",
+            'grades.*.min' => "Минималната оценка е 2! Не може да въведете по-ниска!",
+            'grades.*.max' => "Максималната оценка е 6! Не може да въведете по-висока!"
 
         ];
     }

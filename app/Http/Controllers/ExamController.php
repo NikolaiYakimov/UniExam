@@ -28,29 +28,25 @@ use Illuminate\View\View;
 class   ExamController extends Controller
 {
 
-    protected $examService;
 
-    public function __construct(ExamService $examService)
+    public function __construct(private readonly ExamService $examService)
+    {}
+
+    //Move it to StudentExamController
+    public function exams(Request $request): JsonResponse
     {
-        $this->examService = $examService;
-
-    }
-
-    public function exams()
-    {
-
-
         try {
-            $student = Auth::user()->student;
+            $student = $request->user()->student;
             $exams = $this->examService->getAvailableExams($student);
 
             $availableExams = $exams->values()->all();
             return response()->json([
                 'success' => true,
-                'data' => $availableExams,
+                'data' => $exams,
                 'student' => $student,
             ]);
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to load exams'
@@ -59,12 +55,13 @@ class   ExamController extends Controller
     }
 
 
-    public function storeExam(StoreExamRequest $request)
+    //
+    public function storeExam(StoreExamRequest $request):JsonResponse
     {
         try {
-            $request->validated();
-
-            $exam = $this->examService->createExam($request->all());
+            $data=$request->validated();
+            $teacher = $request->user()->teacher;
+            $exam = $this->examService->createExam($data,$teacher);
             $students = Student::with('user')->whereHas('user', function ($q) {
                 $q->whereNotNull('email');
             })->get();
@@ -188,23 +185,27 @@ class   ExamController extends Controller
         }
     }
 
+    //Move it in TeacherExamControllerAndRefactor it
     public function teacherUpcomingExams(): JsonResponse
     {
         try {
             $teacher = Auth::user()->teacher;
-            $exams = $this->examService->getUpcomingExams($teacher)
-                ->load('subject', 'hall');
+//            $exams = $this->examService->getUpcomingExams($teacher)
+//                ->load('subject', 'hall');
 
-            $subjects = $teacher->subjects;
-            $halls = ExamHall::all();
+            $data=$this->examService->getTeacherDashboardData($teacher);
+//
+//            $subjects = $teacher->subjects;
+//            $halls = ExamHall::all();
 
-            return response()->json([
-                "exams" => $exams,
-                "teacher" => $teacher,
-                "subjects" => $subjects,
-                "halls" => $halls,
-
-            ]);
+//            return response()->json([
+//                "exams" => $exams,
+//                "teacher" => $teacher,
+//                "subjects" => $subjects,
+//                "halls" => $halls,
+//
+//            ]);
+            return response()->json($data);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Грешка при зареждане на предстоящите изпити ',
