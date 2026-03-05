@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateGradeRequest;
 use App\Mail\SuccessfullyRegistrated;
 use App\Models\Exam;
+use App\Models\ExamRegistration;
 use App\Services\ExamRegistrationService;
 use App\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-
-
+use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 class ExamRegistrationController
 {
     protected $paymentService;
@@ -29,7 +31,7 @@ class ExamRegistrationController
         {
 
             $student = Auth::user()->student;
-            $registeredExams = $this->registrationService->getStudentRegistrations($student);
+        $registeredExams = $this->registrationService->getStudentRegistrations($student);
 
 
         return response()->json([
@@ -39,7 +41,7 @@ class ExamRegistrationController
     }
 
     public function myPastExam():JsonResponse{
-        $student = Auth::user()->student;
+       $student = Auth::user()->student;
         $registeredExams = $this->registrationService->getPastStudentRegistrations($student);
 
         return response()->json([
@@ -48,9 +50,10 @@ class ExamRegistrationController
         ]);
     }
 
-    public function register(Exam $exam): JsonResponse
+    public function register(Request $request, Exam $exam): JsonResponse
 
     {
+
 
         $student = Auth::user()->student;
         $result = $this->registrationService->registerStudent($student, $exam);
@@ -88,9 +91,12 @@ class ExamRegistrationController
         ], 200);
     }
 
-    public function updateGrades(UpdateGradeRequest $request, $examId):JsonResponse
+    public function updateGrades(Request $request, $examId)
     {
-        $request->validated();
+        $request->validate([
+            'grades' => 'required|array',
+            'grades.*' => 'nullable|numeric|min:2|max:6'
+        ]);
         try {
             $this->registrationService->updateGrades($examId, $request->grades);
 
@@ -99,7 +105,6 @@ class ExamRegistrationController
                 'message' => 'Оценките бяха актуализирани успешно!'
             ]);
         }catch (\Exception $exception){
-
             return response()->json([
                 'success' => false,
                 'message' => $exception->getMessage()
