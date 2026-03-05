@@ -17,7 +17,6 @@ class ProfileController extends Controller
         $dto = UpdateProfileDto::fromRequest($request);
         $service->updateProfile($request->user(), $dto);
 
-
         return response()->json(['success' => 'Успешмпо актуализирахте профила си']);
     }
 }

@@ -213,6 +213,8 @@ Route::middleware(['auth:sanctum', 'role:teacher'])->group(function () {
     Route::post('/examStore', [TeacherExamController::class, 'store'])->name('exams.store');
 
 //    Route::get('/exam/{id}/edit-data', [ExamController::class, 'getExamEditData'])->name('exams.edit-data');
+
+    //We don't use it for now
     Route::get('/exam/{id}/edit-data', [TeacherExamController::class, 'edit'])->name('exams.edit-data');
 //    Route::put('/edit-exams/{examId}', [ExamController::class, 'editExam'])->name('exams.update');
     Route::put('/edit-exams/{examId}', [TeacherExamController::class, 'update'])->name('exams.update');

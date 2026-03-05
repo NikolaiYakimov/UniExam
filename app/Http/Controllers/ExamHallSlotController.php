@@ -22,8 +22,8 @@ class ExamHallSlotController extends Controller
         try {
             $data=$request->validated();
 
-            $slots = $this->examService->getBookedSlots($data->hall_id,
-                $data->date,
+            $slots = $this->examService->getBookedSlots($data['hall_id'],
+                $data['date'],
                 $request->input('exclude_exam_id', null))->filter();
 
 //            $formatedSlots=$slots->map(function($exam){
@@ -38,8 +38,8 @@ class ExamHallSlotController extends Controller
             return response()->json([
 //                'bookedSlots'=>$formatedSlots,
             'bookedSlots'=>BookedSlotResource::collection($slots),
-                'date'=>$data->date,
-                'hall_id'=>$data->hall_id,
+                'date'=>$data['date'],
+                'hall_id'=>$data['hall_id'],
                 'count'=>$slots->count(),
                 'timestamp' => now()->toIso8601String()
             ]);

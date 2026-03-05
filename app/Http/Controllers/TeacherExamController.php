@@ -84,7 +84,7 @@ class TeacherExamController extends Controller
     {
         try {
         $teacher = $request->user()->teacher;
-        $exam = $this->examService->getExamForEdit($examId,$teacher->teacher_id);
+        $exam = $this->examService->getExamForEdit($examId,$teacher->id);
 
             return response()->json([
                 'subject_id' => $exam->subject_id,

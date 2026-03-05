@@ -24,7 +24,6 @@ use Stripe\Stripe;
 
 class StudentController extends Controller
 {
-
     public function getStudentProfile(Request $request,StudentService $studentService): JsonResponse
     {
         $data=$studentService->getStudentData($request->user());
