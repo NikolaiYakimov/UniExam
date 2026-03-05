@@ -12,12 +12,12 @@ use Illuminate\Support\Collection;
 class ExamRepository implements ExamRepositoryInterface
 {
 
-    public function hasOverlap($hallId, $startTime, $endTime,$excludeExamId=null)
+    public function hasOverlap($hallId, $startTime, $endTime, $excludeExamId = null)
     {
-        $overlap=Exam::where('hall_id',$hallId)->
-            where(function ($query) use ($startTime, $endTime) {
-                $query->where('start_time', '<', $endTime)->
-                    where('end_time', '>', $startTime);
+        $overlap = Exam::where('hall_id', $hallId)->
+        where(function ($query) use ($startTime, $endTime) {
+            $query->where('start_time', '<', $endTime)->
+            where('end_time', '>', $startTime);
         });
         if ($excludeExamId) {
             $overlap->where('id', '!=', $excludeExamId);
@@ -26,26 +26,28 @@ class ExamRepository implements ExamRepositoryInterface
         return $overlap->exists();
 
     }
-    public function update(Exam $exam, array $data){
+
+    public function update(Exam $exam, array $data)
+    {
         $exam->update($data);
         return $exam->fresh();
     }
 
-    public function store($data):Exam
+    public function store($data): Exam
     {
-       return Exam::create($data);
+        return Exam::create($data);
 
     }
 
-    public function getBookedSlots($hallId, $startTime, $endTime,$excludeExamId=null)
+    public function getBookedSlots($hallId, $startTime, $endTime, $excludeExamId = null)
     {
-        $query= Exam::where('hall_id',$hallId)->
-            where(function ($query) use ($startTime, $endTime) {
-                $query->where('end_time', '>', $startTime)
-                    ->where('start_time', '<', $endTime);
+        $query = Exam::where('hall_id', $hallId)->
+        where(function ($query) use ($startTime, $endTime) {
+            $query->where('end_time', '>', $startTime)
+                ->where('start_time', '<', $endTime);
         });
-        if($excludeExamId){
-            $query->where('id','!=',$excludeExamId);
+        if ($excludeExamId) {
+            $query->where('id', '!=', $excludeExamId);
         }
 
         return $query->get();
@@ -55,7 +57,7 @@ class ExamRepository implements ExamRepositoryInterface
     {
         $registeredExamIds = $student->registrations()->pluck('exam_id');
 
-        return Exam::with(['teacher.user', 'subject','hall'])
+        return Exam::with(['teacher.user', 'subject', 'hall'])
             ->whereHas('subject', function ($q) use ($student) {
                 $q->where('semester', '<=', $student->semester)
                     ->whereHas('specialties', function ($q) use ($student) {
@@ -66,7 +68,7 @@ class ExamRepository implements ExamRepositoryInterface
             ->whereNotIn('id', $registeredExamIds)
             ->orderBy('start_time', 'desc')
             ->get()->map(function ($exam) {
-                $exam->remaining_slots=$exam->remainingSlots();
+                $exam->remaining_slots = $exam->remainingSlots();
                 return $exam;
             });
     }
@@ -120,31 +122,32 @@ class ExamRepository implements ExamRepositoryInterface
     }
 
 
-
-    public function  getConductedExams($teacherId)
+    public function getConductedExams($teacherId)
     {
-        return Exam::with(['subject','hall'])->where('teacher_id', $teacherId)
+        return Exam::with(['subject', 'hall'])->where('teacher_id', $teacherId)
             ->where('start_time', '<', Carbon::now()->toIso8601String())
             ->orderBy('start_time', 'desc')
             ->get()->map(function ($exam) {
-                $exam->remaining_slots=$exam->remainingSlots();
+                $exam->remaining_slots = $exam->remainingSlots();
                 return $exam;
             });
     }
 
-    public function getExamDetails($examId)
+    public function getExamDetails($examId):Exam
     {
-        return Exam::with(['registrations.student.user', 'subject','hall'])->findOrFail($examId);
+        $exam= Exam::with(['registrations.student.user', 'subject', 'hall'])->findOrFail($examId);
+        \Log::info($exam);
+        return $exam;
     }
 
-    public function getExamByIdForEdit(int $examId):Exam
+    public function getExamByIdForEdit(int $examId): Exam
     {
         return Exam::with(['subject', 'hall'])->findOrFail($examId);
     }
 
     public function getBookedTimeSlots()
     {
-        return Exam::all()->map(function($exam) {
+        return Exam::all()->map(function ($exam) {
             return [
                 'hall_id' => $exam->hall_id,
                 'start' => Carbon::parse($exam->start_time)->toIso8601String(),
@@ -164,14 +167,37 @@ class ExamRepository implements ExamRepositoryInterface
 //                $exam->remaining_slots=$exam->remainingSlots();
 //                return $exam;
 //            });
-        $exams=Exam::with(['subject', 'hall'])->where('teacher_id', $teacherId)
-        ->where('start_time', '>', now())
-        ->orderBy('start_time', 'desc')
-        ->get();
+        $exams = Exam::with(['subject', 'hall'])->where('teacher_id', $teacherId)
+            ->where('start_time', '>', now())
+            ->orderBy('start_time', 'desc')
+            ->get();
         $exams->each(function ($exam) {
-            $exam->remaining_slots=$exam->remainingSlots();
+            $exam->remaining_slots = $exam->remainingSlots();
 
         });
         return $exams;
     }
+
+    public function getRegisteredStudentsForExam(Exam $exam)
+    {
+
+        return $exam->registrations()
+            ->with(['student.user'])
+            ->get();
+    }
+
+//    public function getExamWithSubjAndStudentData(int $examId){
+//        return Exam::with(['subject','registrations.student.user'])->findOrFail($examId);
+//    }
+
+    public function getStudentSubjectGrades(Student $student): Collection
+    {
+        return $student->registrations()
+            ->with('exam')
+            ->whereNotNull('grade')
+            ->get()
+            ->groupBy('exam.subject_id');
+    }
+
 }
+

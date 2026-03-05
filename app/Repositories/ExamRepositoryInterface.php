@@ -32,8 +32,9 @@ interface ExamRepositoryInterface
 //
 //    public function getExamRegistrations(Student $student): Collection;
     public function getTeacherUpcomingExams($teacherId);
-//    public function getConductedExams($teacherId);
-//    public function getExamDetails($examId);
+    public function getConductedExams($teacherId);
+    public function getExamDetails($examId);
+
 //    public function updateExamGrades($examId, $grades);
-//    public function getBookedTimeSlots();
+    public function getBookedTimeSlots();
 }

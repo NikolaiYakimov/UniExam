@@ -19,7 +19,7 @@ class TeacherExamController extends Controller
     {
     }
 
-    //Showing upcomming exams
+    //Showing upcoming exams
     public function upcomingExam(Request $request): JsonResponse
     {
         try {
@@ -55,14 +55,13 @@ class TeacherExamController extends Controller
     }
 
     //Get exam details with grades
-
     public function show(Request $request, int $examId): JsonResponse
     {
         try {
 
             $teacher = $request->user()->teacher;
-            $exam = $this->examService->getExamDetails($examId, $teacher);
-
+            $exam = $this->examService->getExamDetailsForTeacher($examId, $teacher);
+            Log::info($exam);
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -79,6 +78,8 @@ class TeacherExamController extends Controller
         }
     }
 
+    //Exam Details from ExamController
+    //Get data for the edit exam
     public function edit(Request $request, int $examId): JsonResponse
     {
         try {
@@ -104,6 +105,7 @@ class TeacherExamController extends Controller
         }
     }
 
+    //Update existing exam
     public function update(StoreExamRequest $request, int $examId): JsonResponse
     {
         try {
@@ -117,8 +119,27 @@ class TeacherExamController extends Controller
             Log::error($exception->getMessage());
             return response()->json([
                 'success' => false,
-                'message'=>'Грешка при променянето на изпита'
-            ],500);
+                'message'=>$exception->getMessage()
+            ],422);
+        }
+    }
+
+    //Get conducted exams
+    public function conducted(Request $request): JsonResponse
+    {
+        try {
+          $teacher=$request->user()->teacher;
+          $data=$this->examService->getConductedExams($teacher);
+          return response()->json([
+              'success'=>true,
+              'data'=>$data
+          ]);
+        }catch (Exception $exception){
+            Log::error($exception->getMessage());
+            return response()->json([
+                'success'=>false,
+                'message'=>$exception->getMessage()
+            ]);
         }
     }
 }

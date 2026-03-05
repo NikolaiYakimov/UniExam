@@ -12,6 +12,7 @@ class StudentExamController extends Controller
 {
     public function __construct(private readonly ExamService $examService){}
 
+    //Get all available exams for the student
     public function index(Request $request):JsonResponse{
         try {
             $student=$request->user()->student;

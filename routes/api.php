@@ -157,15 +157,19 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamHallController;
+use App\Http\Controllers\ExamHallSlotController;
 use App\Http\Controllers\ExamRegistrationController;
+use App\Http\Controllers\ExamStudentController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TeacherExamController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -181,7 +185,9 @@ Route::get('/payment/cancel', [PaymentController::class, 'paymentCancel'])
 
 // Student routes
 Route::middleware(['auth:sanctum', 'role:student'])->group(function () {
-    Route::get('/exams', [ExamController::class, 'exams'])->name('exams');
+//    Route::get('/exams', [ExamController::class, 'exams'])->name('exams');
+    //TODO possibly can change the url to /student/exams
+    Route::get('/exams', [StudentExamController::class, 'index'])->name('exams');
     Route::post('/exams/{exam}/register', [ExamRegistrationController::class, 'register']);
     Route::get('/my-exams', [ExamRegistrationController::class, 'myExams']);
     Route::get('/my-past-exams', [ExamRegistrationController::class, 'myPastExam'])->name('my_past_exams');
@@ -193,14 +199,26 @@ Route::middleware(['auth:sanctum', 'role:student'])->group(function () {
 
 // Teacher routes
 Route::middleware(['auth:sanctum', 'role:teacher'])->group(function () {
-    Route::get('/upcoming_exams', [ExamController::class, 'teacherUpcomingExams'])->name('teacher_dashboard');
-    Route::get('/exam/{exam}/registered-students', [ExamController::class, 'examRegisteredStudents'])->name('student.exams');
-    Route::get('/conducted-exams', [ExamController::class, 'conductedExams'])->name('conducted_exams');
-    Route::get('/booked-slots', [ExamController::class, 'getBookedSlots'])->name('exams.booked-slots');
-    Route::post('/examStore', [ExamController::class, 'storeExam'])->name('exams.store');
-    Route::get('/exam/{id}/edit-data', [ExamController::class, 'getExamEditData'])->name('exams.edit-data');
-    Route::put('/edit-exams/{examId}', [ExamController::class, 'editExam'])->name('exams.update');
-    Route::get('/exam/{exam}', [ExamController::class, 'examDetails'])->name('teacher.exam.details');
+//    Route::get('/upcoming_exams', [ExamController::class, 'teacherUpcomingExams'])->name('teacher_dashboard');
+    Route::get('/upcoming_exams', [TeacherExamController::class, 'upcomingExam'])->name('teacher_dashboard');
+
+//    Route::get('/exam/{exam}/registered-students', [ExamController::class, 'examRegisteredStudents'])->name('student.exams');
+    Route::get('/exam/{exam}/registered-students', [ExamStudentController::class, 'index'])->name('student.exams');
+//    Route::get('/conducted-exams', [ExamController::class, 'conductedExams'])->name('conducted_exams');
+    Route::get('/conducted-exams', [TeacherExamController::class, 'conducted'])->name('conducted_exams');
+//    Route::get('/booked-slots', [ExamController::class, 'getBookedSlots'])->name('exams.booked-slots');
+    Route::get('/booked-slots', [ExamHallSlotController::class, 'index'])->name('exams.booked-slots');
+
+//    Route::post('/examStore', [ExamController::class, 'storeExam'])->name('exams.store');
+    Route::post('/examStore', [TeacherExamController::class, 'store'])->name('exams.store');
+
+//    Route::get('/exam/{id}/edit-data', [ExamController::class, 'getExamEditData'])->name('exams.edit-data');
+    Route::get('/exam/{id}/edit-data', [TeacherExamController::class, 'edit'])->name('exams.edit-data');
+//    Route::put('/edit-exams/{examId}', [ExamController::class, 'editExam'])->name('exams.update');
+    Route::put('/edit-exams/{examId}', [TeacherExamController::class, 'update'])->name('exams.update');
+//    Route::get('/exam/{exam}', [ExamController::class, 'examDetails'])->name('teacher.exam.details');
+    Route::get('/exam/{exam}', [TeacherExamController::class, 'show'])->name('teacher.exam.details');
+
     Route::post('/exam/{exam}/grades', [ExamRegistrationController::class, 'updateGrades'])->name('teacher.exam.grades.update');
     Route::get('/teacher-subjects', [SubjectController::class, 'getTeacherSubjects'])->name('teacher.subjects');
     Route::get('/subjects/{subject}/students', [SubjectController::class, 'showSubjectStudents'])->name('teacher.subject.students');
