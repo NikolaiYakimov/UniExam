@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Mail\SuccessfullyPaidAndRegistered;
+use App\Repositories\ExamRepository;
 use Exception;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
@@ -21,7 +22,9 @@ use Stripe\Stripe;
 
 class  PaymentService
 {
-    public function __construct()
+    public function __construct(
+        private readonly ExamRepository $examRepository,
+    )
     {
         Stripe::setApiKey(config('services.stripe.secret'));
     }
@@ -29,9 +32,9 @@ class  PaymentService
     /**
      * @throws ApiErrorException
      */
-    public function  createCheckoutSession(Exam $exam, Student $student )
+    public function  createCheckoutSession(int $examId, Student $student )
     {
-
+        $exam=$this->examRepository->getExamById($examId);
         $session= Session::create([
             'customer_email'=>Auth::user()->email,
             'payment_method_types' => ['card'],

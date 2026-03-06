@@ -45,13 +45,13 @@ class PaymentController extends Controller
         }
     }
 
-    public function handlePayment(Exam $exam)
+    public function handlePayment(Request $request,int $examId)
     {
 
         try {
             Log::debug("Тук съм да плащам");
-            $student = Auth::user()->student;
-            return $this->paymentService->createCheckoutSession($exam, $student);
+            $student = $request->user()->student;
+            return $this->paymentService->createCheckoutSession($examId, $student);
         } catch (\Exception $e) {
             Log::error('Payment initiation failed: ' . $e->getMessage());
             return response()->json(['error' => 'Грешка при плащане: ' . $e->getMessage()], 500);

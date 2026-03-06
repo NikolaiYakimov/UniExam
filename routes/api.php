@@ -170,6 +170,7 @@ use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherExamController;
+use App\Http\Controllers\TeacherGradeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -190,7 +191,7 @@ Route::middleware(['auth:sanctum', 'role:student'])->group(function () {
     Route::get('/exams', [StudentExamController::class, 'index'])->name('exams');
     Route::post('/exams/{exam}/register', [ExamRegistrationController::class, 'register']);
     Route::get('/my-exams', [ExamRegistrationController::class, 'myExams']);
-    Route::get('/my-past-exams', [ExamRegistrationController::class, 'myPastExam'])->name('my_past_exams');
+    Route::get('/my-past-exams', [ExamRegistrationController::class, 'pastExam'])->name('my_past_exams');
     Route::post('/exams/{exam}/unregister', [ExamRegistrationController::class, 'unregisterExam']);
     Route::get('/payments', [PaymentController::class, 'student_payments'])->name('payments.student_payments');
     Route::get('/student-profile', [StudentController::class, 'getStudentProfile'])->name('student.profile');
@@ -221,7 +222,8 @@ Route::middleware(['auth:sanctum', 'role:teacher'])->group(function () {
 //    Route::get('/exam/{exam}', [ExamController::class, 'examDetails'])->name('teacher.exam.details');
     Route::get('/exam/{exam}', [TeacherExamController::class, 'show'])->name('teacher.exam.details');
 
-    Route::post('/exam/{exam}/grades', [ExamRegistrationController::class, 'updateGrades'])->name('teacher.exam.grades.update');
+//    Route::post('/exam/{exam}/grades', [ExamRegistrationController::class, 'updateGrades'])->name('teacher.exam.grades.update');
+    Route::post('/exam/{exam}/grades', [TeacherGradeController::class, 'update'])->name('teacher.exam.grades.update');
     Route::get('/teacher-subjects', [SubjectController::class, 'getTeacherSubjects'])->name('teacher.subjects');
     Route::get('/subjects/{subject}/students', [SubjectController::class, 'showSubjectStudents'])->name('teacher.subject.students');
     Route::post('/subjects/{subject}/students/{student}/toggle-attestation', [SubjectController::class, 'toggleAttestation'])->name('teacher.subject.toggle_attestation');
