@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateGradeRequest;
 use App\Models\Student;
 use App\Services\ExamRegistrationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -15,7 +16,8 @@ class TeacherGradeController extends Controller
         private readonly examRegistrationService $examRegistrationService,
     ){}
 
-    public function update(UpdateGradeRequest $request,int $examId)
+    //Update Students grades, if there is any change
+    public function update(UpdateGradeRequest $request,int $examId):JsonResponse
     {
         try {
             $teacher=$request->user()->teacher;

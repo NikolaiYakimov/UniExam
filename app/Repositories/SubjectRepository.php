@@ -28,7 +28,7 @@ class SubjectRepository
         return $subject->teachers()->sync($teacherIds);
     }
 
-    public function getTeacherSubjectsWithStudentsCount($teacherId)
+    public function getTeacherSubjectsWithStudentsCount(int     $teacherId)
     {
         return Subject::whereHas('teachers', function($query) use ($teacherId) {
             $query->where('teachers.id', $teacherId);
@@ -52,6 +52,14 @@ class SubjectRepository
         ]);
 
         return !$currentStatus;
+    }
+    public function getStudentAttestationStatus(int $studentId,int $subjectId)
+    {
+        return Subject::findOrFail($subjectId)->students()
+            ->where('student_id',$studentId)
+            ->first()
+            ->pivot
+            ->has_attestation;
     }
 
     public function getAll()

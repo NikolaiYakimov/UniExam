@@ -69,7 +69,7 @@ const MyExams = () => {
         }
 
         try {
-            await api.post(`/exams/${examId}/unregister`);
+            await api.delete(`/exams/${examId}/unregister`);
             setExams(exams.filter(exam => exam.id !== examId));
             setAlert({ type: 'success', message: 'Успешно се отписахте от изпита' });
         } catch (error) {

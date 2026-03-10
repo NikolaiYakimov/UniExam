@@ -63,7 +63,7 @@ const TeacherExamDetails = () => {
         setAlert({ type: '', message: '' });
 
         try {
-            const response = await api.post(`/exam/${id}/grades`, { grades });
+            const response = await api.put(`/exam/${id}/grades`, { grades });
 
 
             if (response.data.success) {

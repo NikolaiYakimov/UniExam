@@ -14,13 +14,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 
-class ExamRegistrationController
+class StudentRegistrationController extends Controller
 {
 
     public function __construct(
         private readonly ExamRegistrationService $registrationService
     ){}
 
+    //Return active exams of the student
     public function myExams(Request $request): JsonResponse
 
     {
@@ -32,10 +33,10 @@ class ExamRegistrationController
             'student' => $student
         ]);
     }
-
-    public function pastExam(): JsonResponse
+    //Return the past exams of the student
+    public function pastExam(Request $request): JsonResponse
     {
-        $student = Auth::user()->student;
+        $student = $request->user()->student;
         $registeredExams = $this->registrationService->getPastStudentRegistrations($student);
 
         return response()->json([
@@ -43,8 +44,8 @@ class ExamRegistrationController
             'student' => $student
         ]);
     }
-
-    public function register(Request $request, int $examId): JsonResponse
+    //Register student for exam, if the exam required payment return url to stripe payment page
+    public function store(Request $request, int $examId): JsonResponse
     {
         try {
             $student = $request->user()->student;
@@ -66,7 +67,8 @@ class ExamRegistrationController
         }
     }
 
-    public function unregisterExam(Request $request, int $examId): JsonResponse
+    //Unregister student of a given exam, if he is registered
+    public function destroy(Request $request, int $examId): JsonResponse
     {
         try {
             $student = $request->user()->student;

@@ -30,15 +30,12 @@ const TeacherSubjectStudents = () => {
             setLoading(true);
             const response = await api.get(`/subjects/${id}/students`);
 
-            if (response.data.success) {
                 setSubject(response.data.data.subject);
                 setStudents(response.data.data.students || []);
-            } else {
-                setAlert({ type: 'error', message: response.data.message || 'Грешка при зареждане на студентите' });
-            }
+
         } catch (error) {
             console.error('Грешка при зареждане на студентите:', error);
-            setAlert({ type: 'error', message: 'Грешка при зареждане на студентите' });
+            setAlert({ type: 'error', message: error.response?.data?.message ||'Грешка при зареждане на студентите'});
         } finally {
             setLoading(false);
         }
@@ -60,11 +57,9 @@ const TeacherSubjectStudents = () => {
                     )
                 );
                 setAlert({ type: 'success', message: 'Статусът на заверката е променен успешно!' });
-            } else {
-                throw new Error(response.data.message);
             }
-        } catch (err) {
-            setAlert({ type: 'error', message: 'Възникна грешка при промяна на заверката.' });
+        } catch (error) {
+            setAlert({ type: 'error', message: error.response?.data?.message || 'Възникна грешка при промяна на заверката.' });
         }
     };
 

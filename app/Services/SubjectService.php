@@ -3,7 +3,10 @@
 namespace App\Services;
 use App\Models\Student;
 use App\Repositories\SubjectRepository;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
+//use phpDocumentor\Reflection\Exception;
 
 class SubjectService
 {
@@ -14,32 +17,34 @@ protected $subjectRepository;
         $this->subjectRepository = $subjectRepository;
     }
 
-    public function getTeacherSubjects()
+    public function getTeacherSubjects(int $teacherId)
     {
-        $teacher = Auth::user()->teacher;
-        return $this->subjectRepository->getTeacherSubjectsWithStudentsCount($teacher->id);
+        $subjects=$this->subjectRepository->getTeacherSubjectsWithStudentsCount($teacherId);
+        if($subjects->isEmpty()){
+            throw new Exception("Нямате назначени предмети за момента");
+        }
+        return $subjects;
     }
 
-    public function getSubjectStudents($subjectId)
+    public function getSubjectStudents($subjectId,$teacher)
     {
-        $teacher = Auth::user()->teacher;
 
         if (!$teacher->subjects->contains('id', $subjectId)) {
-            abort(403);
+            throw new AuthorizationException('Нямате права за достъп до студентите на този предмет!');
         }
 
         return $this->subjectRepository->getSubjectStudents($subjectId);
     }
 
-    public function toggleAttestation($subjectId, $studentId, $currentStatus)
+    public function toggleAttestation($subjectId, $studentId,$teacher)
     {
-        $teacher = Auth::user()->teacher;
-
         if (!$teacher->subjects->contains('id', $subjectId)) {
-            abort(403);
+            throw new \Exception('Нямате права да променяте заверката на студента за този предмет.');
         }
+        $studentStatus=$this->subjectRepository->getStudentAttestationStatus($studentId,$subjectId);
 
-        return $this->subjectRepository->toggleAttestation($subjectId, $studentId, $currentStatus);
+
+        return $this->subjectRepository->toggleAttestation($subjectId, $studentId, $studentStatus);
     }
 
     public function getAllSubjects()
