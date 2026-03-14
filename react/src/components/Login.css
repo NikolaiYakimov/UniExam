@@ -1,159 +1,751 @@
 
+/*:root {*/
+/*    --primary-color: #3498db;*/
+/*    --primary-hover: #2980b9;*/
+/*    --secondary-color: #f8f9fa;*/
+/*    --text-color: #2c3e50;*/
+/*    --light-gray: #ecf0f1;*/
+/*    --border-radius: 12px;*/
+/*    --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);*/
+/*}*/
+
+/*.login-page-wrapper {*/
+/*    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);*/
+/*    font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    min-height: 100vh;*/
+/*    color: var(--text-color);*/
+/*    line-height: 1.6;*/
+/*    padding: 20px;*/
+/*}*/
+
+/*.login-container {*/
+/*    background: white;*/
+/*    border-radius: var(--border-radius);*/
+/*    box-shadow: var(--box-shadow);*/
+/*    padding: 2.5rem;*/
+/*    width: 100%;*/
+/*    max-width: 450px;*/
+/*    position: relative;*/
+/*    overflow: hidden;*/
+/*    transition: transform 0.3s ease;*/
+/*}*/
+
+/*.login-container:hover {*/
+/*    transform: translateY(-5px);*/
+/*}*/
+
+/*.login-container::before {*/
+/*    content: '';*/
+/*    position: absolute;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    right: 0;*/
+/*    height: 6px;*/
+/*    background: linear-gradient(90deg, #3498db, #2ecc71);*/
+/*}*/
+
+/*.logo {*/
+/*    height: 70px;*/
+/*    margin: 0 auto 2rem;*/
+/*    display: block;*/
+/*    object-fit: contain;*/
+/*    transition: transform 0.3s ease;*/
+/*}*/
+
+/*.logo:hover {*/
+/*    transform: scale(1.05);*/
+/*}*/
+
+/*.login-title {*/
+/*    font-size: 1.75rem;*/
+/*    font-weight: 700;*/
+/*    text-align: center;*/
+/*    margin-bottom: 1.5rem;*/
+/*    color: var(--text-color);*/
+/*    position: relative;*/
+/*}*/
+
+/*.login-title::after {*/
+/*    content: '';*/
+/*    display: block;*/
+/*    width: 60px;*/
+/*    height: 4px;*/
+/*    background: linear-gradient(90deg, #3498db, #2ecc71);*/
+/*    margin: 0.75rem auto 0;*/
+/*    border-radius: 2px;*/
+/*}*/
+
+/*.form-control {*/
+/*    border-radius: var(--border-radius);*/
+/*    padding: 0.75rem 1.25rem;*/
+/*    border: 1px solid var(--light-gray);*/
+/*    transition: all 0.3s ease;*/
+/*}*/
+
+/*.form-control:focus {*/
+/*    border-color: var(--primary-color);*/
+/*    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);*/
+/*}*/
+
+/*.input-group-text {*/
+/*    background-color: var(--secondary-color);*/
+/*    border: 1px solid var(--light-gray);*/
+/*    border-radius: var(--border-radius) 0 0 var(--border-radius);*/
+/*    padding: 0.75rem 1.25rem;*/
+/*}*/
+
+/*.btn-login {*/
+/*    background: linear-gradient(90deg, #3498db, #2ecc71);*/
+/*    border: none;*/
+/*    border-radius: var(--border-radius);*/
+/*    padding: 0.75rem;*/
+/*    font-weight: 600;*/
+/*    letter-spacing: 0.5px;*/
+/*    transition: all 0.3s ease;*/
+/*    color: white;*/
+/*}*/
+
+/*.btn-login:hover:not(:disabled) {*/
+/*    background: linear-gradient(90deg, #2980b9, #27ae60);*/
+/*    transform: translateY(-2px);*/
+/*    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);*/
+/*    color: white;*/
+/*}*/
+
+/*.btn-login:disabled {*/
+/*    opacity: 0.7;*/
+/*    cursor: not-allowed;*/
+/*}*/
+
+/*.alert {*/
+/*    border-radius: var(--border-radius);*/
+/*}*/
+
+/*.password-toggle {*/
+/*    position: absolute;*/
+/*    right: 15px;*/
+/*    top: 50%;*/
+/*    transform: translateY(-50%);*/
+/*    cursor: pointer;*/
+/*    color: #95a5a6;*/
+/*    z-index: 5;*/
+/*    background: white;*/
+/*    padding: 0.5rem;*/
+/*    border-left: 1px solid var(--light-gray);*/
+/*}*/
+
+/*.password-toggle:hover {*/
+/*    color: var(--primary-color);*/
+/*}*/
+
+/*.invalid-feedback {*/
+/*    display: block;*/
+/*    color: #dc3545;*/
+/*    margin-top: 0.25rem;*/
+/*}*/
+
+/*.text-end a {*/
+/*    color: var(--primary-color);*/
+/*    text-decoration: none;*/
+/*    font-size: 0.9rem;*/
+/*}*/
+
+/*.text-end a:hover {*/
+/*    text-decoration: underline;*/
+/*    color: var(--primary-hover);*/
+/*}*/
+/* Променливи за цветове - ТУ София Тема */
+/*:root {*/
+/*    --primary-blue: #003366;*/
+/*    --secondary-blue: #004080;*/
+/*    --accent-gold: #D4AF37;*/
+/*    --text-main: #333333;*/
+/*    --text-muted: #666666;*/
+/*    --bg-light: #f5f7fa;*/
+/*    --white: #ffffff;*/
+/*    --error: #e74c3c;*/
+/*    --input-border: #e1e4e8;*/
+/*    --shadow-soft: 0 10px 40px rgba(0, 51, 102, 0.15);*/
+/*    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);*/
+/*}*/
+
+/*.login-page-wrapper {*/
+/*    min-height: 100vh;*/
+/*    width: 100%;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    background-color: var(--bg-light);*/
+/*    background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf0 100%);*/
+/*    position: relative;*/
+/*    overflow: hidden;*/
+/*    font-family: 'Segoe UI', Roboto, sans-serif;*/
+/*}*/
+
+/*!* Декоративни фигури на заден план *!*/
+/*.background-shapes .shape {*/
+/*    position: absolute;*/
+/*    border-radius: 50%;*/
+/*    z-index: 0;*/
+/*}*/
+
+/*.shape-1 {*/
+/*    width: 600px;*/
+/*    height: 600px;*/
+/*    background: linear-gradient(45deg, rgba(0, 51, 102, 0.05), rgba(212, 175, 55, 0.05));*/
+/*    top: -150px;*/
+/*    left: -150px;*/
+/*}*/
+
+/*.shape-2 {*/
+/*    width: 500px;*/
+/*    height: 500px;*/
+/*    background: linear-gradient(45deg, rgba(212, 175, 55, 0.08), rgba(0, 51, 102, 0.08));*/
+/*    bottom: -100px;*/
+/*    right: -100px;*/
+/*}*/
+
+/*!* --- Карта за Вход --- *!*/
+/*.login-card {*/
+/*    background: var(--white);*/
+/*    width: 100%;*/
+/*    max-width: 440px;*/
+/*    padding: 2.5rem;*/
+/*    border-radius: 20px;*/
+/*    box-shadow: var(--shadow-soft);*/
+/*    position: relative;*/
+/*    z-index: 10;*/
+/*    margin: 1rem;*/
+/*    border-top: 5px solid var(--primary-blue);*/
+/*}*/
+
+/*!* Хедър на картата *!*/
+/*.login-header {*/
+/*    text-align: center;*/
+/*    margin-bottom: 2rem;*/
+/*}*/
+
+/*.logo-container {*/
+/*    width: 80px;*/
+/*    height: 80px;*/
+/*    margin: 0 auto 1rem;*/
+/*    background: var(--white);*/
+/*    border-radius: 50%;*/
+/*    padding: 10px;*/
+/*    box-shadow: 0 4px 10px rgba(0,0,0,0.1);*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*}*/
+
+/*.tu-logo {*/
+/*    width: 100%;*/
+/*    height: auto;*/
+/*    object-fit: contain;*/
+/*}*/
+
+/*.login-header h1 {*/
+/*    color: var(--primary-blue);*/
+/*    font-size: 1.8rem;*/
+/*    font-weight: 700;*/
+/*    margin: 0;*/
+/*    letter-spacing: -0.5px;*/
+/*}*/
+
+/*.login-header .subtitle {*/
+/*    color: var(--text-muted);*/
+/*    font-size: 0.9rem;*/
+/*    margin-top: 0.5rem;*/
+/*    font-weight: 500;*/
+/*}*/
+
+/*!* --- Форма --- *!*/
+/*.form-group {*/
+/*    margin-bottom: 1.25rem;*/
+/*}*/
+
+/*.form-group label {*/
+/*    display: block;*/
+/*    font-size: 0.9rem;*/
+/*    font-weight: 600;*/
+/*    color: var(--text-main);*/
+/*    margin-bottom: 0.5rem;*/
+/*}*/
+
+/*.input-wrapper {*/
+/*    position: relative;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*}*/
+
+/*.input-icon {*/
+/*    position: absolute;*/
+/*    left: 1rem;*/
+/*    color: #a0aec0;*/
+/*    font-size: 1rem;*/
+/*    pointer-events: none;*/
+/*    transition: color 0.3s;*/
+/*}*/
+
+/*.form-input {*/
+/*    width: 100%;*/
+/*    padding: 0.8rem 1rem 0.8rem 2.8rem; !* Място за иконата отляво *!*/
+/*    border: 2px solid var(--input-border);*/
+/*    border-radius: 10px;*/
+/*    font-size: 0.95rem;*/
+/*    transition: all 0.3s ease;*/
+/*    background-color: #fcfcfc;*/
+/*    color: var(--text-main);*/
+/*}*/
+
+/*.form-input:focus {*/
+/*    outline: none;*/
+/*    border-color: var(--primary-blue);*/
+/*    background-color: var(--white);*/
+/*    box-shadow: 0 0 0 4px rgba(0, 51, 102, 0.1);*/
+/*}*/
+
+/*.form-input:focus + .input-icon,*/
+/*.input-wrapper:focus-within .input-icon {*/
+/*    color: var(--primary-blue);*/
+/*}*/
+
+/*.form-input.error {*/
+/*    border-color: var(--error);*/
+/*    background-color: #fff5f5;*/
+/*}*/
+
+/*.error-message {*/
+/*    display: block;*/
+/*    color: var(--error);*/
+/*    font-size: 0.8rem;*/
+/*    margin-top: 0.4rem;*/
+/*    margin-left: 0.2rem;*/
+/*}*/
+
+/*!* Око за паролата *!*/
+/*.toggle-password {*/
+/*    position: absolute;*/
+/*    right: 1rem;*/
+/*    background: none;*/
+/*    border: none;*/
+/*    cursor: pointer;*/
+/*    color: #a0aec0;*/
+/*    padding: 0;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    transition: color 0.2s;*/
+/*}*/
+
+/*.toggle-password:hover {*/
+/*    color: var(--primary-blue);*/
+/*}*/
+
+/*!* --- Грешки --- *!*/
+/*.general-error {*/
+/*    background-color: #fff2f0;*/
+/*    border: 1px solid #ffccc7;*/
+/*    color: var(--error);*/
+/*    padding: 0.75rem;*/
+/*    border-radius: 8px;*/
+/*    margin-bottom: 1.25rem;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    gap: 0.5rem;*/
+/*    font-size: 0.9rem;*/
+/*}*/
+
+/*!* --- Опции (Забравена парола) --- *!*/
+/*.form-options {*/
+/*    display: flex;*/
+/*    justify-content: flex-end;*/
+/*    margin-bottom: 1.5rem;*/
+/*}*/
+
+/*.forgot-link {*/
+/*    color: var(--primary-blue);*/
+/*    font-size: 0.9rem;*/
+/*    font-weight: 500;*/
+/*    text-decoration: none;*/
+/*    transition: color 0.2s;*/
+/*}*/
+
+/*.forgot-link:hover {*/
+/*    color: var(--secondary-blue);*/
+/*    text-decoration: underline;*/
+/*}*/
+
+/*!* --- Бутон --- *!*/
+/*.submit-btn {*/
+/*    width: 100%;*/
+/*    padding: 1rem;*/
+/*    background-color: var(--primary-blue);*/
+/*    background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));*/
+/*    color: var(--white);*/
+/*    border: none;*/
+/*    border-radius: 10px;*/
+/*    font-size: 1rem;*/
+/*    font-weight: 700;*/
+/*    cursor: pointer;*/
+/*    transition: all 0.3s ease;*/
+/*    box-shadow: 0 4px 15px rgba(0, 51, 102, 0.3);*/
+/*    text-transform: uppercase;*/
+/*    letter-spacing: 0.5px;*/
+/*}*/
+
+/*.submit-btn:hover {*/
+/*    transform: translateY(-2px);*/
+/*    box-shadow: 0 6px 20px rgba(0, 51, 102, 0.4);*/
+/*}*/
+
+/*.submit-btn:active {*/
+/*    transform: translateY(0);*/
+/*}*/
+
+/*.submit-btn:disabled {*/
+/*    opacity: 0.7;*/
+/*    cursor: not-allowed;*/
+/*    transform: none;*/
+/*}*/
+
+/*!* --- Футър --- *!*/
+/*.login-footer {*/
+/*    text-align: center;*/
+/*    margin-top: 2rem;*/
+/*    padding-top: 1.5rem;*/
+/*    border-top: 1px solid #eee;*/
+/*}*/
+
+/*.login-footer p {*/
+/*    color: #999;*/
+/*    font-size: 0.8rem;*/
+/*    margin: 0;*/
+/*}*/
+
+/*!* --- Loader --- *!*/
+/*.loader {*/
+/*    display: inline-block;*/
+/*    width: 20px;*/
+/*    height: 20px;*/
+/*    border: 3px solid rgba(255,255,255,0.3);*/
+/*    border-radius: 50%;*/
+/*    border-top-color: #fff;*/
+/*    animation: spin 0.8s linear infinite;*/
+/*}*/
+
+/*@keyframes spin {*/
+/*    to { transform: rotate(360deg); }*/
+/*}*/
+
+/*!* Mobile Adjustments *!*/
+/*@media (max-width: 480px) {*/
+/*    .login-card {*/
+/*        padding: 1.5rem;*/
+/*        margin: 1rem;*/
+/*    }*/
+
+/*    .login-header h1 {*/
+/*        font-size: 1.5rem;*/
+/*    }*/
+/*}*/
+
+
+/* Променливи за цветове - ТУ София Тема */
 :root {
-    --primary-color: #3498db;
-    --primary-hover: #2980b9;
-    --secondary-color: #f8f9fa;
-    --text-color: #2c3e50;
-    --light-gray: #ecf0f1;
-    --border-radius: 12px;
-    --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --primary-blue: #003366;
+    --secondary-blue: #004080;
+    --accent-gold: #D4AF37;
+    --text-main: #333333;
+    --text-muted: #666666;
+    --bg-light: #f5f7fa;
+    --white: #ffffff;
+    --error: #e74c3c;
+    --input-border: #e1e4e8;
+    --shadow-soft: 0 10px 40px rgba(0, 51, 102, 0.15);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .login-page-wrapper {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
-    color: var(--text-color);
-    line-height: 1.6;
-    padding: 20px;
-}
-
-.login-container {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 2.5rem;
     width: 100%;
-    max-width: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-light);
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf0 100%);
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s ease;
+    font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
-.login-container:hover {
-    transform: translateY(-5px);
-}
-
-.login-container::before {
-    content: '';
+/* Декоративни фигури на заден план */
+.background-shapes .shape {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 50%;
+    z-index: 0;
 }
 
-.logo {
-    height: 70px;
-    margin: 0 auto 2rem;
-    display: block;
-    object-fit: contain;
-    transition: transform 0.3s ease;
+.shape-1 {
+    width: 600px;
+    height: 600px;
+    background: linear-gradient(45deg, rgba(0, 51, 102, 0.05), rgba(212, 175, 55, 0.05));
+    top: -150px;
+    left: -150px;
 }
 
-.logo:hover {
-    transform: scale(1.05);
+.shape-2 {
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(45deg, rgba(212, 175, 55, 0.08), rgba(0, 51, 102, 0.08));
+    bottom: -100px;
+    right: -100px;
 }
 
-.login-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    color: var(--text-color);
+/* --- Карта за Вход --- */
+.login-card {
+    background: var(--white);
+    width: 100%;
+    max-width: 440px;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-soft);
     position: relative;
+    z-index: 10;
+    margin: 1rem;
+    border-top: 5px solid var(--primary-blue);
 }
 
-.login-title::after {
-    content: '';
+/* Хедър на картата */
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Лого контейнер - заоблен квадрат */
+.logo-container {
+    width: 260px;
+    height: 110px;
+    margin: 0 auto 1.5rem;
+    background: var(--white);
+    border-radius: 20px; /* Заоблен квадрат */
+    padding: 10px;
+    /*box-shadow: 0 4px 15px rgba(0,0,0,0.1);*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*border: 1px solid #f0f0f0;*/
+}
+
+.tu-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.login-header h1 {
+    color: var(--primary-blue);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.login-header .subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+/* --- Форма --- */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
     display: block;
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(90deg, #3498db, #2ecc71);
-    margin: 0.75rem auto 0;
-    border-radius: 2px;
-}
-
-.form-control {
-    border-radius: var(--border-radius);
-    padding: 0.75rem 1.25rem;
-    border: 1px solid var(--light-gray);
-    transition: all 0.3s ease;
-}
-
-.form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
-}
-
-.input-group-text {
-    background-color: var(--secondary-color);
-    border: 1px solid var(--light-gray);
-    border-radius: var(--border-radius) 0 0 var(--border-radius);
-    padding: 0.75rem 1.25rem;
-}
-
-.btn-login {
-    background: linear-gradient(90deg, #3498db, #2ecc71);
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 0.75rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-    color: white;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
 }
 
-.btn-login:hover:not(:disabled) {
-    background: linear-gradient(90deg, #2980b9, #27ae60);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    color: white;
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
-.btn-login:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.alert {
-    border-radius: var(--border-radius);
-}
-
-.password-toggle {
+.input-icon {
     position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #95a5a6;
-    z-index: 5;
-    background: white;
-    padding: 0.5rem;
-    border-left: 1px solid var(--light-gray);
+    left: 1rem;
+    color: #a0aec0;
+    font-size: 1rem;
+    pointer-events: none;
+    transition: color 0.3s;
 }
 
-.password-toggle:hover {
-    color: var(--primary-color);
+.form-input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    border: 2px solid var(--input-border);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background-color: #fcfcfc;
+    color: var(--text-main);
 }
 
-.invalid-feedback {
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    background-color: var(--white);
+    box-shadow: 0 0 0 4px rgba(0, 51, 102, 0.1);
+}
+
+.form-input:focus + .input-icon,
+.input-wrapper:focus-within .input-icon {
+    color: var(--primary-blue);
+}
+
+.form-input.error {
+    border-color: var(--error);
+    background-color: #fff5f5;
+}
+
+.error-message {
     display: block;
-    color: #dc3545;
-    margin-top: 0.25rem;
+    color: var(--error);
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    margin-left: 0.2rem;
 }
 
-.text-end a {
-    color: var(--primary-color);
-    text-decoration: none;
+/* Око за паролата */
+.toggle-password {
+    position: absolute;
+    right: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #a0aec0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.toggle-password:hover {
+    color: var(--primary-blue);
+}
+
+/* --- Грешки --- */
+.general-error {
+    background-color: #fff2f0;
+    border: 1px solid #ffccc7;
+    color: var(--error);
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-size: 0.9rem;
 }
 
-.text-end a:hover {
+/* --- Опции --- */
+.form-options {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.forgot-link {
+    color: var(--primary-blue);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.forgot-link:hover {
+    color: var(--secondary-blue);
     text-decoration: underline;
-    color: var(--primary-hover);
+}
+
+/* --- Бутон --- */
+.submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--primary-blue);
+    background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 51, 102, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 51, 102, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* --- Футър --- */
+.login-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+}
+
+.login-footer p {
+    color: #999;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+/* --- Loader --- */
+.loader {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .login-header h1 {
+        font-size: 1.5rem;
+    }
 }
