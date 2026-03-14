@@ -29,10 +29,11 @@ const CreateExamHall = () => {
         setLoading(true);
 
         try {
-            await api.post('/exam-halls/store', formData);
+             const response=await api.post('/exam-halls/store', formData);
             // Навигиране към списъка със съобщение за успех
             navigate('/exam-halls', {
-                state: { message: 'Залата е създадена успешно!' },
+                state: { message:
+                        response.data.message||'Залата е създадена успешно!' },
                 replace: true
             });
         } catch (error) {

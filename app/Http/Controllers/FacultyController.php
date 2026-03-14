@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FacultyRequest;
 use App\Services\FacultyService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
@@ -35,9 +36,6 @@ class FacultyController
     public function store(FacultyRequest $request)
     {
         try {
-//            $validated = $request->validate([
-//                'name' => 'required|string|max:15|unique:faculties'
-//            ]);
             $validated = $request->validated();
 
             $faculty = $this->facultyService->createFaculty($validated);
@@ -51,9 +49,11 @@ class FacultyController
                 'message' => $e->getMessage(),
                 'errors' => $e->errors()
             ], 422);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
+
             return response()->json([
-                'message' => 'Error creating faculty: ' . $e->getMessage()
+                'message' => 'Грешка при създаване на факултета: '
             ], 500);
         }
     }

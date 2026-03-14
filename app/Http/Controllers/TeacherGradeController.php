@@ -29,7 +29,7 @@ class TeacherGradeController extends Controller
                 'message' => 'Оценките бяха актуализирани успешно!'
             ]);
         }catch (\Exception $exception){
-            Log::error($exception->getMessage());
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'message' => $exception->getMessage()

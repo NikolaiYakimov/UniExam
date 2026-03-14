@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\SuccessfullyPaidAndRegistered;
 use App\Repositories\ExamRepository;
+use App\Repositories\PaymentRepository;
 use Exception;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
@@ -24,6 +25,7 @@ class  PaymentService
 {
     public function __construct(
         private readonly ExamRepository $examRepository,
+        private readonly PaymentRepository $paymentRepository,
     )
     {
         Stripe::setApiKey(config('services.stripe.secret'));
@@ -134,6 +136,14 @@ class  PaymentService
             return false;
         }
 
+    }
+
+    public function getPaymentRecords($student)
+    {
+        $records= $this->paymentRepository->getPaymentRecords($student);
+        if($records->isEmpty()){
+            throw new Exception("Няма налични плащания");
+        }
     }
 
 }

@@ -142,7 +142,7 @@ class ExamRepository implements ExamRepositoryInterface
 
     public function getExamByIdForEdit(int $examId): Exam
     {
-        return Exam::with(['subject', 'hall'])->findOrFail($examId);
+        return Exam::with(['subject', 'hall'])->find($examId);
     }
 
     public function getBookedTimeSlots()

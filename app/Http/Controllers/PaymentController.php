@@ -3,43 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\PaymentRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
-use App\Models\Exam;
-use App\Models\ExamRegistration;
-use App\Models\Payment;
 use App\Services\PaymentService;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
-use Stripe\Refund;
-use Stripe\Stripe;
-use Stripe\Checkout\Session;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
-    protected $paymentService;
-    protected $paymentRepository;
 
-    public function __construct(PaymentService $paymentService, PaymentRepository $paymentRepository)
-    {
-        $this->paymentService = $paymentService;
-        $this->paymentRepository = $paymentRepository;
-    }
+    public function __construct(private readonly PaymentService $paymentService)
+    {}
 
-    public function student_payments()
+    //Get the payment of the given student
+    public function index(Request $request):JsonResponse
     {
         try {
-            $student = auth()->user()->student;
-            $payments = $this->paymentRepository->getPaymentRecords($student);
+            $student = $request->user()->student;
+            $payments = $this->paymentService->getPaymentRecords($student);
 
             return response()->json([
                 'payments' => $payments,
-                'student' => $student]);
+                'student' => $student
+            ]);
 
         } catch (\Exception $e) {
             Log::error('Error fetching payments: ' . $e->getMessage());
-            response()->json([
+            return response()->json([
                 'message' => 'error',
                 'description' => 'Грешка при зареждане на плащанията']);
         }
@@ -47,11 +36,11 @@ class PaymentController extends Controller
 
     public function handlePayment(Request $request,int $examId)
     {
-
         try {
-            Log::debug("Тук съм да плащам");
             $student = $request->user()->student;
-            return $this->paymentService->createCheckoutSession($examId, $student);
+            $result=$this->paymentService->createCheckoutSession($examId, $student);
+
+            return response()->json($result);
         } catch (\Exception $e) {
             Log::error('Payment initiation failed: ' . $e->getMessage());
             return response()->json(['error' => 'Грешка при плащане: ' . $e->getMessage()], 500);

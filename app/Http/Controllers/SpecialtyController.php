@@ -5,16 +5,15 @@ use App\Http\Requests\SpecialityRequest;
 use App\Models\Specialty;
 use App\Services\SpecialtyService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 
 class SpecialtyController
 {
-    protected $specialtyService;
 
-    public function __construct(SpecialtyService $specialtyService)
+    public function __construct(private readonly SpecialtyService $specialtyService)
     {
-        $this->specialtyService = $specialtyService;
     }
 
     public function getSpecialties()
@@ -23,11 +22,13 @@ class SpecialtyController
             $specialties = $this->specialtyService->getAllSpecialties();
             return response()->json([
                 'data' => $specialties,
-                'message' => 'Specialties retrieved successfully'
+                'message' => 'Заповядайте вашите специалности!'
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
+
             return response()->json([
-                'message' => 'Error retrieving specialties: ' . $e->getMessage()
+                'message' => 'Грешка при извеждане на спецялностите!'
             ], 500);
         }
     }
@@ -41,11 +42,13 @@ class SpecialtyController
 
             return response()->json([
                 'data' => $specialty,
-                'message' => 'Specialty created successfully'
+                'message' => 'Специалноста е създадена успешно!'
             ], 201);
-        }catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
+
             return response()->json([
-                'message' => 'Error creating specialty: ' . $e->getMessage()
+                'message' => 'Грешка при създаване на специалността!'
             ], 500);
         }
     }
@@ -56,11 +59,13 @@ class SpecialtyController
             $specialty = $this->specialtyService->getSpecialtyById($id);
             return response()->json([
                 'data' => $specialty,
-                'message' => 'Specialty retrieved successfully'
+                'message' => 'Заповядайте вашата специалност!'
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
+
             return response()->json([
-                'message' => 'Error retrieving specialty: ' . $e->getMessage()
+                'message' => 'Грешка при извлизаче на специалността!'
             ], 500);
         }
     }
@@ -74,11 +79,13 @@ class SpecialtyController
 
             return response()->json([
                 'data' => $specialty,
-                'message' => 'Specialty updated successfully'
+                'message' => 'Специалността беше променена успешно!'
             ]);
-        }catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
+
             return response()->json([
-                'message' => 'Error updating specialty: ' . $e->getMessage()
+                'message' => 'Грешка при промяната на специалността!'
             ], 500);
         }
     }
@@ -89,11 +96,13 @@ class SpecialtyController
             $this->specialtyService->deleteSpecialty($id);
 
             return response()->json([
-                'message' => 'Specialty deleted successfully'
+                'message' => 'Успешно изтрихте специалността!'
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
+
             return response()->json([
-                'message' => 'Error deleting specialty: ' . $e->getMessage()
+                'message' => 'Грешка при изтриването на специалнотта!'
             ], 500);
         }
     }

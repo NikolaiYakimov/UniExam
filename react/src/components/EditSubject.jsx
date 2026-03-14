@@ -57,7 +57,7 @@ const EditSubject = () => {
     const fetchSubject = async () => {
         try {
             const response = await api.get(`/subjects/${id}/edit`);
-            const { data, specialties: specialtiesData, selectedSpecialties, selectedTeachers } = response.data;
+            const { data, specialties: specialtiesData, selectedSpecialties, selectedTeachers } = response.data.data;
 
             // Конвертираме ID-тата към стрингове за правилно сравнение
             setFormData({

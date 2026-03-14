@@ -8,10 +8,9 @@ use Illuminate\Http\JsonResponse;
 
 class PasswordController extends Controller
 {
-
-
-    public function update(UpdatePasswordRequest $request,UserService $userService):JsonResponse{
-        $userService->updatePassword($request->user(),$request->validated());
+    public function __construct(private readonly UserService $userService){}
+    public function update(UpdatePasswordRequest $request):JsonResponse{
+        $this->userService->updatePassword($request->user(),$request->validated());
         return response()->json(
             [
                 'success' => true,

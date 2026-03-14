@@ -9,6 +9,7 @@ use App\Models\ExamHall;
 use App\Services\ExamService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ExamHallSlotController extends Controller
 {
@@ -44,11 +45,12 @@ class ExamHallSlotController extends Controller
                 'timestamp' => now()->toIso8601String()
             ]);
         }catch (\Exception $exception){
-            \Log::error($exception->getMessage());
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json(
                 [
                     'success'=>false,
-                    'message' => 'Грешка при зареждане на запазените часове']);
+                    'message' => $exception->getMessage()
+                ]);
         }
     }
 }

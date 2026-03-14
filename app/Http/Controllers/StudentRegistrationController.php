@@ -19,7 +19,9 @@ class StudentRegistrationController extends Controller
 
     public function __construct(
         private readonly ExamRegistrationService $registrationService
-    ){}
+    )
+    {
+    }
 
     //Return active exams of the student
     public function myExams(Request $request): JsonResponse
@@ -33,6 +35,7 @@ class StudentRegistrationController extends Controller
             'student' => $student
         ]);
     }
+
     //Return the past exams of the student
     public function pastExam(Request $request): JsonResponse
     {
@@ -44,6 +47,7 @@ class StudentRegistrationController extends Controller
             'student' => $student
         ]);
     }
+
     //Register student for exam, if the exam required payment return url to stripe payment page
     public function store(Request $request, int $examId): JsonResponse
     {
@@ -59,10 +63,12 @@ class StudentRegistrationController extends Controller
                 'success' => true,
                 'message' => 'Успешно се записахте за изпит!'
             ]);
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
+        } catch (Exception $exception) {
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([
-                'error' => $e->getMessage(),
+                'error' => $exception->getMessage(),
+                'success' => false,
+                'message'=>$exception->getMessage()
             ], 422);
         }
     }
@@ -77,9 +83,10 @@ class StudentRegistrationController extends Controller
                 'success' => true,
                 'message' => 'Успешно се отписахте от изпита'
             ]);
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
+        } catch (Exception $exception) {
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
+            return response()->json(['success' => false,
+                'message' => $exception->getMessage()], 400);
         }
 
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Models\Student;
+use App\Repositories\SpecialtyRepository;
 use App\Repositories\SubjectRepository;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -10,11 +11,10 @@ use Illuminate\Support\Facades\Auth;
 
 class SubjectService
 {
-protected $subjectRepository;
 
-    public function __construct(SubjectRepository $subjectRepository)
+    public function __construct(private readonly SubjectRepository $subjectRepository,
+    private readonly SpecialtyRepository $specialtyRepository)
     {
-        $this->subjectRepository = $subjectRepository;
     }
 
     public function getTeacherSubjects(int $teacherId)
@@ -57,9 +57,17 @@ protected $subjectRepository;
         return $this->subjectRepository->getSubjectById($id);
     }
 
-    public function getSubjectWithTeacherById($id)
+    public function getSubjectEditData($id)
     {
-        return $this->subjectRepository->getSubjectWithTeacher($id);
+        $subject= $this->subjectRepository->getSubjectWithTeacher($id);
+        $specialties=$this->specialtyRepository->getSpecialtyWithTeachers();
+
+        return [
+            'data' => $subject,
+            'specialties' => $specialties,
+            'selectedSpecialties' => $subject->specialties->pluck('id')->toArray(),
+            'selectedTeachers' => $subject->teachers->pluck('id')->toArray()
+        ];
     }
 
     public function createSubject(array $data)
