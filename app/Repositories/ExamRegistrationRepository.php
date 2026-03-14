@@ -9,17 +9,18 @@ use Illuminate\Support\Collection;
 
 class ExamRegistrationRepository
 {
-    public function getStudentRegistrations(Student $student): Collection
+    public function getActiveStudentRegistrations(Student $student): Collection
     {
-        return $student->registrations()
-            ->with(['exam.teacher.user', 'exam.subject', 'exam.hall'])
-            ->get()
-            ->pluck('exam')
+
+        return Exam::whereHas('registrations', function ($query) use ($student) {
+            $query->where('student_id', $student->id);
+        })
+            ->with('teacher.user', 'subject', 'hall')
             ->where('start_time', '>=', now())
-            ->sortByDesc('start_time')
-            ->values()
+            ->orderBy('start_time', 'desc')
+            ->get()
             ->map(function ($exam) {
-                $exam->remaining_slots=$exam->remainingSlots();
+                $exam->remaining_slots = $exam->remainingSlots();
                 return $exam;
             });
     }
@@ -27,14 +28,14 @@ class ExamRegistrationRepository
     public function getPastStudentRegistrations(Student $student): Collection
     {
 
-        return $student->registrations()
-            ->with(['exam.teacher.user', 'exam.subject', 'exam.hall'])
-            ->whereHas('exam', function($query) {
-                $query->where('start_time', '<=', now());
-            })
-            ->get()
-            ->sortByDesc('exam.start_time')
-            ->values();
+        return ExamRegistration::query()
+            ->with('exam.teacher.user', 'exam.subject', 'exam.hall')
+            ->join('exams', 'exam_registrations.exam_id', '=', 'exams.id')
+            ->where('exam_registrations.student_id', $student->id)
+            ->where('exams.start_time', '<', now())
+            ->orderBy('start_time', 'desc')
+            ->select('exam_registrations.*')
+            ->get();
     }
 
 
@@ -62,21 +63,14 @@ class ExamRegistrationRepository
             ->exists();
     }
 
-    public function getExamDetails($examId)
-    {
-        return Exam::with(['registrations.student.user', 'subject','hall'])->findOrFail($examId);
-    }
-
     public function updateExamGrades($examId, $grades)
     {
+
         foreach ($grades as $registrationId => $grade) {
-            $registration = ExamRegistration::find($registrationId);
-            if ($registration && $registration->exam_id == $examId) {
-                $registration->grade = $grade ?: null;
-                $registration->save();
-            }
+            ExamRegistration::where('id', $registrationId)
+                ->where('exam_id', $examId)
+                ->update(['grade' => $grade ?: null]);
         }
     }
-
 
 }

@@ -25,7 +25,7 @@ class StudentExamController extends Controller
                 'student' => $student,
             ]);
         }catch (\Exception $exception){
-            Log::error('Student exams error: ' . $exception->getMessage());
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'message' => 'Възникна грешка при зареждане на изпитите',

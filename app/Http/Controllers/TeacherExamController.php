@@ -27,10 +27,11 @@ class TeacherExamController extends Controller
 
             $data = $this->examService->getTeacherDashboardData($teacher);
             return response()->json($data);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([
                 'error' => 'Грешка при зареждане на предстоящите изпити ',
-                'message' => $e->getMessage()
+                'message' => $exception->getMessage()
             ], 500);
         }
     }
@@ -47,6 +48,7 @@ class TeacherExamController extends Controller
                 'exam' => $exam,
             ]);
         } catch (\Exception $exception) {
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'message' => $exception->getMessage()
@@ -70,10 +72,10 @@ class TeacherExamController extends Controller
                 ]
             ]);
         } catch (\Exception $exception) {
-            Log::error($exception->getMessage());
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([
                 'success' => false,
-                'message' => "Exam not found"
+                'message' => $exception->getMessage()
             ], 404);
         }
     }
@@ -84,7 +86,9 @@ class TeacherExamController extends Controller
     {
         try {
         $teacher = $request->user()->teacher;
-        $exam = $this->examService->getExamForEdit($examId,$teacher->id);
+        $exam = $this->examService->getExamForEdit(
+            $examId,
+            $teacher->id);
 
             return response()->json([
                 'subject_id' => $exam->subject_id,
@@ -96,10 +100,11 @@ class TeacherExamController extends Controller
             ]);
         }catch (\Exception $exception){
 
-            Log::error($exception->getMessage());
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([
                 'success' => false,
-                'message' => 'Грешка при зареждането на изпита',
+//                'message' => 'Грешка при зареждането на изпита',
+            'message'=>$exception->getMessage()
             ], 500);
 
         }
@@ -116,7 +121,7 @@ class TeacherExamController extends Controller
                 'data' => $updatedExam
             ]);
         }catch (Exception $exception){
-            Log::error($exception->getMessage());
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'message'=>$exception->getMessage()
@@ -135,7 +140,7 @@ class TeacherExamController extends Controller
               'data'=>$data
           ]);
         }catch (Exception $exception){
-            Log::error($exception->getMessage());
+            Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([
                 'success'=>false,
                 'message'=>$exception->getMessage()

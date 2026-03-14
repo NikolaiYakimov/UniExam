@@ -4,33 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectRequest;
 use App\Models\Specialty;
+use App\Services\SpecialtyService;
 use App\Services\SubjectService;
+use App\Services\TeacherService;
 
 
 class AdminSubjectController extends Controller
 {
-    protected $subjectService;
 
-    public function __construct(SubjectService $subjectService)
+    public function __construct(private readonly SubjectService $subjectService, private readonly SpecialtyService $specialtyService)
     {
-        $this->subjectService = $subjectService;
     }
 
     public function uniSubjects()
     {
-        $subjects = $this->subjectService->getAllSubjects();
-        $allSubjects=$subjects->values()->all();
+        $subjects = $this->subjectService->getAllSubjects()->values()->all();
 
         return response()->json([
             'success' => true,
-            'data' => $allSubjects
+            'data' => $subjects
         ]);
     }
 
     //TODO This need to be in the speciality controller , and need to change the name
     public function create()
     {
-        $specialties = Specialty::with(['teachers.user'])->get();
+        $specialties = $this->specialtyService->getAllSpecialties();
 
         return response()->json([
             'success' => true,
@@ -38,7 +37,8 @@ class AdminSubjectController extends Controller
         ]);
     }
 
-    public function store(SubjectRequest $request) {
+    public function store(SubjectRequest $request)
+    {
         $data = $request->validated();
 
         $subject = $this->subjectService->createSubjectWithRelations($data);
@@ -52,19 +52,11 @@ class AdminSubjectController extends Controller
 
     public function edit($id)
     {
-        $subject = $this->subjectService->getSubjectWithTeacherById($id);
-
-        $specialties = Specialty::with('teachers.user')->get();
-        $selectedSpecialties = $subject->specialties->pluck('id')->toArray();
-        $selectedTeachers = $subject->teachers->pluck('id')->toArray();
-
+        $data = $this->subjectService->getSubjectEditData($id);
 
         return response()->json([
             'success' => true,
-            'data' => $subject,
-            'specialties' => $specialties,
-            'selectedSpecialties' => $selectedSpecialties,
-            'selectedTeachers' => $selectedTeachers
+            'data' => $data
         ]);
     }
 
@@ -81,7 +73,6 @@ class AdminSubjectController extends Controller
 
 
     }
-
     public function destroy($id)
     {
         $this->subjectService->deleteSubject($id);

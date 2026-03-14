@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Mail\SuccessfullyPaidAndRegistered;
+use App\Repositories\ExamRepository;
+use App\Repositories\PaymentRepository;
 use Exception;
 use App\Models\Exam;
 use App\Models\ExamRegistration;
@@ -21,7 +23,10 @@ use Stripe\Stripe;
 
 class  PaymentService
 {
-    public function __construct()
+    public function __construct(
+        private readonly ExamRepository $examRepository,
+        private readonly PaymentRepository $paymentRepository,
+    )
     {
         Stripe::setApiKey(config('services.stripe.secret'));
     }
@@ -29,9 +34,9 @@ class  PaymentService
     /**
      * @throws ApiErrorException
      */
-    public function  createCheckoutSession(Exam $exam, Student $student )
+    public function  createCheckoutSession(int $examId, Student $student )
     {
-
+        $exam=$this->examRepository->getExamById($examId);
         $session= Session::create([
             'customer_email'=>Auth::user()->email,
             'payment_method_types' => ['card'],
@@ -131,6 +136,14 @@ class  PaymentService
             return false;
         }
 
+    }
+
+    public function getPaymentRecords($student)
+    {
+        $records= $this->paymentRepository->getPaymentRecords($student);
+        if($records->isEmpty()){
+            throw new Exception("Няма налични плащания");
+        }
     }
 
 }

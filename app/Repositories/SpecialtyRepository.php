@@ -15,6 +15,10 @@ class SpecialtyRepository
     {
         return Specialty::with('faculty')->findOrFail($id);
     }
+    public function getSpecialtyWithTeachers()
+    {
+        return Specialty::with('teachers.user')->get();
+    }
 
     public function create(array $data)
     {

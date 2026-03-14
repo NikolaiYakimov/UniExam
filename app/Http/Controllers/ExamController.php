@@ -25,11 +25,11 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\View\View;
 
-class   ExamController extends Controller
+class ExamController extends Controller
 {
 
 
-//    public function __construct(private readonly ExamService $examService)
+    //    public function __construct(private readonly ExamService $examService)
 //    {}
 
     //Move it to StudentExamController
@@ -84,7 +84,7 @@ class   ExamController extends Controller
 //        }
 //    }
 
-//    public function editExam(StoreExamRequest $request, int $examId)
+    //    public function editExam(StoreExamRequest $request, int $examId)
 //    {
 //        try {
 //            $exam = Exam::findOrFail($examId);
@@ -133,7 +133,7 @@ class   ExamController extends Controller
 //        }
 //    }
 
-//    public function getExamEditData($examId): \Illuminate\Http\JsonResponse
+    //    public function getExamEditData($examId): \Illuminate\Http\JsonResponse
 //    {
 //        try {
 //            $exam = Exam::findOrFail($examId);
@@ -154,7 +154,7 @@ class   ExamController extends Controller
 //    }
 
 
-//    public function getBookedSlots(GetBookedSlotsRequest $request)
+    //    public function getBookedSlots(GetBookedSlotsRequest $request)
 //    {
 //        try {
 //
@@ -214,7 +214,7 @@ class   ExamController extends Controller
 //        }
 //    }
 
-//    public function examRegisteredStudents($examId): JsonResponse
+    //    public function examRegisteredStudents($examId): JsonResponse
 //    {
 //        try {
 //
@@ -253,7 +253,7 @@ class   ExamController extends Controller
 //        }
 //    }
 
-//    public function conductedExams():
+    //    public function conductedExams():
 //    JsonResponse
 //    {
 //        try {

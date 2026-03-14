@@ -10,9 +10,14 @@ use Illuminate\Validation\Rule;
 
 class ExamHallController extends Controller
 {
-    public function getExamHalls(){
+    public function __construct(private readonly \App\Services\ExamHallService $examHallService)
+    {
+    }
+
+    public function getExamHalls()
+    {
         try {
-            $examHalls = ExamHall::all();
+            $examHalls = $this->examHallService->getAllExamHalls();
             return response()->json([
                 'success' => true,
                 'data' => $examHalls
@@ -26,16 +31,17 @@ class ExamHallController extends Controller
         }
     }
 
-    public function store(ExamHallRequest $request){
+    public function store(ExamHallRequest $request)
+    {
         try {
             $data = $request->validated();
-            $examHall = ExamHall::create($data);
+            $examHall = $this->examHallService->createExamHall($data);
 
             return response()->json([
-                'message' => 'Exam hall created successfully',
+                'message' => 'Залата е създадена успешно!',
                 'data' => $examHall
             ], 201);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             Log::error('Грешка при създаване на зала: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
@@ -52,7 +58,7 @@ class ExamHallController extends Controller
                 'success' => true,
                 'data' => $examHall
             ]);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             Log::error('Грешка при зареждане на зала: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
@@ -61,16 +67,16 @@ class ExamHallController extends Controller
         }
     }
 
-    public function update(ExamHallRequest $request,ExamHall $examHall){
+    public function update(ExamHallRequest $request, ExamHall $examHall)
+    {
         try {
             $data = $request->validated();
-            //TODO Да го преместя в service
-            $examHall->update($data);
+            $this->examHallService->updateExamHall($examHall, $data);
             return response()->json([
                 'message' => 'Изпитната зала беше променена',
                 'data' => $examHall
             ]);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             Log::error('Грешка при актуализация на зала: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
@@ -79,16 +85,10 @@ class ExamHallController extends Controller
         }
     }
 
-    public function destroy(ExamHall $examHall){
+    public function destroy(ExamHall $examHall)
+    {
         try {
-            if ($examHall->exams()->count() > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Не може да изтриете зала, която се използва в изпити!'
-                ], 422);
-            }
-
-            $examHall->delete();
+            $this->examHallService->deleteExamHall($examHall);
 
             return response()->json([
                 'success' => true,
@@ -96,10 +96,13 @@ class ExamHallController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Грешка при изтриване на зала: ' . $e->getMessage());
+
+            $isValidationException = $e->getMessage() === 'Не може да изтриете зала, която се използва в изпити!';
+
             return response()->json([
                 'success' => false,
-                'message' => 'Грешка при изтриване на зала'
-            ], 500);
+                'message' => $isValidationException ? $e->getMessage() : 'Грешка при изтриване на зала'
+            ], $isValidationException ? 422 : 500);
         }
     }
 

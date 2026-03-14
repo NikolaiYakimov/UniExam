@@ -13,6 +13,7 @@ use App\Repositories\ExamHallRepository;
 use App\Repositories\ExamRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Collection;
 use Exception;
@@ -21,7 +22,7 @@ class ExamService
 {
     public function __construct(
         private readonly ExamRepositoryInterface $examRepository,
-        private readonly ExamHallRepository      $examHallRepository
+        private readonly ExamHallRepository $examHallRepository
     ) {
     }
 
@@ -70,9 +71,8 @@ class ExamService
     public function getExamDetailsForTeacher(int $examId, Teacher $teacher): Exam
     {
         $exam = $this->examRepository->getExamDetails($examId);
-
         if ($exam->teacher_id !== $teacher->id) {
-            abort(403, 'Нямате права над този изпит.');
+            throw new Exception('Нямате права над този изпит!');
         }
 
         return $exam;
@@ -159,7 +159,7 @@ class ExamService
     {
         $exam = $this->examRepository->getExamDetails($examId);
 
-        $students = $exam->registrations->map(function($registration) {
+        $students = $exam->registrations->map(function ($registration) {
             if ($registration->student) {
                 return [
                     'id' => $registration->student->id,

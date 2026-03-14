@@ -26,15 +26,12 @@ const TeacherSubjects = () => {
         try {
             setLoading(true);
             const response = await api.get('/teacher-subjects');
+            setSubjects(response.data.subjects || []);
 
-            if (response.data.success) {
-                setSubjects(response.data.data.subjects || []);
-            } else {
-                setAlert({ type: 'error', message: response.data.message || 'Грешка при зареждане на предметите' });
-            }
         } catch (error) {
             console.error('Грешка при зареждане на предметите:', error);
-            setAlert({ type: 'error', message: 'Грешка при зареждане на предметите' });
+            // setAlert({ type: 'error', message:'Грешка при зареждане на предметите' });
+            setAlert({ type: 'error', message: error.response.data.message || 'Грешка при зареждане на предметите' });
         } finally {
             setLoading(false);
         }

@@ -6,13 +6,15 @@ use App\Repositories\SpecialtyRepository;
 
 class SpecialtyService
 {
-    protected $specialtyRepository;
 
-    public function __construct(SpecialtyRepository $specialtyRepository)
+    public function __construct(private readonly SpecialtyRepository $specialtyRepository)
     {
-        $this->specialtyRepository = $specialtyRepository;
     }
 
+    public function getSpecialtyWithTeachers()
+    {
+        return $this->specialtyRepository->getSpecialtyWithTeachers();
+    }
     public function getAllSpecialties()
     {
         return $this->specialtyRepository->getAllSpecialties();

@@ -48,21 +48,24 @@ class Exam extends Model
         'start_time' => 'datetime',
         'end_time' => 'datetime',
     ];
-    protected $fillable = ['teacher_id', 'subject_id','hall_id','start_time','end_time','max_students','exam_type'];
+    protected $fillable = ['teacher_id', 'subject_id', 'hall_id', 'start_time', 'end_time', 'max_students', 'exam_type'];
 
     public function hall(): BelongsTo
     {
         return $this->belongsTo(ExamHall::class, 'hall_id');
     }
 
-    public function teacher():BelongsTo{
+    public function teacher(): BelongsTo
+    {
         return $this->belongsTo(Teacher::class);
     }
-    public function subject():BelongsTo{
-       return $this->belongsTo(Subject::class);
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(Subject::class);
     }
 
-    public function registrations():HasMany{
+    public function registrations(): HasMany
+    {
         return $this->hasMany(ExamRegistration::class);
     }
 
@@ -70,8 +73,9 @@ class Exam extends Model
 //    public function remainingSlots(){
 //        return $this->max_students-$this->registrations()->count();
 //    }
-    public function remainingSlots(){
-        $registered=$this->registrations()->count();
+    public function remainingSlots()
+    {
+        $registered = $this->registrations()->count();
         //Allow 10 % overflow for the exam
 //        $maxAllowed=$this->max_students+ceil($this->max_students*0.1);
 //        $maxAllowed=$this->max_students-
@@ -79,12 +83,12 @@ class Exam extends Model
 //            return 0;
 //        }
 //        return $maxAllowed-$registered;
-        return $this->max_students-$registered;
+        return $this->max_students - $registered;
     }
 
     public function hasAvailableSlots(): bool
     {
-        return $this->remainingSlots()>0;
+        return $this->remainingSlots() > 0;
     }
 }
 
