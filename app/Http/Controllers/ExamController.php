@@ -8,7 +8,7 @@ use App\Http\Requests\StoreExamRequest;
 use App\Mail\ExamCreatedMail;
 use App\Mail\ExamUpdatedMail;
 use App\Models\Student;
-use App\Services\ExamService;
+
 use App\Models\Exam;
 use App\Models\ExamHall;
 use App\Models\Subject;

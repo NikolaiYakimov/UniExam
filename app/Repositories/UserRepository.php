@@ -163,4 +163,9 @@ class UserRepository
     {
         return User::where('email', $email)->first();
     }
+
+    public function updateUser(User $user, array $data): bool
+    {
+        return $user->update($data);
+    }
 }

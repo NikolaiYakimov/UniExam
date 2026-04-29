@@ -3,20 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Services\ExamService;
+use App\Services\Exam\StudentExamService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class StudentExamController extends Controller
 {
-    public function __construct(private readonly ExamService $examService){}
+    public function __construct(private readonly StudentExamService $examService){}
 
     //Get all available exams for the student
     public function index(Request $request):JsonResponse{
         try {
             $student=$request->user()->student;
-//            $exams=$this->examService->getAvailableExams($student)->values()->all();
             $exams=$this->examService->getAvailableExams($student);
 
             return response()->json([

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\SubjectDto;
 use App\Http\Requests\SubjectRequest;
+use App\Http\Resources\SubjectDetailsResource;
+use App\Http\Resources\SubjectListResource;
 use App\Models\Specialty;
 use App\Services\SpecialtyService;
 use App\Services\SubjectService;
@@ -22,7 +25,7 @@ class AdminSubjectController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $subjects
+            'data' => SubjectListResource::collection($subjects)
         ]);
     }
 
@@ -39,14 +42,14 @@ class AdminSubjectController extends Controller
 
     public function store(SubjectRequest $request)
     {
-        $data = $request->validated();
+        $dto = SubjectDto::fromRequest($request);
 
-        $subject = $this->subjectService->createSubjectWithRelations($data);
+        $subject = $this->subjectService->createSubjectWithRelations($dto);
 
         return response()->json([
             'success' => true,
             'message' => 'Дисциплината е създадена успешно.',
-            'data' => $subject
+            'data' => new SubjectDetailsResource($subject)
         ], 201);
     }
 
@@ -62,13 +65,13 @@ class AdminSubjectController extends Controller
 
     public function update(SubjectRequest $request, $id)
     {
-        $data = $request->validated();
-        $subject = $this->subjectService->updateSubjectWithRelations($id, $data);
+        $dto = SubjectDto::fromRequest($request);
+        $subject = $this->subjectService->updateSubjectWithRelations($id, $dto);
 
         return response()->json([
             'success' => true,
             'message' => 'Дисциплината е актуализирана успешно.',
-            'data' => $subject
+            'data' => new SubjectDetailsResource($subject)
         ]);
 
 

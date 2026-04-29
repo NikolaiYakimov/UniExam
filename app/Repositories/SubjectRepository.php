@@ -104,4 +104,22 @@ class SubjectRepository
         return $subject->delete();
     }
 
+    public function getStudentSubjectIdsForSemester(int $studentId, int $semester): array
+    {
+        return \App\Models\Student::findOrFail($studentId)
+            ->subjects()
+            ->where('semester', $semester)
+            ->pluck('subjects.id')
+            ->toArray();
+    }
+
+    public function getSubjectsBySemesterAndSpecialty(int $semester, int $specialtyId): \Illuminate\Support\Collection
+    {
+        return Subject::where('semester', $semester)
+            ->whereHas('specialties', function ($query) use ($specialtyId) {
+                $query->where('specialties.id', $specialtyId);
+            })
+            ->get();
+    }
+
 }

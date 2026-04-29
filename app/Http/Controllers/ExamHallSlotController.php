@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GetBookedSlotsRequest;
 use App\Http\Resources\BookedSlotResource;
-use App\Models\ExamHall;
-use App\Services\ExamService;
+use App\Services\Exam\ExamScheduleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 class ExamHallSlotController extends Controller
 {
     public function __construct(
-        private readonly ExamService $examService,
+        private readonly ExamScheduleService $scheduleService,
     ){}
 
     //Return time slots for the given date and hall
@@ -23,21 +22,11 @@ class ExamHallSlotController extends Controller
         try {
             $data=$request->validated();
 
-            $slots = $this->examService->getBookedSlots($data['hall_id'],
+            $slots = $this->scheduleService->getBookedSlots($data['hall_id'],
                 $data['date'],
                 $request->input('exclude_exam_id', null))->filter();
 
-//            $formatedSlots=$slots->map(function($exam){
-//                return [
-//                    'id'=>$exam->id,
-//                    'hall_id'=>$exam->hall_id,
-//                    'start' => $exam->start_time->toIso8601String(),
-//                    'end' => $exam->end_time->toIso8601String()
-//                ];
-//            })->filter()->values();
-
             return response()->json([
-//                'bookedSlots'=>$formatedSlots,
             'bookedSlots'=>BookedSlotResource::collection($slots),
                 'date'=>$data['date'],
                 'hall_id'=>$data['hall_id'],

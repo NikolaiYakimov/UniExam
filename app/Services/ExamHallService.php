@@ -1,31 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\DTOs\ExamHallDto;
 use App\Models\ExamHall;
 use App\Repositories\ExamHallRepository;
+use Illuminate\Support\Collection;
 
 class ExamHallService
 {
-    public function __construct(private readonly ExamHallRepository $examHallRepository)
-    {
-    }
+    public function __construct(
+        private readonly ExamHallRepository $examHallRepository
+    ) {}
 
-    public function getAllExamHalls()
+    public function getAllExamHalls(): Collection
     {
         return $this->examHallRepository->getAll();
     }
 
-    public function createExamHall(array $data): ExamHall
+    public function createExamHall(ExamHallDto $dto): ExamHall
     {
-        return $this->examHallRepository->create($data);
+        return $this->examHallRepository->create($dto->toArray());
     }
 
-    public function updateExamHall(ExamHall $examHall, array $data): bool
+    public function updateExamHall(ExamHall $examHall, ExamHallDto $dto): bool
     {
-        return $this->examHallRepository->update($examHall, $data);
+        return $this->examHallRepository->update($examHall, $dto->toArray());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function deleteExamHall(ExamHall $examHall): ?bool
     {
         if ($examHall->exams()->count() > 0) {

@@ -1,34 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
+
+use App\DTOs\SubjectDto;
 use App\Models\Student;
+use App\Models\Subject;
 use App\Repositories\SpecialtyRepository;
+use App\Repositories\StudentRepository;
 use App\Repositories\SubjectRepository;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Auth;
-//use phpDocumentor\Reflection\Exception;
+use Illuminate\Support\Collection;
 
 class SubjectService
 {
+    public function __construct(
+        private readonly SubjectRepository $subjectRepository,
+        private readonly SpecialtyRepository $specialtyRepository,
+        private readonly StudentRepository $studentRepository
+    ) {}
 
-    public function __construct(private readonly SubjectRepository $subjectRepository,
-    private readonly SpecialtyRepository $specialtyRepository)
+    /**
+     * @throws Exception
+     */
+    public function getTeacherSubjects(int $teacherId): Collection
     {
-    }
-
-    public function getTeacherSubjects(int $teacherId)
-    {
-        $subjects=$this->subjectRepository->getTeacherSubjectsWithStudentsCount($teacherId);
-        if($subjects->isEmpty()){
+        $subjects = $this->subjectRepository->getTeacherSubjectsWithStudentsCount($teacherId);
+        if ($subjects->isEmpty()) {
             throw new Exception("Нямате назначени предмети за момента");
         }
         return $subjects;
     }
 
-    public function getSubjectStudents($subjectId,$teacher)
+    /**
+     * @throws AuthorizationException
+     */
+    public function getSubjectStudents(int $subjectId, mixed $teacher): Collection
     {
-
         if (!$teacher->subjects->contains('id', $subjectId)) {
             throw new AuthorizationException('Нямате права за достъп до студентите на този предмет!');
         }
@@ -36,90 +46,94 @@ class SubjectService
         return $this->subjectRepository->getSubjectStudents($subjectId);
     }
 
-    public function toggleAttestation($subjectId, $studentId,$teacher)
+    /**
+     * @throws Exception
+     */
+    public function toggleAttestation(int $subjectId, int $studentId, mixed $teacher): mixed
     {
         if (!$teacher->subjects->contains('id', $subjectId)) {
-            throw new \Exception('Нямате права да променяте заверката на студента за този предмет.');
+            throw new Exception('Нямате права да променяте заверката на студента за този предмет.');
         }
-        $studentStatus=$this->subjectRepository->getStudentAttestationStatus($studentId,$subjectId);
-
+        $studentStatus = $this->subjectRepository->getStudentAttestationStatus($studentId, $subjectId);
 
         return $this->subjectRepository->toggleAttestation($subjectId, $studentId, $studentStatus);
     }
 
-    public function getAllSubjects()
+    public function getAllSubjects(): Collection
     {
         return $this->subjectRepository->getAll();
     }
 
-    public function getSubjectById($id)
+    public function getSubjectById(int $id): Subject
     {
         return $this->subjectRepository->getSubjectById($id);
     }
 
-    public function getSubjectEditData($id)
+    public function getSubjectEditData(int $id): array
     {
-        $subject= $this->subjectRepository->getSubjectWithTeacher($id);
-        $specialties=$this->specialtyRepository->getSpecialtyWithTeachers();
+        $subject = $this->subjectRepository->getSubjectWithTeacher($id);
+        $specialties = $this->specialtyRepository->getSpecialtyWithTeachers();
 
         return [
             'data' => $subject,
             'specialties' => $specialties,
             'selectedSpecialties' => $subject->specialties->pluck('id')->toArray(),
-            'selectedTeachers' => $subject->teachers->pluck('id')->toArray()
+            'selectedTeachers' => $subject->teachers->pluck('id')->toArray(),
         ];
     }
 
-    public function createSubject(array $data)
+    public function createSubject(SubjectDto $dto): Subject
     {
-        return $this->subjectRepository->create($data);
+        return $this->subjectRepository->create($dto->toArray());
     }
 
-    public function updateSubject($id, array $data)
+    public function updateSubject(int $id, SubjectDto $dto): Subject
     {
-        return $this->subjectRepository->update($id, $data);
+        return $this->subjectRepository->update($id, $dto->toArray());
     }
 
-    public function deleteSubject($id)
+    public function deleteSubject(int $id): bool
     {
         return $this->subjectRepository->delete($id);
     }
 
-    public function createSubjectWithRelations(array $data) {
-        $subject = $this->subjectRepository->create($data);
+    public function createSubjectWithRelations(SubjectDto $dto): Subject
+    {
+        $subject = $this->subjectRepository->create($dto->toArray());
 
-        if (!empty($data['specialties'])) {
-            $subject->specialties()->sync($data['specialties']);
+        if (!empty($dto->specialties)) {
+            $subject->specialties()->sync($dto->specialties);
 
-            $students = Student::where('semester', $data['semester'])
-                ->whereIn('specialty_id', $data['specialties'])
-                ->get();
+            $students = $this->studentRepository->getStudentsBySemesterAndSpecialties(
+                $dto->semester,
+                $dto->specialties
+            );
             $subject->students()->attach($students, ['has_attestation' => true]);
         }
 
-        if (!empty($data['teachers'])) {
-            $subject->teachers()->sync($data['teachers']);
+        if (!empty($dto->teachers)) {
+            $subject->teachers()->sync($dto->teachers);
         }
 
         return $subject;
     }
 
-    public function updateSubjectWithRelations($id, array $data) {
-        $subject = $this->subjectRepository->update($id, $data);
+    public function updateSubjectWithRelations(int $id, SubjectDto $dto): Subject
+    {
+        $subject = $this->subjectRepository->update($id, $dto->toArray());
 
-        if (!empty($data['specialties'])) {
-            $subject->specialties()->sync($data['specialties']);
+        if (!empty($dto->specialties)) {
+            $subject->specialties()->sync($dto->specialties);
         } else {
             $subject->specialties()->detach();
         }
 
-        if (!empty($data['teachers'])) {
-            $subject->teachers()->sync($data['teachers']);
+        if (!empty($dto->teachers)) {
+            $subject->teachers()->sync($dto->teachers);
         } else {
             $subject->teachers()->detach();
         }
 
         return $subject;
     }
-
 }

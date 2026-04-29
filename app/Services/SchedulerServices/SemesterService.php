@@ -1,40 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\SchedulerServices;
 
-use App\Models\AcademicSemester;
-use App\Models\Student;
+use App\Repositories\AcademicSemesterRepository;
+use App\Repositories\StudentRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SemesterService
 {
-public function updateCurrentSemester(): bool
-{
+    public function __construct(
+        private readonly AcademicSemesterRepository $semesterRepository,
+        private readonly StudentRepository $studentRepository
+    ) {}
 
-    $today=Carbon::today();
+    public function updateCurrentSemester(): bool
+    {
+        $today = Carbon::today();
 
-    $currentSemester=AcademicSemester::where('is_current',true)->first();
-    $nextSemester=AcademicSemester::where('start_date','>=',$today)->orderBy('start_date')->first();
-    \Log::info('В сървиза съм');
+        $currentSemester = $this->semesterRepository->getCurrentSemester();
+        $nextSemester = $this->semesterRepository->getNextSemester($today);
 
+        Log::info('В сървиза съм');
 
-    if ($nextSemester && !$nextSemester->is_current && $today->greaterThanOrEqualTo(Carbon::parse($nextSemester->start_date))) {
+        if ($nextSemester && !$nextSemester->is_current && $today->greaterThanOrEqualTo(Carbon::parse($nextSemester->start_date))) {
+            if ($currentSemester) {
+                $this->semesterRepository->updateSemester($currentSemester, [
+                    'is_current' => false,
+                    'start_date' => Carbon::parse($currentSemester->start_date)->addYears(),
+                    'end_date' => Carbon::parse($currentSemester->end_date)->addYear(),
+                ]);
+            }
 
-        if($currentSemester){
-            $currentSemester->is_current=false;
-            $currentSemester->start_date=Carbon::parse($currentSemester->start_date)->addYears();
-            $currentSemester->end_date = Carbon::parse($currentSemester->end_date)->addYear();
-            $currentSemester->save();
+            $this->semesterRepository->updateSemester($nextSemester, [
+                'is_current' => true
+            ]);
+
+            $this->studentRepository->incrementSemesterForAllEligible(8);
+
+            return true;
         }
 
-        $nextSemester->is_current=true;
-        $nextSemester->save();
-
-        Student::where('semester','<',8)->increment('semester');
-
-        return true;
+        return false;
     }
-    return false;
-}
-
 }

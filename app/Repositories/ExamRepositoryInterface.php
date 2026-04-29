@@ -3,8 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Exam;
-
 use App\Models\Student;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 interface ExamRepositoryInterface
@@ -37,4 +37,5 @@ interface ExamRepositoryInterface
 
 //    public function updateExamGrades($examId, $grades);
     public function getBookedTimeSlots();
+    public function getTodayExamsWithSpecialties(Carbon $date): Collection;
 }

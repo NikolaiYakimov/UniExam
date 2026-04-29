@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Teacher;
-use App\Services\ExamService;
+use App\Services\Exam\TeacherExamService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
@@ -12,7 +11,7 @@ use Mockery\Exception;
 class ExamStudentController extends Controller
 {
     public function __construct(
-        private readonly ExamService $examService,
+        private readonly TeacherExamService $examService,
     ){}
 
     //get registered students for the given exam

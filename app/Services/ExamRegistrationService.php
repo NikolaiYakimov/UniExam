@@ -1,19 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\Events\StudentRegisteredForExam;
 use App\Models\Exam;
 use App\Models\Student;
-use App\Models\Teacher;
 use App\Repositories\ExamRegistrationRepository;
 use App\Repositories\ExamRepository;
-use App\Services\PaymentService;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\SuccessfullyRegistrated;
+use Illuminate\Support\Collection;
 
 class ExamRegistrationService
 {
@@ -23,20 +20,22 @@ class ExamRegistrationService
         private readonly PaymentService $paymentService
     ) {}
 
-    public function getActiveStudentRegistrations(Student $student)
+    public function getActiveStudentRegistrations(Student $student): Collection
     {
         return $this->registrationRepository->getActiveStudentRegistrations($student);
     }
 
-    public function getPastStudentRegistrations(Student $student)
+    public function getPastStudentRegistrations(Student $student): Collection
     {
         return $this->registrationRepository->getPastStudentRegistrations($student);
-
     }
 
+    /**
+     * @throws Exception
+     */
     public function registerStudent(Student $student, int $examId): array
     {
-        $exam=$this->examRepository->getExamById($examId);
+        $exam = $this->examRepository->getExamById($examId);
         if ($exam->remainingSlots() <= 0) {
             throw new Exception("Няма свободни места");
         }
@@ -48,13 +47,11 @@ class ExamRegistrationService
         $isPastSemester = $exam->subject->semester < $student->semester;
 
         if ($isPastSemester && $exam->exam_type === 'редовен') {
-
             throw new Exception('Не е позволено да се явяваш на редовни изпити от по-долен курс! Позволено е да се явиш само на поправката или ликвидацията на по-долния курс!');
         }
 
-
         if ($exam->exam_type === 'ликвидация' || $isPastSemester) {
-            return ['redirect_to_payment'=>true];
+            return ['redirect_to_payment' => true];
         }
 
         $this->registrationRepository->createRegistration([
@@ -62,16 +59,17 @@ class ExamRegistrationService
             'exam_id' => $exam->id,
         ]);
 
-        // Изпращане на имейл
-        Mail::to($student->user->email)->queue(new SuccessfullyRegistrated($exam, $student));
+        event(new StudentRegisteredForExam($exam, $student));
 
-
-        return ['redirect_to_payment'=>false];
+        return ['redirect_to_payment' => false];
     }
 
+    /**
+     * @throws Exception
+     */
     public function unregisterStudent(Student $student, int $examId): void
     {
-        $exam=$this->examRepository->getExamById($examId);
+        $exam = $this->examRepository->getExamById($examId);
         $registration = $this->registrationRepository->findRegistration($student->id, $exam->id);
 
         if (!$registration) {
@@ -97,25 +95,8 @@ class ExamRegistrationService
             if (!$refundSuccess) {
                 throw new Exception('Възникна грешка при възстановяването на сумата.');
             }
-
         }
 
         $this->registrationRepository->deleteRegistration($registration);
-
-
-
     }
-
-    public function updateGrades(Teacher $teacher,$examId, $grades)
-    {
-        $exam=$this->examRepository->getExamDetails($examId);
-
-        if ($exam->teacher_id !== $teacher->id) {
-            abort(403);
-        }
-        $this->registrationRepository->updateExamGrades($examId, $grades);
-    }
-
-
-
 }

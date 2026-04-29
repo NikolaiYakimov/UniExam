@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\CreateExamDto;
+use App\DTOs\UpdateExamDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExamRequest;
-use App\Models\Exam;
-use App\Models\ExamHall;
-use App\Services\ExamService;
+use App\Http\Resources\ExamDetailsResource;
+use App\Http\Resources\ExamEditResource;
+use App\Http\Resources\ExamListResource;
+use App\Services\Exam\TeacherExamService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +18,7 @@ use Mockery\Exception;
 
 class TeacherExamController extends Controller
 {
-    public function __construct(private readonly ExamService $examService)
+    public function __construct(private readonly TeacherExamService $examService)
     {
     }
 
@@ -26,6 +29,8 @@ class TeacherExamController extends Controller
             $teacher = $request->user()->teacher;
 
             $data = $this->examService->getTeacherDashboardData($teacher);
+            $data['exams'] = ExamListResource::collection($data['exams']);
+
             return response()->json($data);
         } catch (\Exception $exception) {
             Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
@@ -41,11 +46,13 @@ class TeacherExamController extends Controller
     {
         try {
             $teacher = $request->user()->teacher;
-            $exam = $this->examService->createExam($request->validated(), $teacher);
+            $dto = CreateExamDto::fromRequest($request);
+            $exam = $this->examService->createExam($dto, $teacher);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Изпита е добавен успешно',
-                'exam' => $exam,
+                'exam' => new ExamDetailsResource($exam),
             ]);
         } catch (\Exception $exception) {
             Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
@@ -60,14 +67,13 @@ class TeacherExamController extends Controller
     public function show(Request $request, int $examId): JsonResponse
     {
         try {
-
             $teacher = $request->user()->teacher;
             $exam = $this->examService->getExamDetailsForTeacher($examId, $teacher);
-            Log::info($exam);
+
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'exam' => $exam,
+                    'exam' => new ExamDetailsResource($exam),
                     'teacher' => $teacher,
                 ]
             ]);
@@ -85,25 +91,15 @@ class TeacherExamController extends Controller
     public function edit(Request $request, int $examId): JsonResponse
     {
         try {
-        $teacher = $request->user()->teacher;
-        $exam = $this->examService->getExamForEdit(
-            $examId,
-            $teacher->id);
+            $teacher = $request->user()->teacher;
+            $exam = $this->examService->getExamForEdit($examId, $teacher->id);
 
-            return response()->json([
-                'subject_id' => $exam->subject_id,
-                'exam_type' => $exam->exam_type,
-                'max_students' => $exam->max_students,
-                'start_time' => $exam->start_time,
-                'end_time' => $exam->end_time,
-                'hall_id' => $exam->hall_id
-            ]);
-        }catch (\Exception $exception){
+            return response()->json(new ExamEditResource($exam));
+        } catch (\Exception $exception) {
 
             Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([
                 'success' => false,
-//                'message' => 'Грешка при зареждането на изпита',
             'message'=>$exception->getMessage()
             ], 500);
 
@@ -114,11 +110,13 @@ class TeacherExamController extends Controller
     public function update(StoreExamRequest $request, int $examId): JsonResponse
     {
         try {
-            $updatedExam = $this->examService->updateExam($examId,$request->validated());
+            $dto = UpdateExamDto::fromRequest($request);
+            $updatedExam = $this->examService->updateExam($examId, $dto);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Изпита беше редактиран успешно!',
-                'data' => $updatedExam
+                'data' => new ExamDetailsResource($updatedExam)
             ]);
         }catch (Exception $exception){
             Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
@@ -133,12 +131,14 @@ class TeacherExamController extends Controller
     public function conducted(Request $request): JsonResponse
     {
         try {
-          $teacher=$request->user()->teacher;
-          $data=$this->examService->getConductedExams($teacher);
-          return response()->json([
-              'success'=>true,
-              'data'=>$data
-          ]);
+            $teacher = $request->user()->teacher;
+            $data = $this->examService->getConductedExams($teacher);
+            $data['exams'] = ExamListResource::collection($data['exams']);
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
         }catch (Exception $exception){
             Log::error($exception->getMessage() . " |||| " . $exception->getTraceAsString());
             return response()->json([

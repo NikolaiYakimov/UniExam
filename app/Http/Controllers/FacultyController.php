@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\FacultyDto;
 use App\Http\Requests\FacultyRequest;
+use App\Http\Resources\FacultyListResource;
 use App\Services\FacultyService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -23,7 +25,7 @@ class FacultyController
         try {
             $faculties = $this->facultyService->getAllFaculties();
             return response()->json([
-                'data' => $faculties,
+                'data' => FacultyListResource::collection($faculties),
                 'message' => 'Faculties retrieved successfully'
             ]);
         } catch (\Exception $e) {
@@ -36,9 +38,9 @@ class FacultyController
     public function store(FacultyRequest $request)
     {
         try {
-            $validated = $request->validated();
+            $dto = FacultyDto::fromRequest($request);
 
-            $faculty = $this->facultyService->createFaculty($validated);
+            $faculty = $this->facultyService->createFaculty($dto);
 
             return response()->json([
                 'data' => $faculty,
@@ -76,11 +78,8 @@ class FacultyController
     public function update(FacultyRequest $request, $id)
     {
         try {
-//            $validated = $request->validate([
-//                'name' => 'required|string|max:255|unique:faculties,name,' . $id
-//            ]);
-            $validated = $request->validated();
-            $faculty = $this->facultyService->updateFaculty($id, $validated);
+            $dto = FacultyDto::fromRequest($request);
+            $faculty = $this->facultyService->updateFaculty($id, $dto);
 
             return response()->json([
                 'data' => $faculty,

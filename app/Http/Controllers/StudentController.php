@@ -8,7 +8,7 @@ use App\Models\Exam;
 use App\Models\ExamRegistration;
 use App\Models\Payment;
 use App\Models\Student;
-use App\Services\ExamService;
+
 use App\Services\PaymentService;
 use App\Services\StudentService;
 use Illuminate\Http\JsonResponse;

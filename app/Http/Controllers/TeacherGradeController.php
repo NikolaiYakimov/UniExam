@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\UpdateGradeDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateGradeRequest;
-use App\Models\Student;
-use App\Services\ExamRegistrationService;
+use App\Services\Exam\TeacherExamService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 class TeacherGradeController extends Controller
 {
     public function __construct(
-        private readonly examRegistrationService $examRegistrationService,
+        private readonly TeacherExamService $teacherExamService,
     ){}
 
     //Update Students grades, if there is any change
@@ -21,8 +21,8 @@ class TeacherGradeController extends Controller
     {
         try {
             $teacher=$request->user()->teacher;
-           $request->validated();
-            $this->examRegistrationService->updateGrades($teacher,$examId, $request->grades);
+            $dto = UpdateGradeDto::fromRequest($request);
+            $this->teacherExamService->updateGrades($teacher,$examId, $dto);
 
             return response()->json([
                 'success' => true,

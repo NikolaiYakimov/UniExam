@@ -1,50 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-use App\Mail\SuccessfullyPaidAndRegistered;
+use App\Events\PaymentCompleted;
+use App\Models\Student;
+use App\Repositories\ExamRegistrationRepository;
 use App\Repositories\ExamRepository;
 use App\Repositories\PaymentRepository;
+use App\Repositories\StudentRepository;
 use Exception;
-use App\Models\Exam;
-use App\Models\ExamRegistration;
-use App\Models\Payment;
-use App\Models\Student;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Refund;
 use Stripe\Stripe;
 
-
-
-class  PaymentService
+class PaymentService
 {
     public function __construct(
         private readonly ExamRepository $examRepository,
         private readonly PaymentRepository $paymentRepository,
-    )
-    {
+        private readonly ExamRegistrationRepository $registrationRepository,
+        private readonly StudentRepository $studentRepository
+    ) {
         Stripe::setApiKey(config('services.stripe.secret'));
     }
 
     /**
      * @throws ApiErrorException
      */
-    public function  createCheckoutSession(int $examId, Student $student )
+    public function createCheckoutSession(int $examId, Student $student): \Illuminate\Http\JsonResponse
     {
-        $exam=$this->examRepository->getExamById($examId);
-        $session= Session::create([
-            'customer_email'=>Auth::user()->email,
+        $exam = $this->examRepository->getExamById($examId);
+        $session = Session::create([
+            'customer_email' => $student->user->email,
             'payment_method_types' => ['card'],
             'line_items' => [[
                 'price_data' => [
                     'currency' => 'eur',
                     'product_data' => [
-                        'name' => 'Ликвида  ионен изпит по ' . $exam->subject->subject_name,
+                        'name' => 'Ликвидационен изпит по ' . $exam->subject->subject_name,
                     ],
                     'unit_amount' => $exam->subject->price * 100,
                 ],
@@ -56,9 +54,9 @@ class  PaymentService
                 'student_id' => $student->id,
                 'exam_id' => $exam->id,
             ],
-//            'return_url' => route('payment.success.embedded').'?session_id={CHECKOUT_SESSION_ID}',
             'return_url' => route('payment.success.embedded') . '?session_id={CHECKOUT_SESSION_ID}',
         ]);
+
         return response()->json(['clientSecret' => $session->client_secret]);
     }
 
@@ -74,77 +72,76 @@ class  PaymentService
         }
     }
 
-
-    public function createRegistrationAndPayment(Session $session):void
+    /**
+     * @throws Exception
+     */
+    public function createRegistrationAndPayment(Session $session): void
     {
-        $exam=Exam::findOrFail($session->metadata->exam_id);
-        $student=Student::findOrFail($session->metadata->student_id);
-        $user=Auth::user();
+        $exam = $this->examRepository->getExamById((int) $session->metadata->exam_id);
+        $student = $this->studentRepository->getStudentById((int) $session->metadata->student_id);
 
-        DB::transaction(function () use ($session,$exam) {
-            $student_id=$session->metadata->student_id;
-            if($exam->remainingSlots()<=0){
+        DB::transaction(function () use ($session, $exam) {
+            $student_id = (int) $session->metadata->student_id;
+            if ($exam->remainingSlots() <= 0) {
                 throw new Exception("Няма свободни места");
             }
-            if (Payment::where('stripe_payment_id', $session->payment_intent)->exists()) {
+            if ($this->paymentRepository->paymentExistsWithIntent($session->payment_intent)) {
                 throw new Exception('Дублиране на плащане');
             }
 
-            $registration=ExamRegistration::create([
-                'student_id'=>$student_id,
-                'exam_id'=>$exam->id,
+            $registration = $this->registrationRepository->createRegistration([
+                'student_id' => $student_id,
+                'exam_id' => $exam->id,
             ]);
 
-            Payment::create([
-                'student_id'=>$student_id,
-                'exam_registration_id'=>$registration->id,
-                'stripe_payment_id'=>$session->payment_intent,
-                'amount'=>$session->amount_total/100,
-                'currency'=>$session->currency,
-                'status'=>'paid',
-                'payment_date'=>now(),
+            $this->paymentRepository->createPayment([
+                'student_id' => $student_id,
+                'exam_registration_id' => $registration->id,
+                'stripe_payment_id' => $session->payment_intent,
+                'amount' => $session->amount_total / 100,
+                'currency' => $session->currency,
+                'status' => 'paid',
+                'payment_date' => now(),
             ]);
         });
 
-        Log::debug($student->user);
-        Mail::to($student->user->email)->queue(new SuccessfullyPaidAndRegistered($exam,$student));
+        event(new PaymentCompleted($exam, $student));
     }
 
-    public function processRefund(string $paymentIntentId,string $reason='requested_by_customer'): bool
+    public function processRefund(string $paymentIntentId, string $reason = 'requested_by_customer'): bool
     {
-        try{
-           $payment=Payment::where('stripe_payment_id', $paymentIntentId)->first();
-           if(!$payment){
-               throw new Exception("Такова плащане не беше намерено");
-           }
-           if($payment->status!=='paid'){
-               throw new Exception("Само изпитите който са платени успешно могат да бъдат върнати");
-           }
-           Refund::create([
-               'payment_intent'=>$paymentIntentId,
-               'reason'=>$reason,
-           ]);
-           $payment->status='refunded';
-           $payment->save();
-           return true;
+        try {
+            $payment = $this->paymentRepository->findPaymentByIntent($paymentIntentId);
+            if (!$payment) {
+                throw new Exception("Такова плащане не беше намерено");
+            }
+            if ($payment->status !== 'paid') {
+                throw new Exception("Само изпитите който са платени успешно могат да бъдат върнати");
+            }
+            Refund::create([
+                'payment_intent' => $paymentIntentId,
+                'reason' => $reason,
+            ]);
+            $this->paymentRepository->updatePaymentStatus($payment, 'refunded');
+
+            return true;
         } catch (ApiErrorException $e) {
             Log::error('Refund failed', [
                 'payment_intent' => $paymentIntentId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return false;
         }
-
     }
 
-    public function getPaymentRecords($student)
+    public function getPaymentRecords(Student $student): mixed
     {
-        $records= $this->paymentRepository->getPaymentRecords($student);
-        if($records->isEmpty()){
+        $records = $this->paymentRepository->getPaymentRecords($student);
+        if ($records->isEmpty()) {
             throw new Exception("Няма налични плащания");
         }
+
+        return $records;
     }
-
 }
-

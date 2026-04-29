@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\ExamHallDto;
 use App\Http\Requests\ExamHallRequest;
+use App\Http\Resources\ExamHallListResource;
 use App\Models\ExamHall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +22,7 @@ class ExamHallController extends Controller
             $examHalls = $this->examHallService->getAllExamHalls();
             return response()->json([
                 'success' => true,
-                'data' => $examHalls
+                'data' => ExamHallListResource::collection($examHalls)
             ]);
         } catch (\Exception $e) {
             Log::error('Грешка при зареждане на зали: ' . $e->getMessage());
@@ -34,12 +36,13 @@ class ExamHallController extends Controller
     public function store(ExamHallRequest $request)
     {
         try {
-            $data = $request->validated();
-            $examHall = $this->examHallService->createExamHall($data);
+            $dto = ExamHallDto::fromRequest($request);
+            $examHall = $this->examHallService->createExamHall($dto);
 
             return response()->json([
                 'message' => 'Залата е създадена успешно!',
-                'data' => $examHall
+                'data' => $examHall,
+                'success' => true
             ], 201);
         } catch (\Exception $e) {
             Log::error('Грешка при създаване на зала: ' . $e->getMessage());
@@ -50,7 +53,6 @@ class ExamHallController extends Controller
         }
     }
 
-    //TODO да погледна това
     public function edit(ExamHall $examHall)
     {
         try {
@@ -70,11 +72,12 @@ class ExamHallController extends Controller
     public function update(ExamHallRequest $request, ExamHall $examHall)
     {
         try {
-            $data = $request->validated();
-            $this->examHallService->updateExamHall($examHall, $data);
+            $dto = ExamHallDto::fromRequest($request);
+            $this->examHallService->updateExamHall($examHall, $dto);
             return response()->json([
                 'message' => 'Изпитната зала беше променена',
-                'data' => $examHall
+                'data' => $examHall,
+                'success' => true
             ]);
         } catch (\Exception $e) {
             Log::error('Грешка при актуализация на зала: ' . $e->getMessage());

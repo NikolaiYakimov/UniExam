@@ -6,7 +6,7 @@ use App\Models\Exam;
 use App\Models\ExamRegistration;
 use App\Models\Student;
 use App\Repositories\ExamRepositoryInterface;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class ExamRepository implements ExamRepositoryInterface
@@ -197,6 +197,26 @@ class ExamRepository implements ExamRepositoryInterface
             ->whereNotNull('grade')
             ->get()
             ->groupBy('exam.subject_id');
+    }
+
+    public function getTodayExamsWithSpecialties(Carbon $date): Collection
+    {
+        return Exam::with(['subject.specialties'])
+            ->whereDate('start_time', $date)
+            ->get();
+    }
+
+    public function getEligibleStudentsForAutoRegistration(Exam $exam, array $specialtyIds): Collection
+    {
+        return Student::whereHas('subjects', function ($query) use ($exam) {
+            $query->where('subject_id', $exam->subject_id)->where('has_attestation', true);
+        })
+            ->whereDoesntHave('registration', function ($query) use ($exam) {
+                $query->where('exam_id', $exam->id);
+            })
+            ->where('semester', '>=', $exam->subject->semester)
+            ->whereIn('specialty_id', $specialtyIds)
+            ->get();
     }
 
 }

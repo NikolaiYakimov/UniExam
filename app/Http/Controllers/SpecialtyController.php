@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\DTOs\SpecialtyDto;
 use App\Http\Requests\SpecialityRequest;
+use App\Http\Resources\SpecialtyListResource;
 use App\Models\Specialty;
 use App\Services\SpecialtyService;
 use Illuminate\Http\Request;
@@ -21,7 +23,7 @@ class SpecialtyController
         try {
             $specialties = $this->specialtyService->getAllSpecialties();
             return response()->json([
-                'data' => $specialties,
+                'data' => SpecialtyListResource::collection($specialties),
                 'message' => 'Заповядайте вашите специалности!'
             ]);
         } catch (\Exception $exception) {
@@ -36,9 +38,9 @@ class SpecialtyController
     public function store(SpecialityRequest $request)
     {
         try {
-            $validated = $request->validated();
+            $dto = SpecialtyDto::fromRequest($request);
 
-            $specialty = $this->specialtyService->createSpecialty($validated);
+            $specialty = $this->specialtyService->createSpecialty($dto);
 
             return response()->json([
                 'data' => $specialty,
@@ -73,9 +75,9 @@ class SpecialtyController
     public function update(SpecialityRequest $request, $id)
     {
         try {
-            $validated = $request->validated();
+            $dto = SpecialtyDto::fromRequest($request);
 
-            $specialty = $this->specialtyService->updateSpecialty($id, $validated);
+            $specialty = $this->specialtyService->updateSpecialty($id, $dto);
 
             return response()->json([
                 'data' => $specialty,
